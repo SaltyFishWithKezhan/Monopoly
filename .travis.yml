@@ -10,8 +10,18 @@ cache:
 jobs:
   include:
     - stage: lint
-      script: yarn lint
+      script: yarn workspace shared lint
+      name: lint shared
+    - script: yarn workspace client lint
+      name: lint client
+    - script: yarn workspace server lint
+      name: lint server
+    - stage: build shared
+      script: yarn workspace shared build
     - stage: build
-      script: yarn build
+      script: yarn workspace client build
+      name: build client
+    - script: yarn workspace server build
+      name: build server
     - stage: test
-      script: yarn test
+      script: yarn workspace server test
