@@ -1,0 +1,48 @@
+{
+  "tasks": {
+    "start-server": {
+      "executable": "yarn",
+      "cwd": "server",
+      "args": ["start"],
+      "watch": ["server/.config/**/*", "server/src/**/*.ts"]
+    },
+    "start-client": {
+      "executable": "yarn",
+      "cwd": "client",
+      "args": ["start"]
+    },
+    "build-shared": {
+      "executable": "tsc",
+      "args": ["--project", "shared", "--watch"],
+      "problemMatcher": "$typescript:tsc-watch"
+    },
+    "build-server": {
+      "executable": "tsc",
+      "args": ["--project", "server", "--watch"],
+      "problemMatcher": "$typescript:tsc-watch"
+    },
+    "build-client": {
+      "executable": "yarn",
+      "cwd": "client",
+      "args": ["build"]
+    },
+    "lint-shared": {
+      "executable": "tslint",
+      "args": ["--project", "shared"],
+      "autoClose": true,
+      "problemMatcher": "$typescript:tslint"
+    },
+    "lint-client": {
+      "executable": "tslint",
+      "args": ["--project", "client"],
+      "autoClose": true,
+      "problemMatcher": "$typescript:tslint"
+    },
+    "lint-server": {
+      "executable": "tslint",
+      "args": ["--project", "server"],
+      "autoClose": true,
+      "problemMatcher": "$typescript:tslint"
+    }
+  }
+}

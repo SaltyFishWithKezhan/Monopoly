@@ -4,9 +4,16 @@
   "main": "index.js",
   "private": true,
   "license": "MIT",
+  "scripts": {
+    "start-client": "yarn workspace client start",
+    "start-server": "yarn workspace server start",
+    "lint": "yarn workspace shared lint && yarn workspace client lint && yarn workspace server lint",
+    "build": "yarn workspace shared build && yarn workspace client build && yarn workspace server build"
+  },
   "devDependencies": {
     "@magicspace/configs": "^0.1.45",
     "@magicspace/tslint-rules": "^0.1.41",
+    "biu": "0.3.0-alpha.2",
     "dot-template-types": "^0.0.7",
     "rimraf": "^2.6.2",
     "tslint": "^5.11.0",

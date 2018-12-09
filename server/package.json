@@ -6,8 +6,9 @@
   "scripts": {
     "start": "yarn ts-node -r tsconfig-paths/register src/main.ts",
     "start:dev": "nodemon",
-    "prestart:prod": "rm -rf bld && tsc",
-    "start:prod": "node bld/main.js"
+    "build": "rimraf bld && tsc --project src",
+    "start:prod": "node bld/main.js",
+    "lint": "tslint -c ./tslint.json -p ./tsconfig.json"
   },
   "dependencies": {
   },

@@ -3,10 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build:library": "rimraf bld && tsc --project src",
-    "lint:library": "tslint --project src",
-    "build": "yarn build:library",
-    "lint": "yarn lint:library"
+    "build": "rimraf bld && tsc --project src",
+    "lint": "tslint -c ./tslint.json -p ./tsconfig.json"
   },
   "main": "bld/index.js",
   "types": "bld/index.d.ts",
