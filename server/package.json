@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node bld/main.js",
-    "build": "rimraf bld && tsc --project src",
+    "build": "rimraf bld && tsc --project ./",
     "lint": "tslint -c ./tslint.json -p ./tsconfig.json",
     "test": "jest"
   },
