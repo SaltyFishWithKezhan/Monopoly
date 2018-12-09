@@ -6,8 +6,8 @@
     "experimentalDecorators": true,
     "declaration": true,
 
-    "baseUrl": "./src",
-    "rootDir": "./src"
+    "rootDir": "src",
+    "outDir": "bld"
   },
-  "exclude": ["node_modules", "test"]
+  "exclude": ["node_modules", "test", "bld"]
 }

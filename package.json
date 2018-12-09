@@ -9,6 +9,7 @@
     "start-server": "yarn workspace server start",
     "lint": "yarn workspace shared lint && yarn workspace client lint && yarn workspace server lint",
     "build": "yarn workspace shared build && yarn workspace client build && yarn workspace server build",
+    "start": "yarn workspace server start",
     "test": "yarn workspace server test"
   },
   "devDependencies": {

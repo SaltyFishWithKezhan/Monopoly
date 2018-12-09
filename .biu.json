@@ -5,9 +5,9 @@
       "cwd": "server",
       "args": ["start"],
       "watch": [
-        "server/.config/**/*",
-        "server/bld/**/*.js",
-        "node_modules/shared/bld/**/*.js"
+        "../.config/**/*",
+        "bld/**/*.js",
+        "../node_modules/shared/bld/**/*.js"
       ]
     },
     "start-client": {
