@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "parcel serve src/index.html --port 8089 --out-dir bld",
-    "build": "parcel build src/index.html --out-dir bld",
+    "build": "rimraf bld && parcel build src/index.html --out-dir bld",
     "lint": "tslint -c ./tslint.json -p ./tsconfig.json"
   },
   "dependencies": {

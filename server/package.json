@@ -4,17 +4,13 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "yarn ts-node -r tsconfig-paths/register src/main.ts",
-    "start:dev": "nodemon",
+    "start": "node bld/main.js",
     "build": "rimraf bld && tsc --project src",
-    "start:prod": "node bld/main.js",
     "lint": "tslint -c ./tslint.json -p ./tsconfig.json"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^10.12.11",
-    "nodemon": "^1.18.7",
-    "ts-node": "^7.0.1"
+    "tsconfig-paths": "^3.7.0"
   }
 }

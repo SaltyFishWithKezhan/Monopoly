@@ -4,7 +4,11 @@
       "executable": "yarn",
       "cwd": "server",
       "args": ["start"],
-      "watch": ["server/.config/**/*", "server/src/**/*.ts"]
+      "watch": [
+        "server/.config/**/*",
+        "server/bld/**/*.js",
+        "node_modules/shared/bld/**/*.js"
+      ]
     },
     "start-client": {
       "executable": "yarn",
