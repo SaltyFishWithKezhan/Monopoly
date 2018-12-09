@@ -8,7 +8,8 @@
     "start-client": "yarn workspace client start",
     "start-server": "yarn workspace server start",
     "lint": "yarn workspace shared lint && yarn workspace client lint && yarn workspace server lint",
-    "build": "yarn workspace shared build && yarn workspace client build && yarn workspace server build"
+    "build": "yarn workspace shared build && yarn workspace client build && yarn workspace server build",
+    "test": "yarn workspace server test"
   },
   "devDependencies": {
     "@magicspace/configs": "^0.1.45",
