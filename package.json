@@ -2,5 +2,22 @@
   "name": "Monopoly",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "private": true,
+  "license": "MIT",
+  "devDependencies": {
+    "@magicspace/configs": "^0.1.45",
+    "@magicspace/tslint-rules": "^0.1.41",
+    "dot-template-types": "^0.0.7",
+    "rimraf": "^2.6.2",
+    "tslint": "^5.11.0",
+    "tslint-language-service": "^0.9.9",
+    "typescript": "^3.2.1"
+  },
+  "workspaces": {
+    "packages": [
+      "client",
+      "server",
+      "shared"
+    ]
+  }
 }

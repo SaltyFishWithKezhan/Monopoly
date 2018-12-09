@@ -1,0 +1,17 @@
+{
+  "name": "shared",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build:library": "rimraf bld && tsc --project src",
+    "lint:library": "tslint --project src",
+    "build": "yarn build:library",
+    "lint": "yarn lint:library"
+  },
+  "main": "bld/index.js",
+  "types": "bld/index.d.ts",
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}

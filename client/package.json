@@ -1,0 +1,15 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "phaser": "^3.15.1"
+  },
+  "devDependencies": {
+    "parcel": "^1.10.3",
+    "parcel-bundler": "^1.9.7",
+    "parcel-plugin-typescript": "^1.0.0"
+  }
+}

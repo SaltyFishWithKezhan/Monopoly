@@ -1,0 +1,35 @@
+# Develepment environment
+
+.idea/
+
+# Cache files
+
+.yarn-offline-cache/
+
+# Installable packages
+
+node_modules/
+
+# Configuration
+
+.config/
+
+# Building artifacts
+
+bld/
+build/
+dist/
+.cache/
+*.tgz
+
+# Debugging outputs
+
+*.log
+
+# Testing files
+
+/test.*
+
+# File system
+
+.DS_Store

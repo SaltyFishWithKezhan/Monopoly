@@ -1,0 +1,7 @@
+{
+  "extends": "@magicspace/configs/tslint-prettier",
+  "rules": {
+    "import-path-base-url": [true, { "baseUrl": "src" }],
+    "import-path-shallowest": [true, { "baseUrl": "src" }]
+  }
+}
