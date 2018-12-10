@@ -25,3 +25,12 @@ jobs:
       name: build server
     - stage: test
       script: yarn workspace server test
+    - stage: deploy
+      script: yarn deploy
+stages:
+  - lint
+  - build shared
+  - build
+  - test
+  - name: deploy
+    if: branch = master
