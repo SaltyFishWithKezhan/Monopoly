@@ -16,21 +16,12 @@ jobs:
       name: lint client
     - script: yarn workspace server lint
       name: lint server
-    - stage: build shared
-      script: yarn workspace shared build
-    - stage: build
-      script: yarn workspace client build
-      name: build client
-    - script: yarn workspace server build
-      name: build server
-    - stage: test
-      script: yarn workspace server test
+    - stage: build and test
+      script: yarn build-test
     - stage: deploy
       script: yarn deploy
 stages:
   - lint
-  - build shared
-  - build
-  - test
+  - build and test
   - name: deploy
     if: branch = master
