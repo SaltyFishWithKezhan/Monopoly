@@ -21,7 +21,7 @@ const ncp = promisify(_ncp);
 const rimraf = promisify(_rimraf);
 
 const DEPLOY_BLD_DIR = Path.join(PROJECT_DIR, 'bld');
-const DEPLOY_PACKAGE_PATH = Path.join(PROJECT_DIR, 'package.json');
+const DEPLOY_PACKAGE_PATH = Path.join(DEPLOY_BLD_DIR, 'package.json');
 
 const DEPLOY_SHARED_DIR = Path.join(DEPLOY_BLD_DIR, 'shared');
 
