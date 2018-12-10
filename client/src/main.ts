@@ -8,6 +8,7 @@ let config: GameConfig = {
   type: Phaser.CANVAS,
   width: gameWidth,
   height: gameHeight,
+  backgroundColor: 0x87cefa,
   physics: {
     default: 'arcade',
     arcade: {
