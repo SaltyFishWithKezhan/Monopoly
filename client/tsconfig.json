@@ -8,10 +8,9 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
 
-    "baseUrl": "src",
     "rootDir": "src",
     "outDir": "bld",
 
-    "plugins": [{ "name": "tslint-language-service" }]
+    "plugins": [{"name": "tslint-language-service"}]
   }
 }

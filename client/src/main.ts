@@ -1,42 +1,23 @@
-import {Game, Scene} from 'phaser';
+import {Game} from 'phaser';
+
+import {LoginScene} from './scenes/login-scene';
 
 let config: GameConfig = {
   type: Phaser.AUTO,
-  width: 1000,
-  height: 800,
+  width: window.screen.availWidth / window.devicePixelRatio,
+  height: window.screen.availHeight / window.devicePixelRatio,
   physics: {
     default: 'arcade',
     arcade: {
       gravity: {y: 200},
     },
   },
-  scene: {
-    preload,
-    create,
-  },
 };
 
-function preload(this: Scene): void {
-  this.load.setBaseURL('http://labs.phaser.io');
-  this.load.image('sky', 'assets/skies/space3.png');
-  this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-  this.load.image('red', 'assets/particles/red.png');
-}
+let game = new Game(config);
 
-function create(this: Scene): void {
-  this.add.image(400, 300, 'sky');
-  let particles = this.add.particles('red');
-  let emitter = particles.createEmitter({
-    speed: 100,
-    scale: {start: 1, end: 0},
-    blendMode: 1,
-  });
-  let logo = this.physics.add.image(400, 100, 'logo');
-  logo.setVelocity(100, 200);
-  logo.setFriction(0.1, 0.1);
-  logo.setBounce(1, 1);
-  logo.setCollideWorldBounds(true);
-  emitter.startFollow(logo);
-}
+game.scene.add('LoginScene', new LoginScene());
 
-export const game = new Game(config);
+game.scene.start('LoginScene');
+
+export {game};
