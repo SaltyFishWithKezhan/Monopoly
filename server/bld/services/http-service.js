@@ -14,6 +14,7 @@ class HTTPService {
     }
     initialize() {
         this.app.use(express_1.default.static(paths_1.CLIENT_BUILD_DIR));
+        this.app.use(express_1.default.static(paths_1.CLIENT_PUBLIC_DIR));
     }
 }
 exports.HTTPService = HTTPService;
