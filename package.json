@@ -1,0 +1,41 @@
+{
+  "name": "Monopoly",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start-client": "yarn workspace client start",
+    "start-server": "yarn workspace server start",
+    "lint": "yarn workspace shared lint && yarn workspace client lint && yarn workspace server lint",
+    "build": "yarn workspace shared build && yarn workspace client build && yarn workspace server build",
+    "start": "yarn workspace server start",
+    "test": "yarn workspace server test",
+    "build-test": "yarn build && yarn test",
+    "deploy:build": "ts-node --transpileOnly --project scripts/tsconfig.json scripts/deploy-build.ts",
+    "deploy:push": "git-directory-deploy --directory bld --branch build --repo \"https://${BUILD_TOKEN}@github.com/SaltyFishWithKezhan/Monopoly.git\"",
+    "deploy":"yarn build && yarn deploy:build && yarn deploy:push"
+  },
+  "devDependencies": {
+    "@magicspace/configs": "^0.1.45",
+    "@magicspace/tslint-rules": "^0.1.41",
+    "@types/ncp": "^2.0.1",
+    "@types/rimraf": "^2.0.2",
+    "biu": "0.3.0-alpha.2",
+    "dot-template-types": "^0.0.7",
+    "git-directory-deploy": "^1.5.1",
+    "ncp": "^2.0.0",
+    "rimraf": "^2.6.2",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "tslint-language-service": "^0.9.9",
+    "typescript": "^3.2.1"
+  },
+  "workspaces": {
+    "packages": [
+      "client",
+      "server",
+      "shared"
+    ]
+  }
+}
