@@ -4638,6 +4638,13 @@ ignore@^3.3.5:
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.10.tgz#0a97fb876986e8081c631160f8f9f389157f0043"
   integrity sha512-Pgs951kaMm5GXP7MOvxERINe3gsaVjUWFm+UZPSq9xYriQAksyhg0csnS0KXSNRD5NmNdapXEpjxG49+AKh/ug==
 
+image-preloader@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/image-preloader/-/image-preloader-1.1.1.tgz#487a516dc165f87821d14326db8bb448b318f95f"
+  integrity sha1-SHpRbcFl+Hgh0UMm24u0SLMY+V8=
+  dependencies:
+    promise-ext-settled "^1.1.0"
+
 image-size@~0.5.0:
   version "0.5.5"
   resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.5.5.tgz#09dfd4ab9d20e29eb1c3e80b8990378df9e3cb9c"
@@ -7744,6 +7751,11 @@ process@^0.11.10:
   version "0.11.10"
   resolved "https://registry.yarnpkg.com/process/-/process-0.11.10.tgz#7332300e840161bda3e69a1d1d91a7d4bc16f182"
   integrity sha1-czIwDoQBYb2j5podHZGn1LwW8YI=
+
+promise-ext-settled@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/promise-ext-settled/-/promise-ext-settled-1.1.0.tgz#e258758abcb25b1456adfad82beed0dee2a9d857"
+  integrity sha1-4lh1iryyWxRWrfrYK+7Q3uKp2Fc=
 
 promise@^7.1.1:
   version "7.3.1"

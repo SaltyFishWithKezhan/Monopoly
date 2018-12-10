@@ -1,6 +1,6 @@
 import {Game} from 'phaser';
 
-import {BoardScene, LoginScene} from './scenes';
+import {BoardScene, EnterLoadingScene, LoginScene} from './scenes';
 import {gameHeight, gameWidth} from './utils/ratio';
 
 let config: GameConfig = {
@@ -19,9 +19,10 @@ let config: GameConfig = {
 
 let game = new Game(config);
 
+game.scene.add('EnterLoadingScene', new EnterLoadingScene());
 game.scene.add('LoginScene', new LoginScene());
 game.scene.add('BoardScene', new BoardScene());
 
-game.scene.start('LoginScene');
+game.scene.start('EnterLoadingScene');
 
 export {game};
