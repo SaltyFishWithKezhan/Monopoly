@@ -1,11 +1,12 @@
 import {Game} from 'phaser';
 
 import {LoginScene} from './scenes/login-scene';
+import {gameHeight, gameWidth} from './utils/ratio';
 
 let config: GameConfig = {
   type: Phaser.AUTO,
-  width: window.screen.availWidth / window.devicePixelRatio,
-  height: window.screen.availHeight / window.devicePixelRatio,
+  width: gameWidth,
+  height: gameHeight,
   physics: {
     default: 'arcade',
     arcade: {
