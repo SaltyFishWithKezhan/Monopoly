@@ -2,8 +2,8 @@ import {Game, Scene} from 'phaser';
 
 let config: GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: 1000,
+  height: 800,
   physics: {
     default: 'arcade',
     arcade: {
@@ -33,6 +33,7 @@ function create(this: Scene): void {
   });
   let logo = this.physics.add.image(400, 100, 'logo');
   logo.setVelocity(100, 200);
+  logo.setFriction(0.1, 0.1);
   logo.setBounce(1, 1);
   logo.setCollideWorldBounds(true);
   emitter.startFollow(logo);
