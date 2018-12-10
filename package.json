@@ -12,7 +12,7 @@
     "start": "yarn workspace server start",
     "test": "yarn workspace server test",
     "deploy:build": "ts-node --transpileOnly --project scripts/tsconfig.json scripts/deploy-build.ts",
-    "deploy:push": "git-directory-deploy --directory bld --branch build",
+    "deploy:push": "git-directory-deploy --directory bld --branch build --repo \"https://${BUILD_TOKEN}github.com/SaltyFishWithKezhan/Monopoly.git\"",
     "deploy":"yarn build && yarn deploy:build && yarn deploy:push"
   },
   "devDependencies": {
