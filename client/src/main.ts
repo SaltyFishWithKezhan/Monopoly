@@ -13,6 +13,7 @@ let config: GameConfig = {
       gravity: {y: 200},
     },
   },
+  canvas: document.getElementById('game') as HTMLCanvasElement,
 };
 
 let game = new Game(config);
