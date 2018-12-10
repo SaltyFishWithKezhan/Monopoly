@@ -15,3 +15,11 @@ if (virtualWidth / 16 > virtualHeight / 9) {
 export {gameHeight, gameWidth};
 
 export const ratio = gameWidth / DESIGN_WIDTH;
+
+export function height(vHeight: number): number {
+  return gameHeight * vHeight;
+}
+
+export function width(vWidth: number): number {
+  return gameWidth * vWidth;
+}
