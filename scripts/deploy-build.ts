@@ -9,6 +9,7 @@ import {
   CLIENT_BUILD_DIR,
   CLIENT_PACKAGE_PATH,
   CLIENT_PUBLIC_DIR,
+  PACKAGE_PATH,
   PROJECT_DIR,
   SERVER_BLD_DIR,
   SERVER_PACKAGE_PATH,
@@ -20,6 +21,7 @@ const ncp = promisify(_ncp);
 const rimraf = promisify(_rimraf);
 
 const DEPLOY_BLD_DIR = Path.join(PROJECT_DIR, 'bld');
+const DEPLOY_PACKAGE_PATH = Path.join(PROJECT_DIR, 'package.json');
 
 const DEPLOY_SHARED_DIR = Path.join(DEPLOY_BLD_DIR, 'shared');
 
@@ -45,6 +47,9 @@ async function main(): Promise<void> {
 
   console.info('Creating new directory...');
   FS.mkdirSync(DEPLOY_BLD_DIR);
+
+  console.info('Copying main package...');
+  await ncp(PACKAGE_PATH, DEPLOY_PACKAGE_PATH);
 
   console.info('Creating new shared dir...');
   FS.mkdirSync(DEPLOY_SHARED_DIR);

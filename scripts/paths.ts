@@ -3,6 +3,7 @@ import * as Path from 'path';
 export const PROJECT_DIR = Path.join(__dirname, '../');
 
 export const SHARED_DIR = Path.join(PROJECT_DIR, 'shared');
+export const PACKAGE_PATH = Path.join(PROJECT_DIR, 'package.json');
 
 export const SHARED_BLD_DIR = Path.join(SHARED_DIR, 'bld');
 export const SHARED_PACKAGE_PATH = Path.join(SHARED_DIR, 'package.json');
