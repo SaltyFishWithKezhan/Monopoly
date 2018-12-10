@@ -2,7 +2,7 @@
   "extends": "../node_modules/@magicspace/configs/tsconfig.json",
   "compilerOptions": {
     "target": "es6",
-    "module": "esnext",
+    "module": "commonjs",
     "lib": ["esnext", "dom"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
