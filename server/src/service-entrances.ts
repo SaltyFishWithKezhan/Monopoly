@@ -1,6 +1,7 @@
 import {createServer} from 'http';
 
 import express from 'express';
+import {ModelService} from 'shared/bld';
 import socketIO from 'socket.io';
 
 import {HTTPService, SocketService} from './services';
@@ -15,6 +16,8 @@ const io = socketIO(httpServer);
 export const httpService = new HTTPService(app, httpServer);
 
 export const socketService = new SocketService(io);
+
+export const modelService = new ModelService();
 
 export const servicesReady = Promise.all([]);
 

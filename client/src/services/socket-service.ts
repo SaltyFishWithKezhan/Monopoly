@@ -1,11 +1,13 @@
+import SocketIO from 'socket.io-client';
+
 export class SocketService {
-  constructor(public io: SocketIO.Server) {
+  io = SocketIO();
+
+  constructor() {
     this.initialize();
   }
 
   private initialize(): void {
-    this.io.in('lobby');
-
     this.io.on('connect', () => {});
   }
 }

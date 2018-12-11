@@ -1,6 +1,7 @@
 import ImagePreloader from 'image-preloader';
 import {GameObjects, Scene} from 'phaser';
 
+import {servicesReady} from '../../service-entrances';
 import {
   gameHeight,
   gameWidth,
@@ -64,6 +65,9 @@ export class EnterLoadingScene extends Scene {
         '/assets/lg-text-player.png',
         '/assets/lg-bg.jpg',
       )
+      .then(() => {
+        return servicesReady;
+      })
       .then(() => {
         this.scene.switch('LoginScene');
       })
