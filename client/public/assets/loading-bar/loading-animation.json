@@ -1,0 +1,104 @@
+{
+  "anims": [
+    {
+      "key": "loading-bar",
+      "type": "frame",
+      "frames": [
+        {
+          "key": "bars",
+          "frame": "loading-bar-10001",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10002",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10003",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10004",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10005",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10006",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10007",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10008",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10009",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10010",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10011",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10012",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10013",
+          "duration": 0,
+          "visible": false
+        },
+        {
+          "key": "bars",
+          "frame": "loading-bar-10014",
+          "duration": 0,
+          "visible": false
+        }
+      ],
+      "frameRate": 24,
+      "duration": 1.5,
+      "skipMissedFrames": true,
+      "delay": 0,
+      "repeat": -1,
+      "repeatDelay": 0,
+      "yoyo": false,
+      "showOnStart": false,
+      "hideOnComplete": false
+    }
+  ],
+  "globalTimeScale": 1
+}
