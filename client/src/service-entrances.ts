@@ -1,4 +1,4 @@
-import {ModelService} from 'shared/bld';
+import {ModelService} from 'shared';
 
 import {SocketService} from './services';
 

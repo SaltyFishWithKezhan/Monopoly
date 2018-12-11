@@ -1,10 +1,10 @@
 import {createServer} from 'http';
 
 import express from 'express';
-import {ModelService} from 'shared/bld';
+import {ModelService} from 'shared';
 import socketIO from 'socket.io';
 
-import {HTTPService, SocketService} from './services';
+import {HTTPService, PlayerService, SocketService} from './services';
 import {Config} from './utils/config';
 
 const app = express();
@@ -18,6 +18,8 @@ export const httpService = new HTTPService(app, httpServer);
 export const socketService = new SocketService(io);
 
 export const modelService = new ModelService();
+
+export const playerService = new PlayerService(socketService, modelService);
 
 export const servicesReady = Promise.all([]);
 
