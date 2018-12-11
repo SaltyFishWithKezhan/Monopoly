@@ -38,29 +38,29 @@ export class LoginScene extends Scene {
       `<div
         id="login-form-div"
         class="login-form-div"
-        style="margin-left: ${width(0.25)}px;
-              margin-top: ${height(0.06)}px;
-              width: ${width(0.3)}px;
-              height: ${height(0.6)}px;"
+        style="margin-left: ${width(25)}px;
+              margin-top: ${height(6)}px;
+              width: ${width(30)}px;
+              height: ${height(60)}px;"
       >
         <div class="logo animated bounceIn" style="width: ${width(
-          0.33,
-        )}px; left: -${width(0.001)}px; top: -${height(0.2)}px">
+          33,
+        )}px; left: 0px; top: -${height(20)}px">
           <img src="/assets/logo.png" />
         </div>
         <div class="text-player" style="margin-top: ${height(
-          0.16,
-        )}px; width: ${width(0.07)}px; height: ${width(0.07 * 0.5)}px;">
+          16,
+        )}px; width: ${width(7)}px; height: ${width(7 * 0.5)}px;">
             <img src="/assets/lg-text-player.png"/>
         </div>
         <input id="login-player" type="text" placeholder="您的名字" style="margin-top: ${height(
-          0.055,
-        )}px; height: ${height(0.06)}px; line-height: ${height(
-        0.08,
-      )}px; font-size: ${height(0.03)}px;" />
+          5.5,
+        )}px; height: ${height(6)}px; line-height: ${height(
+        8,
+      )}px; font-size: ${height(3)}px;" />
         <button id="login-join-btn" style="margin-top: ${height(
-          0.04,
-        )}px; width: ${height(0.155)}px; height: ${height(0.155 * 0.6)}px;" />
+          4,
+        )}px; width: ${height(15.5)}px; height: ${height(15.5 * 0.6)}px;" />
       </div>`,
     );
   }
