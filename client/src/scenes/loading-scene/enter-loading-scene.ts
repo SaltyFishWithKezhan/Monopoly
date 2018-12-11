@@ -61,6 +61,7 @@ export class EnterLoadingScene extends Scene {
         '/assets/lg-btn-join.png',
         '/assets/lg-btn-join-hover.png',
         '/assets/lg-btn-join-active.png',
+        '/assets/lg-text-player.png',
         '/assets/lg-bg.jpg',
       )
       .then(() => {
