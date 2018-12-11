@@ -1,4 +1,5 @@
-export declare class Model {
+export declare class Model<T extends object = {}> {
     readonly id: string;
-    constructor(id?: string);
+    data: T | {};
+    constructor(id?: string, data?: T);
 }
