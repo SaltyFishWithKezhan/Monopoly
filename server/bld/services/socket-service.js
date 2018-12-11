@@ -7,7 +7,7 @@ class SocketService {
     }
     initialize() {
         this.io.in('lobby');
-        this.io.on('connection', () => { });
+        this.io.on('connect', () => { });
     }
 }
 exports.SocketService = SocketService;
