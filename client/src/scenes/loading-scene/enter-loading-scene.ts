@@ -1,3 +1,4 @@
+import ImagePreloader from 'image-preloader';
 import {GameObjects, Scene} from 'phaser';
 
 import {
@@ -51,9 +52,14 @@ export class EnterLoadingScene extends Scene {
 
     scaleGameObject(loadingBar, 1.5);
 
-    setTimeout(() => {
-      this.scene.switch('LoginScene');
-    }, 4000);
+    let imagePreloader = new ImagePreloader();
+
+    imagePreloader
+      .preload('/assets/logo.png', '/assets/all_resourses.png')
+      .then(() => {
+        this.scene.switch('LoginScene');
+      })
+      .catch(console.error);
   }
 
   update(time: number, _delta: number): void {
