@@ -55,7 +55,14 @@ export class EnterLoadingScene extends Scene {
     let imagePreloader = new ImagePreloader();
 
     imagePreloader
-      .preload('/assets/logo.png', '/assets/all_resourses.png')
+      .preload(
+        '/assets/logo.png',
+        '/assets/all_resourses.png',
+        '/assets/lg-btn-join.png',
+        '/assets/lg-btn-join-hover.png',
+        '/assets/lg-btn-join-active.png',
+        '/assets/lg-bg.jpg',
+      )
       .then(() => {
         this.scene.switch('LoginScene');
       })
