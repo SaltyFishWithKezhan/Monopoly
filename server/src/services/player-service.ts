@@ -17,9 +17,9 @@ export class PlayerService {
   }
 
   private initializeSocket(socket: SocketIO.Socket): void {
-    socket.on('player:join', (name: string) => {
+    socket.on('player:login', (name: string) => {
       if (this.modelService.hasModel('player', name)) {
-        socket.emit('player:fail', 'player:join', 201, '玩家名字已经存在啦！');
+        socket.emit('player:fail', 'player:login', 201, '玩家名字已经存在啦！');
         return;
       }
 
@@ -27,7 +27,7 @@ export class PlayerService {
 
       this.modelService.addModel('player', player);
 
-      socket.emit('play:success', 'player:join', packModel(player));
+      socket.emit('play:success', 'player:login', packModel(player));
     });
   }
 }
