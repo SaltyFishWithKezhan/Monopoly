@@ -1,8 +1,10 @@
 import {ModelService} from 'shared';
 
-import {SocketService} from './services';
+import {SocketService, UIService} from './services';
 
-export const socketService = new SocketService();
+export const uiService = new UIService();
+
+export const socketService = new SocketService(uiService);
 
 export const modelService = new ModelService();
 

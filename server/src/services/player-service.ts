@@ -1,6 +1,15 @@
 import {ModelService, Player, packModel} from 'shared';
+import SocketIO from 'socket.io';
 
 import {SocketService} from './socket-service';
+
+declare global {
+  namespace SocketIO {
+    export interface Socket {
+      player: Player | undefined;
+    }
+  }
+}
 
 export class PlayerService {
   constructor(
@@ -27,7 +36,9 @@ export class PlayerService {
 
       this.modelService.addModel('player', player);
 
-      socket.emit('play:success', 'player:login', packModel(player));
+      socket.player = player;
+
+      socket.emit('player:success', 'player:login', packModel(player));
     });
   }
 }
