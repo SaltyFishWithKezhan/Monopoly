@@ -45,9 +45,9 @@ export class LoginScene extends Scene {
               height: ${height(60)}px;"
       >
         <div class="logo animated bounceIn" style="width: ${width(
-          33,
-        )}px; left: 0px; top: -${height(20)}px">
-          <img src="/assets/logo.png" />
+          40,
+        )}px; left: -${width(5)}px; top: -${height(43)}px">
+          <img src="/assets/logo-test.png" />
         </div>
         <div class="text-player" style="margin-top: ${height(
           16,
