@@ -1,14 +1,51 @@
 import {Scene} from 'phaser';
 
-import {gameHeight, gameWidth, ratio} from '../../utils/ratio';
+import {
+  gameHeight,
+  gameWidth,
+  height,
+  ratio,
+  scaleGameObject,
+  width,
+} from '../../utils/ratio';
 
 export class BoardScene extends Scene {
   private gameOptions = {
-    landWidth: 183 * ratio,
-    landHeight: 109 * ratio,
     landCount: 5,
-    padding: 120 * ratio,
+    paddingX: width(10),
+    paddingY: height(10),
   };
+
+  private points = [
+    // top:
+    {
+      x: gameWidth / 2,
+      y: this.gameOptions.paddingY,
+      posX: 1,
+      posY: 1,
+    },
+    // left:
+    {
+      x: this.gameOptions.paddingX,
+      y: gameHeight / 2,
+      posX: 1,
+      posY: -1,
+    },
+    // right:
+    {
+      x: gameWidth - this.gameOptions.paddingX,
+      y: gameHeight / 2,
+      posX: -1,
+      posY: 1,
+    },
+    // bottom:
+    {
+      x: gameWidth / 2,
+      y: gameHeight - this.gameOptions.paddingY,
+      posX: -1,
+      posY: -1,
+    },
+  ];
 
   private landGroup!: Phaser.GameObjects.Group;
 
@@ -17,26 +54,29 @@ export class BoardScene extends Scene {
   }
 
   preload(): void {
-    // this.load.setBaseURL('http://labs.phaser.io');
     this.load.image('green-block', 'assets/green-block.png');
+    this.load.image('red-block', 'assets/red-block.png');
   }
 
   create(): void {
     this.landGroup = this.add.group();
-    this.add.image(800, 600, 'green-block');
+    this.addLandX();
   }
 
   addLandX(): void {
-    let offset = {x: 0, y: 0};
-    offset.x = gameWidth / 2;
-    offset.y = gameHeight - this.gameOptions.padding;
+    let count = this.gameOptions.landCount - 1;
+    let offsetX = (gameWidth / 2 - this.gameOptions.paddingX) / count;
+    let offsetY = (gameHeight / 2 - this.gameOptions.paddingY) / count;
 
-    for (let j = 0; j < this.gameOptions.landCount; j++) {
-      let landX = this.gameOptions.landWidth * j + offset.x;
-      let landY = offset.y - ((this.gameOptions.landHeight * j) / 4) * 3;
-      let land = this.add.sprite(landX, landY, 'green-block');
-      land.setOrigin(0, 0);
-      this.landGroup.add(land);
-    }
+    this.points.forEach(element => {
+      for (let i = 0; i < count; i++) {
+        let landX = element.x + element.posX * offsetX * i;
+        let landY = element.y + element.posY * offsetY * i;
+        let land = this.add.image(landX, landY, 'green-block');
+        console.log(landX / gameWidth, landY / gameHeight);
+        scaleGameObject(land);
+        this.landGroup.add(land);
+      }
+    });
   }
 }
