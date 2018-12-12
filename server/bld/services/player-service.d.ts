@@ -1,5 +1,12 @@
-import { ModelService } from 'shared';
+import { ModelService, Player } from 'shared';
 import { SocketService } from './socket-service';
+declare global {
+    namespace SocketIO {
+        interface Socket {
+            player: Player | undefined;
+        }
+    }
+}
 export declare class PlayerService {
     private socketService;
     private modelService;

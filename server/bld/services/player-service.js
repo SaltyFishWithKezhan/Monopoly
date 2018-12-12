@@ -20,7 +20,8 @@ class PlayerService {
             }
             let player = new shared_1.Player(name);
             this.modelService.addModel('player', player);
-            socket.emit('play:success', 'player:login', shared_1.packModel(player));
+            socket.player = player;
+            socket.emit('player:success', 'player:login', shared_1.packModel(player));
         });
     }
 }

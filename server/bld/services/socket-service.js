@@ -7,8 +7,11 @@ class SocketService {
     }
     initialize() {
         this.io.in('lobby');
-        this.io.on('connect', () => { });
+        this.io.on('connect', socket => {
+            this.initializeSocket(socket);
+        });
     }
+    initializeSocket(_socket) { }
 }
 exports.SocketService = SocketService;
 //# sourceMappingURL=socket-service.js.map
