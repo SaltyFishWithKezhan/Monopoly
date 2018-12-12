@@ -24,6 +24,11 @@ class ModelService {
         let map = this.modelMaps[type];
         map.set(model.id, model);
     }
+    createModelFromTransfer(type, transferModel) {
+        let model = unpackModel(type, transferModel);
+        this.addModel(type, model);
+        return model;
+    }
     removeModel(type, id) {
         if (!(type in this.modelMaps)) {
             throw new Error(`Model type '${type}' is unknown`);

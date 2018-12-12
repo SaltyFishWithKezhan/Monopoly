@@ -9,10 +9,12 @@ export declare type ModelConstructorMap = typeof modelConstructorMap;
 export declare type ModelMaps = {
     [K in keyof ModelConstructorMap]: Map<string, GetClassTypeFromConstructor<ModelConstructorMap[K]>>;
 };
+export declare type ModelByMapKey<T extends keyof ModelConstructorMap> = GetClassTypeFromConstructor<ModelConstructorMap[T]>;
 export declare class ModelService {
     private modelMaps;
     getModelById<T extends keyof ModelMaps>(type: T, id: string): ModelMapValue<ModelMaps[T]> | undefined;
     addModel<T extends keyof ModelMaps>(type: T, model: ModelMapValue<ModelMaps[T]>): void;
+    createModelFromTransfer<T extends keyof ModelMaps>(type: T, transferModel: TransferModel<T>): ModelByMapKey<T>;
     removeModel<T extends keyof ModelMaps>(type: T, id: string): boolean;
     hasModel<T extends keyof ModelMaps>(type: T, id: string): boolean;
 }
@@ -21,5 +23,5 @@ export interface TransferModel<T extends keyof ModelMaps> {
     data: ModelMapValue<ModelMaps[T]>['data'];
 }
 export declare function packModel<T extends keyof ModelMaps>(model: ModelMapValue<ModelMaps[T]>): TransferModel<T>;
-export declare function unpackModel<T extends keyof ModelMaps>(type: T, transferModel: TransferModel<T>): T;
+export declare function unpackModel<T extends keyof ModelMaps>(type: T, transferModel: TransferModel<T>): ModelByMapKey<T>;
 export {};
