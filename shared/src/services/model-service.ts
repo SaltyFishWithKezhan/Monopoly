@@ -21,6 +21,10 @@ export type ModelMaps = {
   >
 };
 
+export type ModelByMapKey<
+  T extends keyof ModelConstructorMap
+> = GetClassTypeFromConstructor<ModelConstructorMap[T]>;
+
 export class ModelService {
   private modelMaps: ModelMaps = {
     player: new Map<string, Player>(),
@@ -50,6 +54,17 @@ export class ModelService {
     let map = this.modelMaps[type];
 
     map.set(model.id, model);
+  }
+
+  createModelFromTransfer<T extends keyof ModelMaps>(
+    type: T,
+    transferModel: TransferModel<T>,
+  ): ModelByMapKey<T> {
+    let model = unpackModel(type, transferModel);
+
+    this.addModel(type, model as any);
+
+    return model;
   }
 
   removeModel<T extends keyof ModelMaps>(type: T, id: string): boolean {
@@ -89,7 +104,7 @@ export function packModel<T extends keyof ModelMaps>(
 export function unpackModel<T extends keyof ModelMaps>(
   type: T,
   transferModel: TransferModel<T>,
-): T {
+): ModelByMapKey<T> {
   if (!(type in modelConstructorMap)) {
     throw new Error(`Model type '${type}' is unknown`);
   }
@@ -98,5 +113,5 @@ export function unpackModel<T extends keyof ModelMaps>(
 
   let {id, data} = transferModel;
 
-  return new modelConstructor(id, data) as any;
+  return new modelConstructor(id, data) as ModelByMapKey<T>;
 }
