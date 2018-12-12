@@ -4,7 +4,14 @@ import $ from 'jquery';
 import {Scene} from 'phaser';
 
 import {playerService} from '../../service-entrances';
-import {gameHeight, gameWidth, height, ratio, width} from '../../utils/ratio';
+import {
+  gameHeight,
+  gameWidth,
+  height,
+  ratio,
+  scaleGameObject,
+  width,
+} from '../../utils/ratio';
 
 import './style.less';
 
@@ -26,8 +33,7 @@ export class LoginScene extends Scene {
   private createScene(): void {
     let bgImage = this.add.image(gameWidth / 2, gameHeight / 2, 'lg-bg');
 
-    bgImage.scaleX = ratio;
-    bgImage.scaleY = ratio;
+    scaleGameObject(bgImage);
   }
 
   private createLoginForm(): void {
