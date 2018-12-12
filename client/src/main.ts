@@ -1,3 +1,5 @@
+import 'babel-polyfill';
+
 import {Game} from 'phaser';
 
 import {BoardScene, EnterLoadingScene, LoginScene} from './scenes';

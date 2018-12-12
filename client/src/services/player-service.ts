@@ -32,6 +32,15 @@ export class PlayerService extends PromisePool {
           break;
       }
     });
+
+    this.io.on(
+      'player:fail',
+      (event: string, _code: number, message: string) => {
+        let error = new Error(message);
+
+        this.reject(event, error);
+      },
+    );
   }
 
   private onPlayerLogin(transferModel: TransferModel<'player'>): void {

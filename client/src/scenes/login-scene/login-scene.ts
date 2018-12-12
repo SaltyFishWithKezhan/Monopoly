@@ -3,6 +3,7 @@ import 'animate.css';
 import $ from 'jquery';
 import {Scene} from 'phaser';
 
+import {playerService} from '../../service-entrances';
 import {gameHeight, gameWidth, height, ratio, width} from '../../utils/ratio';
 
 import './style.less';
@@ -31,7 +32,7 @@ export class LoginScene extends Scene {
 
   private createLoginForm(): void {
     if ($('#login-form-div').length) {
-      $('#login-form-div').remove();
+      return;
     }
 
     $('#game-playground').append(
@@ -63,10 +64,23 @@ export class LoginScene extends Scene {
         )}px; width: ${height(15.5)}px; height: ${height(15.5 * 0.6)}px;" />
       </div>`,
     );
+
+    $('#login-join-btn').on('click', this.onLoginBtnClick);
   }
 
   private onSceneDestroy = (): void => {
     this.destroyLoginForm();
+  };
+
+  private onLoginBtnClick = (): void => {
+    let name = $('#login-player').val() as string;
+
+    playerService
+      .login(name)
+      .then(() => {
+        // console.log('login success');
+      })
+      .catch(console.error);
   };
 
   private destroyLoginForm(): void {

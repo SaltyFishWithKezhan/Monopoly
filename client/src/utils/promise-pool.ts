@@ -1,17 +1,27 @@
 export class PromisePool {
   private resolveMap = new Map<string, Function[]>();
+  private rejectMap = new Map<string, Function[]>();
 
   protected register(key: string): Promise<any> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.addResolve(key, resolve);
+      this.addReject(key, reject);
     });
   }
 
-  protected resolve(key: string): void {
+  protected resolve(key: string, ...args: any[]): void {
     let resolves = this.popResolves(key);
 
     for (let resolve of resolves) {
-      resolve();
+      resolve(...args);
+    }
+  }
+
+  protected reject(key: string, ...args: any[]): void {
+    let rejects = this.popRejects(key);
+
+    for (let reject of rejects) {
+      reject(...args);
     }
   }
 
@@ -34,6 +44,29 @@ export class PromisePool {
     }
 
     this.resolveMap.set(key, []);
+
+    return array;
+  }
+
+  private addReject(key: string, reject: Function): void {
+    let array = this.rejectMap.get(key);
+
+    if (!array) {
+      array = [];
+      this.rejectMap.set(key, array);
+    }
+
+    array.push(reject);
+  }
+
+  private popRejects(key: string): Function[] {
+    let array = this.rejectMap.get(key);
+
+    if (!array) {
+      return [];
+    }
+
+    this.rejectMap.set(key, []);
 
     return array;
   }
