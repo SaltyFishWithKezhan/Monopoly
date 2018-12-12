@@ -74,7 +74,7 @@ export class BoardScene extends Scene {
         let landY = element.y + element.posY * offsetY * i;
         let land = this.add.image(landX, landY, 'green-block');
         console.log(landX / gameWidth, landY / gameHeight);
-        scaleGameObject(land);
+        scaleGameObject(land, 7 / this.gameOptions.landCount);
         this.landGroup.add(land);
       }
     });
