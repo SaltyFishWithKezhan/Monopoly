@@ -4,7 +4,14 @@ import $ from 'jquery';
 import {Scene} from 'phaser';
 
 import {playerService} from '../../service-entrances';
-import {gameHeight, gameWidth, height, ratio, width} from '../../utils/ratio';
+import {
+  gameHeight,
+  gameWidth,
+  height,
+  ratio,
+  scaleGameObject,
+  width,
+} from '../../utils/ratio';
 
 import './style.less';
 
@@ -26,8 +33,7 @@ export class LoginScene extends Scene {
   private createScene(): void {
     let bgImage = this.add.image(gameWidth / 2, gameHeight / 2, 'lg-bg');
 
-    bgImage.scaleX = ratio;
-    bgImage.scaleY = ratio;
+    scaleGameObject(bgImage);
   }
 
   private createLoginForm(): void {
@@ -45,8 +51,8 @@ export class LoginScene extends Scene {
               height: ${height(60)}px;"
       >
         <div class="logo animated bounceIn" style="width: ${width(
-          33,
-        )}px; left: 0px; top: -${height(20)}px">
+          40,
+        )}px; left: -${width(5)}px; top: -${height(43)}px">
           <img src="/assets/logo.png" />
         </div>
         <div class="text-player" style="margin-top: ${height(

@@ -25,6 +25,6 @@ game.scene.add('EnterLoadingScene', new EnterLoadingScene());
 game.scene.add('LoginScene', new LoginScene());
 game.scene.add('BoardScene', new BoardScene());
 
-game.scene.start('EnterLoadingScene');
+game.scene.start('BoardScene');
 
 export {game};
