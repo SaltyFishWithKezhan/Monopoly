@@ -4,7 +4,6 @@ import {
   gameHeight,
   gameWidth,
   height,
-  ratio,
   scaleGameObject,
   width,
 } from '../../utils/ratio';
