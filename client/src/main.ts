@@ -2,7 +2,7 @@ import 'babel-polyfill';
 
 import {Game} from 'phaser';
 
-import {BoardScene, EnterLoadingScene, LoginScene} from './scenes';
+import {BoardScene, EnterLoadingScene, LoginScene, RoomScene} from './scenes';
 import {gameHeight, gameWidth} from './utils/ratio';
 
 let config: GameConfig = {
@@ -23,8 +23,9 @@ let game = new Game(config);
 
 game.scene.add('EnterLoadingScene', new EnterLoadingScene());
 game.scene.add('LoginScene', new LoginScene());
+game.scene.add('RoomScene', new RoomScene());
 game.scene.add('BoardScene', new BoardScene());
 
-game.scene.start('BoardScene');
+game.scene.start('EnterLoadingScene');
 
 export {game};

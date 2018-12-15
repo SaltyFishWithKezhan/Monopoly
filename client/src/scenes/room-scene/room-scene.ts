@@ -3,7 +3,7 @@ import 'animate.css';
 import $ from 'jquery';
 import {Scene} from 'phaser';
 
-import {modelService, playerService} from '../../service-entrances';
+import {playerService} from '../../service-entrances';
 import {
   gameHeight,
   gameWidth,
@@ -15,9 +15,20 @@ import {
 
 import './style.less';
 
-export class LoginScene extends Scene {
+export class RoomScene extends Scene {
   constructor() {
-    super({key: 'LoginScene'});
+    super({key: 'RoomScene'});
+  }
+
+  init(data: {}): void {
+    console.log('data: ', data);
+
+    if (playerService.player == null) {
+      alert('你不应该出现在这里！！！');
+      this.scene.switch('LoginScene');
+    } else {
+      console.log(playerService.player.id);
+    }
   }
 
   preload(): void {
@@ -37,14 +48,14 @@ export class LoginScene extends Scene {
   }
 
   private createLoginForm(): void {
-    if ($('#login-form-div').length) {
+    if ($('#room-form-div').length) {
       return;
     }
 
     $('#game-playground').append(
       `<div
-        id="login-form-div"
-        class="login-form-div"
+        id="room-form-div"
+        class="room-form-div"
         style="margin-left: ${width(25)}px;
               margin-top: ${height(6)}px;
               width: ${width(30)}px;
@@ -53,7 +64,7 @@ export class LoginScene extends Scene {
         <div class="logo animated bounceIn" style="width: ${width(
           40,
         )}px; left: -${width(5)}px; top: -${height(43)}px">
-          <img src="/assets/logo.png" />
+          <img src="/assets/logo.pn" />
         </div>
         <div class="text-player" style="margin-top: ${height(
           16,
@@ -75,26 +86,18 @@ export class LoginScene extends Scene {
   }
 
   private onSceneDestroy = (): void => {
-    console.log('onDestoryCalled');
     this.destroyLoginForm();
   };
 
   private onLoginBtnClick = (): void => {
     let name = $('#login-player').val() as string;
 
-    let ok = false;
     playerService
       .login(name)
       .then(() => {
-        console.log('login success');
-        // console.log(modelService.getModelById());
-        this.destroyLoginForm();
-        this.scene.switch('RoomScene');
-        // this.scene.stop('LoginScene');
+        // console.log('login success');
       })
-      .catch(error => {
-        alert(error);
-      });
+      .catch(console.error);
   };
 
   private destroyLoginForm(): void {
