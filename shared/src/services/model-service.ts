@@ -1,4 +1,4 @@
-import {Player} from '../models';
+import {Player, Room} from '../models';
 
 export type ModelMapValue<T> = T extends Map<string, infer R> ? R : never;
 
@@ -6,6 +6,7 @@ type Constructor<T> = new (...args: any[]) => T;
 
 export const modelConstructorMap = {
   player: Player,
+  room: Room,
 };
 
 export type GetClassTypeFromConstructor<T> = T extends Constructor<infer R>
@@ -28,6 +29,7 @@ export type ModelByMapKey<
 export class ModelService {
   private modelMaps: ModelMaps = {
     player: new Map<string, Player>(),
+    room: new Map<string, Room>(),
   };
 
   getModelById<T extends keyof ModelMaps>(
@@ -53,7 +55,7 @@ export class ModelService {
 
     let map = this.modelMaps[type];
 
-    map.set(model.id, model);
+    map.set(model.id, model as any);
   }
 
   createModelFromTransfer<T extends keyof ModelMaps>(
