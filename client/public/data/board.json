@@ -1,0 +1,18 @@
+[
+  {"x": 0.5, "y": 0.2, "type": "green-block"},
+  {"x": 0.6, "y": 0.275, "type": "green-block"},
+  {"x": 0.7, "y": 0.35, "type": "green-block"},
+  {"x": 0.8, "y": 0.425, "type": "green-block"},
+  {"x": 0.9, "y": 0.5, "type": "red-block"},
+  {"x": 0.8, "y": 0.575, "type": "red-block"},
+  {"x": 0.7, "y": 0.65, "type": "red-block"},
+  {"x": 0.6, "y": 0.725, "type": "red-block"},
+  {"x": 0.5, "y": 0.8, "type": "yellow-block"},
+  {"x": 0.4, "y": 0.725, "type": "yellow-block"},
+  {"x": 0.3, "y": 0.65, "type": "yellow-block"},
+  {"x": 0.2, "y": 0.575, "type": "yellow-block"},
+  {"x": 0.1, "y": 0.5, "type": "blue-block"},
+  {"x": 0.2, "y": 0.425, "type": "blue-block"},
+  {"x": 0.3, "y": 0.35, "type": "blue-block"},
+  {"x": 0.4, "y": 0.275, "type": "blue-block"}
+]

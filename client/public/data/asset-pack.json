@@ -1,0 +1,66 @@
+{
+  "board": {
+    "files": [
+      {
+        "type": "image",
+        "key": "green-block",
+        "url": "assets/green-block.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "red-block",
+        "url": "assets/red-block.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "yellow-block",
+        "url": "assets/yellow-block.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "blue-block",
+        "url": "assets/blue-block.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-1",
+        "url": "assets/building-1.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-2",
+        "url": "assets/building-2.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-3",
+        "url": "assets/building-3.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-4",
+        "url": "assets/building-5.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-6",
+        "url": "assets/building-6.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-7",
+        "url": "assets/building-7.png",
+        "overwrite": false
+      }
+    ]
+  }
+}
