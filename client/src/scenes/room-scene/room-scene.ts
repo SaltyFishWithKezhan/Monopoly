@@ -41,16 +41,6 @@ export class RoomScene extends Scene {
     this.createScene();
   }
 
-  async update(): Promise<void> {
-    console.log('in update');
-    await roomService
-      .update()
-      .then(() => {
-        console.log(roomService.room);
-      })
-      .catch(console.error);
-  }
-
   private createScene(): void {
     let bgImage = this.add.image(gameWidth / 2, gameHeight / 2, 'lg-bg');
 
@@ -72,11 +62,6 @@ export class RoomScene extends Scene {
               width: ${width(30)}px;
               height: ${height(60)}px;"
       >
-        <div class="logo animated bounceIn" style="width: ${width(
-          40,
-        )}px; left: -${width(5)}px; top: -${height(43)}px">
-          <img src="/assets/logo.pn" />
-        </div>
         <div class="text-player" style="margin-top: ${height(
           16,
         )}px; width: ${width(7)}px; height: ${width(7 * 0.5)}px;">
@@ -132,26 +117,34 @@ export class RoomScene extends Scene {
 
   private onRoomCreate = (): void => {
     roomService
-      .createRoom(playerService.player!)
+      .createRoom(playerService.player!.id)
       .then(() => {
         let textBox = $('#room-number');
         textBox.val(roomService.room!.id);
         console.log('create success');
       })
-      .catch(() => {
-        console.error;
+      .catch(error => {
+        console.log(error);
       });
   };
 
   private onJoinRoom = (): void => {
+    let roomName = $('#room-number').val() as string;
+    console.log(roomName, playerService.player!.id);
     roomService
-      .joinRoom(roomService.room!, playerService.player!)
+      .joinRoom(roomName, playerService.player!.id)
       .then(() => {
+        console.log(roomService.room);
         console.log('in join room');
       })
-      .catch(() => {
-        console.error;
+      .catch(error => {
+        console.log(error);
+        alert(error);
       });
+  };
+
+  onUpdate = (): void => {
+    console.log(roomService.room);
   };
 
   private onSceneDestroy = (): void => {

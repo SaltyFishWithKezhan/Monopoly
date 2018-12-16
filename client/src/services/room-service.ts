@@ -18,20 +18,16 @@ export class RoomService extends PromisePool {
     this.initializeSocket();
   }
 
-  async createRoom(player: Player): Promise<void> {
-    this.io.emit('room:create', player.id);
+  async createRoom(player: string): Promise<void> {
+    this.io.emit('room:create', player);
 
     return this.register('room:create');
   }
 
-  async joinRoom(room: Room, player: Player): Promise<void> {
-    this.io.emit('room:join', room.id, player.id);
+  async joinRoom(room: string, player: string): Promise<void> {
+    this.io.emit('room:join', room, player);
 
-    return this.register('room:update');
-  }
-
-  async update(): Promise<void> {
-    return this.register('room:update');
+    return this.register('room:join');
   }
 
   private initializeSocket(): void {
@@ -40,8 +36,12 @@ export class RoomService extends PromisePool {
         case 'room:create':
           this.onRoomCreate(args[0]);
           break;
+        case 'room:join':
+          this.onRoomJoin(args[0]);
+          break;
         case 'room:update':
           this.onRoomUpdate(args[0]);
+          break;
       }
     });
 
@@ -58,10 +58,19 @@ export class RoomService extends PromisePool {
     this.resolve('room:create');
   }
 
-  private onRoomUpdate(transferModel: TransferModel<'room'>) {
+  private onRoomJoin(transferModel: TransferModel<'room'>): void {
+    console.log(transferModel);
     let room = this.modelService.createModelFromTransfer('room', transferModel);
+    console.log(room);
     this.room = room;
+    // 开namepace?????????
+    this.onRoomUpdate(transferModel);
+    this.resolve('room:join');
+  }
 
-    this.resolve('room:update');
+  private onRoomUpdate(transferModel: TransferModel<'room'>) {
+    // let room = this.modelService.createModelFromTransfer('room', transferModel);
+    // this.room = room;
+    // this.roomScene.onUpdate();
   }
 }
