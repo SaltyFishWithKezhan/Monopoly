@@ -9,21 +9,19 @@ enum GameState {
 }
 
 export interface GameData {
-  gameId: number;
   playerNum: number;
   players: string[];
   gameState: GameState;
-  board: Board;
+  board: any;
   currentPlayerIndex: number;
 }
 
 export class Game extends Model {
   data: GameData = {
-    gameId: 0,
     playerNum: 0,
     players: [],
     gameState: GameState.WAIT_FOR_ROLL,
-    board: new Board(),
+    board: {}, // new Board()
     currentPlayerIndex: 0,
   };
 
