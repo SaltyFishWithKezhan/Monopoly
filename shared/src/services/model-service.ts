@@ -62,9 +62,7 @@ export class ModelService {
     type: T,
     transferModel: TransferModel<T>,
   ): ModelByMapKey<T> {
-    console.log('xxxxxxxxxxxxxx');
     let model = unpackModel(type, transferModel);
-    console.log(model);
     this.addModel(type, model as any);
 
     return model;
@@ -115,8 +113,6 @@ export function unpackModel<T extends keyof ModelMaps>(
   let modelConstructor = modelConstructorMap[type];
 
   let {id, data} = transferModel;
-
-  console.log(modelConstructor, id, data);
 
   let model = new modelConstructor(id, data);
 
