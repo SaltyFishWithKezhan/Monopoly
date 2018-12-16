@@ -24,6 +24,19 @@
     text-align: center;
     outline: none;
     transition: all 0.5s;
+    &:focus {
+      background-color: rgba(0, 0, 0, 0.07);
+      transition: all 0.5s;
+    }
+  }
+
+  #room-number {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 7px;
+    border-width: 0;
+    text-align: center;
+    outline: none;
+    transition: all 0.5s;
 
     &:focus {
       background-color: rgba(0, 0, 0, 0.07);
@@ -31,7 +44,29 @@
     }
   }
 
-  #login-join-btn {
+  #room-create-btn {
+    border: none;
+    border-width: 0;
+    outline: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(../../../public/assets/lg-btn-join.png);
+    background-color: transparent;
+    transition: all 0.3s;
+
+    &:hover {
+      background-image: url(../../../public/assets/lg-btn-join-hover.png);
+      transition: all 0.3s;
+    }
+
+    &:active {
+      background-image: url(../../../public/assets/lg-btn-join-active.png);
+      transition: all 0.3s;
+    }
+  }
+
+  #room-join-btn {
     border: none;
     border-width: 0;
     outline: none;

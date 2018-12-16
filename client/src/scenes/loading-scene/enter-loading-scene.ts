@@ -55,19 +55,17 @@ export class EnterLoadingScene extends Scene {
 
     let imagePreloader = new ImagePreloader();
 
-    let preloadList: string[] = [
-      '/assets/logo.png',
-      '/assets/all_resourses.png',
-      '/assets/ui.png',
-      '/assets/lg-btn-join.png',
-      '/assets/lg-btn-join-hover.png',
-      '/assets/lg-btn-join-active.png',
-      '/assets/lg-text-player.png',
-      '/assets/lg-bg.jpg',
-    ];
-
     imagePreloader
-      .preload(...preloadList)
+      .preload(
+        '/assets/logo.png',
+        '/assets/all_resourses.png',
+        '/assets/ui.png',
+        '/assets/lg-btn-join.png',
+        '/assets/lg-btn-join-hover.png',
+        '/assets/lg-btn-join-active.png',
+        '/assets/lg-text-player.png',
+        '/assets/lg-bg.jpg',
+      )
       .then(() => {
         return servicesReady;
       })

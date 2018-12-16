@@ -26,6 +26,7 @@ export class LoginScene extends Scene {
 
   create(): void {
     this.events.on('destroy', this.onSceneDestroy);
+    this.events.on('sleep', this.onSceneDestroy);
     this.createLoginForm();
     this.createScene();
   }
@@ -82,15 +83,11 @@ export class LoginScene extends Scene {
   private onLoginBtnClick = (): void => {
     let name = $('#login-player').val() as string;
 
-    let ok = false;
     playerService
       .login(name)
       .then(() => {
         console.log('login success');
-        // console.log(modelService.getModelById());
-        this.destroyLoginForm();
         this.scene.switch('RoomScene');
-        // this.scene.stop('LoginScene');
       })
       .catch(error => {
         alert(error);
