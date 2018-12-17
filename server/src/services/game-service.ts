@@ -1,4 +1,12 @@
-import {Game, ModelService, Player, packModel} from 'shared';
+import {
+  Game,
+  Land,
+  Model,
+  ModelService,
+  Player,
+  TransferModel,
+  packModel,
+} from 'shared';
 import SocketIO from 'socket.io';
 
 import {SocketService} from './socket-service';
@@ -33,5 +41,39 @@ export class GameService {
       'game:make-decision',
       (playerName: string, decistion: boolean) => {},
     );
+
+    socket.on('game:get-lands', () => {
+      if (!socket.game) {
+        socket.emit('game:failed', 'game:get-lands', 401, '还未加入游戏');
+        return;
+      }
+
+      let boardId = (socket.game.data.board as any) as string;
+
+      let board = this.modelService.getModelById('board', boardId);
+
+      if (!board) {
+        socket.emit('game:failed', 'game:get-lands', 402, '找不到游戏的 Board');
+        return;
+      }
+
+      let landIds = (board.data.lands as any) as string[];
+
+      let landTransfers: TransferModel<'land'>[] = [];
+
+      for (let id of landIds) {
+        let land = this.modelService.getModelById('land', id);
+
+        if (!land) {
+          continue;
+        }
+
+        let transfer = packModel<'land'>(land);
+
+        landTransfers.push(transfer);
+      }
+
+      socket.emit('game:success', 'game:get-lands', landTransfers);
+    });
   }
 }

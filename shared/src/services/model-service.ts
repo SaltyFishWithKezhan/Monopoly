@@ -1,4 +1,5 @@
-import {Player, Room} from '../models';
+import {Model} from '../core';
+import {Board, Game, Land, Player, Room} from '../models';
 
 export type ModelMapValue<T> = T extends Map<string, infer R> ? R : never;
 
@@ -7,6 +8,9 @@ type Constructor<T> = new (...args: any[]) => T;
 export const modelConstructorMap = {
   player: Player,
   room: Room,
+  board: Board,
+  game: Game,
+  land: Land,
 };
 
 export type GetClassTypeFromConstructor<T> = T extends Constructor<infer R>
@@ -30,6 +34,9 @@ export class ModelService {
   private modelMaps: ModelMaps = {
     player: new Map<string, Player>(),
     room: new Map<string, Room>(),
+    board: new Map<string, Board>(),
+    game: new Map<string, Game>(),
+    land: new Map<string, Land>(),
   };
 
   getModelById<T extends keyof ModelMaps>(
@@ -53,7 +60,7 @@ export class ModelService {
       throw new Error(`Model type '${type}' is unknown`);
     }
 
-    let map = this.modelMaps[type];
+    let map = this.modelMaps[type] as Map<string, Model>;
 
     map.set(model.id, model as any);
   }
@@ -110,7 +117,7 @@ export function unpackModel<T extends keyof ModelMaps>(
     throw new Error(`Model type '${type}' is unknown`);
   }
 
-  let modelConstructor = modelConstructorMap[type];
+  let modelConstructor = modelConstructorMap[type] as Constructor<Model>;
 
   let {id, data} = transferModel;
 
