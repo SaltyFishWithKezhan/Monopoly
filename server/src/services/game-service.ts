@@ -27,11 +27,18 @@ export class GameService {
   }
 
   private initializeSocket(socket: SocketIO.Socket): void {
-    socket.on('game:roll', (playerName: string, faceValue: number) => {});
+    socket.on('game:roll', (games: any, roomId: string) => {
+      this.handle_roll(games, roomId);
+    });
     socket.on('game:pay', (playerName: string, land: number) => {});
     socket.on(
       'game:make-decision',
       (playerName: string, decistion: boolean) => {},
     );
+  }
+
+  private handle_roll(games: any, roomId: string) {
+    let game = games[roomId];
+    let moveRes = this.modelService.createModelFromTransfer();
   }
 }
