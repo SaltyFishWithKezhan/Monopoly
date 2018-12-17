@@ -126,6 +126,8 @@ export class BoardScene extends Scene {
     this.drawHouse(7, 7);
 
     this.rollDice(6); // for test
+
+    this.playerJump(1); // for test
   }
 
   private createScene(): void {}
@@ -191,14 +193,11 @@ export class BoardScene extends Scene {
 
     for (let i = 0; i < playerNum; i++) {
       let playerName = concatStrNum('player', i);
-      let x=(landPos.x + this.playerOffset[i].offsetX) * gameWidth;
-      let y =(landPos.y + this.playerOffset[i].offsetY) * gameHeight;
-      let player = this.add.image(
-        (landPos.x + this.playerOffset[i].offsetX) * gameWidth,
-        (landPos.y + this.playerOffset[i].offsetY) * gameHeight,
-        playerName,
-      );
+      let x = (landPos.x + this.playerOffset[i].offsetX) * gameWidth;
+      let y = (landPos.y + this.playerOffset[i].offsetY) * gameHeight;
+      let player = this.add.image(x, y, playerName);
       scaleGameObject(player, 0.7);
+      player.setDepth(100);
       this.playerGroup.add(player);
     }
   }
@@ -234,7 +233,9 @@ export class BoardScene extends Scene {
   private rollDice(faceValue: number): void {
     $('#roll-btn').on('click', () => {
       this.myDice.roll(faceValue);
-      console.log(this.playerGroup.getChildren());
+      this.playerJump(1); // for test
     });
   }
+
+  private playerJump(step: number): void {}
 }
