@@ -9,6 +9,7 @@ import {
   Player,
   Room,
 } from '../models';
+import {updatePlainObject} from '../utils';
 
 export type ModelMapValue<T> = T extends Map<string, infer R> ? R : never;
 
@@ -125,18 +126,36 @@ export class ModelService {
     type: T,
     model: ModelByMapKey<T>,
   ): void {
-    this.addModel(type, model);
+    if (!(type in this.modelMaps)) {
+      throw new Error(`Model type '${type}' is unknown`);
+    }
+
+    let map = this.modelMaps[type] as Map<string, Model>;
+
+    if (!map.has(model.id)) {
+      this.addModel(type, model);
+    } else {
+      let origin = map.get(model.id)!;
+
+      updatePlainObject(origin.data, model.data);
+    }
   }
 
   updateModelFromTransfer<T extends keyof ModelMaps>(
     type: T,
     transferModel: TransferModel<T>,
   ): ModelByMapKey<T> {
+    if (!(type in this.modelMaps)) {
+      throw new Error(`Model type '${type}' is unknown`);
+    }
+
+    let map = this.modelMaps[type] as Map<string, ModelByMapKey<T>>;
+
     let model = unpackModel(type, transferModel);
 
     this.updateModel<T>(type, model);
 
-    return model;
+    return map.get(model.id)! as any;
   }
 
   removeModel<T extends keyof ModelMaps>(type: T, id: string): boolean {

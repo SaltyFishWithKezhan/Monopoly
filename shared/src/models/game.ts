@@ -27,6 +27,10 @@ export class Game extends Model {
     this.data.board = boardId;
   }
 
+  getBoard(): string | undefined {
+    return this.data.board;
+  }
+
   addPlayer(playerId: string): boolean {
     if (this.data.players.includes(playerId)) {
       return false;

@@ -50,7 +50,7 @@ export class Board extends Model {
 
     if (index >= lands.length) {
       if (lands.length > 0) {
-        return lands[0];
+        return lands[index % lands.length];
       } else {
         return undefined;
       }
@@ -71,13 +71,13 @@ export class Board extends Model {
     return result;
   }
 
-  getNextLand(info: LandInfo): LandInfo | undefined {
+  getNextLand(info: LandInfo, step: number = 1): LandInfo | undefined {
     let index = this.indexOfLand(info);
 
     if (index < 0) {
       return undefined;
     }
 
-    return this.getLand(index + 1);
+    return this.getLand(index + step);
   }
 }

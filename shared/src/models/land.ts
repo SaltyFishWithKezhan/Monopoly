@@ -69,7 +69,23 @@ export class ConstructionLand extends Land {
   }
 
   getPrice(): number {
-    return this.data.landPrice * 1.1;
+    if (this.data.owner) {
+      return this.data.landPrice * 1.1;
+    }
+
+    return this.data.landPrice;
+  }
+
+  getRentPrice(): number {
+    return this.data.rentPrice;
+  }
+
+  getUpgradePrice(): number {
+    return this.data.upgradePrice;
+  }
+
+  setPrice(amount: number): void {
+    this.data.landPrice = amount;
   }
 
   getLevel(): ConstructionLandLevel {
@@ -109,6 +125,10 @@ export class JailLand extends Land {
     type: LandType.jail,
     bailPrice: 20,
   };
+
+  getBailPrice(): number {
+    return this.data.bailPrice;
+  }
 }
 
 export interface ParkingLandData extends LandData {}
@@ -153,3 +173,5 @@ export function isJailLand(land: Land): land is JailLand {
 export function isParkingLand(land: Land): land is ParkingLand {
   return land.getType() === LandType.parking;
 }
+
+export type ConstructionLandArrivalOperation = 'rent' | 'buy' | 'upgrade';

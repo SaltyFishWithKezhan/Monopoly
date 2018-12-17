@@ -68,7 +68,7 @@ export class RoomService extends PromisePool {
     this.resolve('room:join');
   }
 
-  private onRoomUpdate(transferModel: TransferModel<'room'>) {
+  private onRoomUpdate(transferModel: TransferModel<'room'>): void {
     // let room = this.modelService.createModelFromTransfer('room', transferModel);
     // this.room = room;
     // this.roomScene.onUpdate();
