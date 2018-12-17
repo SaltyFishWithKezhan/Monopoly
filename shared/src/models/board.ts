@@ -3,7 +3,7 @@ import {Model} from '../core';
 import {ConstructionLand, JailLand, Land, StartLand} from './land';
 
 export interface BoardData {
-  lands: Land[];
+  lands: any[];
 }
 
 export class Board extends Model {
@@ -13,7 +13,11 @@ export class Board extends Model {
 
   constructor() {
     super();
-    this.generateLands();
+    // this.generateLands();
+  }
+
+  addLand(pos: number, des: string, content: any) {
+    this.data.lands.push(new Land(pos, des, content));
   }
 
   generateLands() {
