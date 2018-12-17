@@ -1,5 +1,14 @@
 import {Model} from '../core';
-import {Board, Game, Land, Player, Room} from '../models';
+import {
+  Board,
+  ConstructionLand,
+  Game,
+  GoLand,
+  JailLand,
+  ParkingLand,
+  Player,
+  Room,
+} from '../models';
 
 export type ModelMapValue<T> = T extends Map<string, infer R> ? R : never;
 
@@ -10,7 +19,10 @@ export const modelConstructorMap = {
   room: Room,
   board: Board,
   game: Game,
-  land: Land,
+  goLand: GoLand,
+  constructionLand: ConstructionLand,
+  jailLand: JailLand,
+  parkingLand: ParkingLand,
 };
 
 export type GetClassTypeFromConstructor<T> = T extends Constructor<infer R>
@@ -36,7 +48,10 @@ export class ModelService {
     room: new Map<string, Room>(),
     board: new Map<string, Board>(),
     game: new Map<string, Game>(),
-    land: new Map<string, Land>(),
+    goLand: new Map<string, GoLand>(),
+    constructionLand: new Map<string, ConstructionLand>(),
+    jailLand: new Map<string, JailLand>(),
+    parkingLand: new Map<string, ParkingLand>(),
   };
 
   getModelById<T extends keyof ModelMaps>(
@@ -52,10 +67,26 @@ export class ModelService {
     return map.get(id) as ModelMapValue<ModelMaps[T]> | undefined;
   }
 
-  addModel<T extends keyof ModelMaps>(
+  getModelsByIds<T extends keyof ModelMaps>(
     type: T,
-    model: ModelMapValue<ModelMaps[T]>,
-  ): void {
+    ids: string[],
+  ): ModelMapValue<ModelMaps[T]>[] {
+    let result: ModelMapValue<ModelMaps[T]>[] = [];
+
+    for (let id of ids) {
+      let model = this.getModelById(type, id);
+
+      if (!model) {
+        continue;
+      }
+
+      result.push(model);
+    }
+
+    return result;
+  }
+
+  addModel<T extends keyof ModelMaps>(type: T, model: ModelByMapKey<T>): void {
     if (!(type in this.modelMaps)) {
       throw new Error(`Model type '${type}' is unknown`);
     }
@@ -71,6 +102,39 @@ export class ModelService {
   ): ModelByMapKey<T> {
     let model = unpackModel(type, transferModel);
     this.addModel(type, model as any);
+
+    return model;
+  }
+
+  createModelsFromTransfers<T extends keyof ModelMaps>(
+    type: T,
+    transferModels: TransferModel<T>[],
+  ): ModelByMapKey<T>[] {
+    let result: ModelByMapKey<T>[] = [];
+
+    for (let transfer of transferModels) {
+      let model = this.createModelFromTransfer(type, transfer);
+
+      result.push(model);
+    }
+
+    return result;
+  }
+
+  updateModel<T extends keyof ModelMaps>(
+    type: T,
+    model: ModelByMapKey<T>,
+  ): void {
+    this.addModel(type, model);
+  }
+
+  updateModelFromTransfer<T extends keyof ModelMaps>(
+    type: T,
+    transferModel: TransferModel<T>,
+  ): ModelByMapKey<T> {
+    let model = unpackModel(type, transferModel);
+
+    this.updateModel<T>(type, model);
 
     return model;
   }
@@ -109,6 +173,20 @@ export function packModel<T extends keyof ModelMaps>(
   return {id, data};
 }
 
+export function packModels<T extends keyof ModelMaps>(
+  models: ModelMapValue<ModelMaps[T]>[],
+): TransferModel<T>[] {
+  let result: TransferModel<T>[] = [];
+
+  for (let model of models) {
+    let {id, data} = model;
+
+    result.push({id, data});
+  }
+
+  return result;
+}
+
 export function unpackModel<T extends keyof ModelMaps>(
   type: T,
   transferModel: TransferModel<T>,
@@ -117,12 +195,29 @@ export function unpackModel<T extends keyof ModelMaps>(
     throw new Error(`Model type '${type}' is unknown`);
   }
 
-  let modelConstructor = modelConstructorMap[type] as Constructor<Model>;
+  let modelConstructor = modelConstructorMap[type] as Constructor<
+    ModelByMapKey<T>
+  >;
 
   let {id, data} = transferModel;
 
   let model = new modelConstructor(id, data);
 
   model.data = data;
-  return model as ModelByMapKey<T>;
+  return model;
+}
+
+export function unpackModels<T extends keyof ModelMaps>(
+  type: T,
+  transferModels: TransferModel<T>[],
+): ModelByMapKey<T>[] {
+  let result: ModelByMapKey<T>[] = [];
+
+  for (let transfer of transferModels) {
+    let model = unpackModel(type, transfer);
+
+    result.push(model);
+  }
+
+  return result;
 }

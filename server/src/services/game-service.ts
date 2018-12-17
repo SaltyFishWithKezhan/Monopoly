@@ -1,24 +1,21 @@
 import {
+  Board,
+  ConstructionLand,
   Game,
-  Land,
-  Model,
+  GoLand,
+  JailLand,
+  LandInfo,
+  LandType,
+  LandTypeToModelTypeKey,
   ModelService,
+  ParkingLand,
   Player,
-  TransferModel,
+  Room,
   packModel,
+  packModels,
 } from 'shared';
-import SocketIO from 'socket.io';
 
 import {SocketService} from './socket-service';
-
-//将类型成员注入到已经定义的 SocketIO.Socket 里面
-declare global {
-  namespace SocketIO {
-    export interface Socket {
-      game: Game | undefined;
-    }
-  }
-}
 
 export class GameService {
   constructor(
@@ -35,52 +32,157 @@ export class GameService {
   }
 
   private initializeSocket(socket: SocketIO.Socket): void {
-    socket.on('game:roll', (games: any, roomId: string) => {
-      this.handle_roll(games, roomId);
-    });
-    socket.on('game:pay', (playerName: string, land: number) => {});
-    socket.on(
-      'game:make-decision',
-      (playerName: string, decistion: boolean) => {},
-    );
-
-    socket.on('game:get-lands', () => {
-      if (!socket.game) {
-        socket.emit('game:failed', 'game:get-lands', 401, '还未加入游戏');
+    socket.on('game:start', () => {
+      if (!socket.room || !socket.player) {
+        socket.emit('game:fail', 'game:start', 401, '无权限执行该操作！');
         return;
       }
 
-      let boardId = (socket.game.data.board as any) as string;
-
-      let board = this.modelService.getModelById('board', boardId);
-
-      if (!board) {
-        socket.emit('game:failed', 'game:get-lands', 402, '找不到游戏的 Board');
+      if (socket.room.getOwner() !== socket.player.id) {
+        socket.emit('game:fail', 'game:start', 402, '只有房主才能开始游戏！');
         return;
       }
 
-      let landIds = (board.data.lands as any) as string[];
+      let game = new Game();
+      this.modelService.addModel('game', game);
 
-      let landTransfers: TransferModel<'land'>[] = [];
+      socket.room.setGame(game.id);
 
-      for (let id of landIds) {
-        let land = this.modelService.getModelById('land', id);
+      let board = new Board();
+      createNormalBoardLands(this.modelService, board);
+      this.modelService.addModel('board', board);
 
-        if (!land) {
-          continue;
-        }
+      let goLands = this.modelService.getModelsByIds(
+        'goLand',
+        board.getLandIdsByType(LandType.go),
+      );
+      let constructionLands = this.modelService.getModelsByIds(
+        'constructionLand',
+        board.getLandIdsByType(LandType.construction),
+      );
+      let jailLands = this.modelService.getModelsByIds(
+        'jailLand',
+        board.getLandIdsByType(LandType.jail),
+      );
+      let parkingLands = this.modelService.getModelsByIds(
+        'parkingLand',
+        board.getLandIdsByType(LandType.parking),
+      );
 
-        let transfer = packModel<'land'>(land);
+      let roomPlayers = this.modelService.getModelsByIds(
+        'player',
+        socket.room.data.players,
+      );
 
-        landTransfers.push(transfer);
+      for (let roomPlayer of roomPlayers) {
+        roomPlayer.setLand(goLands[0].getLandInfo());
       }
 
-      socket.emit('game:success', 'game:get-lands', landTransfers);
+      let data = [
+        packModel(socket.room),
+        packModels(roomPlayers),
+        packModel(game),
+        packModel(board),
+        packModels(goLands),
+        packModels(constructionLands),
+        packModels(jailLands),
+        packModels(parkingLands),
+      ];
+
+      socket.emit('game:success', 'game:start', ...data);
+      socket.to(socket.room.getRoomURL()).emit('game:game-start', ...data);
+
+      this.triggerNextStep(socket);
     });
   }
 
-  private handle_roll(games: any, roomId: string) {
-    let game = games[roomId];
-    let moveRes = this.modelService.createModelFromTransfer();
+  private triggerNextStep(socket: SocketIO.Socket): void {
+    if (!socket.player || !socket.room) {
+      return;
+    }
+
+    let room = socket.room;
+    let gameId = room.getGame();
+
+    if (!gameId) {
+      return;
+    }
+
+    let game = this.modelService.getModelById('game', gameId);
+
+    if (!game) {
+      return;
+    }
+
+    let currentPlayerId = game.getCurrentPlayerId();
+
+    if (!currentPlayerId) {
+      return;
+    }
+
+    let currentPlayer = this.modelService.getModelById(
+      'player',
+      currentPlayerId,
+    );
+
+    if (!currentPlayer) {
+      return;
+    }
+
+    let landInfo = currentPlayer.getLand();
+
+    let landModel = this.modelService.getModelById(
+      LandTypeToModelTypeKey(landInfo.type),
+      landInfo.id,
+    );
+
+    game.moveOnToNextPlayer();
+  }
+}
+
+function createNormalBoardLands(
+  modelService: ModelService,
+  board: Board,
+): void {
+  let goLand = new GoLand();
+
+  modelService.addModel('goLand', goLand);
+
+  board.addLand(goLand.getLandInfo());
+
+  createConstructionLands(4);
+
+  let parkingLand1 = new ParkingLand();
+
+  modelService.addModel('parkingLand', parkingLand1);
+
+  board.addLand(parkingLand1.getLandInfo());
+
+  createConstructionLands(4);
+
+  let jailLand = new JailLand();
+
+  modelService.addModel('jailLand', jailLand);
+
+  board.addLand(jailLand.getLandInfo());
+
+  createConstructionLands(4);
+
+  let parkingLand2 = new ParkingLand();
+
+  modelService.addModel('parkingLand', parkingLand2);
+
+  board.addLand(parkingLand2.getLandInfo());
+
+  createConstructionLands(4);
+
+  function createConstructionLands(count: number): void {
+    for (let i = 0; i < count; i++) {
+      let land = new ConstructionLand();
+
+      modelService.addModel('constructionLand', land);
+
+      board.addLand(land.getLandInfo());
+    }
   }
 }

@@ -2,5 +2,8 @@
   "extends": [
     "@magicspace/configs/tslint-prettier",
     "@magicspace/configs/tslint-override-dev"
-  ]
+  ],
+  "rules": {
+    "no-implicit-dependencies": false
+  }
 }

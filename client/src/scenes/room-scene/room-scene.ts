@@ -117,8 +117,6 @@ export class RoomScene extends Scene {
 
     $('#room-create-btn').on('click', this.onRoomCreate);
     $('#room-join-btn').on('click', this.onJoinRoom);
-
-    socketService.io.on('room:update', () => {});
   }
 
   private onRoomCreate = (): void => {
@@ -141,6 +139,7 @@ export class RoomScene extends Scene {
       .joinRoom(roomName, playerService.player!.id)
       .then(() => {
         console.log(roomService.room);
+        console.log('in join room');
       })
       .catch(error => {
         console.log(error);

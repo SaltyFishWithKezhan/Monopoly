@@ -40,5 +40,22 @@ export class PlayerService {
 
       socket.emit('player:success', 'player:login', packModel(player));
     });
+
+    socket.on('disconnect', () => {
+      if (!socket.player || !socket.room) {
+        return;
+      }
+
+      let player = socket.player;
+      let room = socket.room;
+
+      room.removePlayer(player.id);
+
+      this.modelService.removeModel('player', player.id);
+
+      socket
+        .to(room.getRoomURL())
+        .emit('room:player-leave', player.id, packModel(room));
+    });
   }
 }

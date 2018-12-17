@@ -39,6 +39,9 @@ export class RoomService extends PromisePool {
         case 'room:join':
           this.onRoomJoin(args[0]);
           break;
+        case 'room:update':
+          this.onRoomUpdate(args[0]);
+          break;
       }
     });
 
@@ -56,9 +59,18 @@ export class RoomService extends PromisePool {
   }
 
   private onRoomJoin(transferModel: TransferModel<'room'>): void {
+    console.log(transferModel);
     let room = this.modelService.createModelFromTransfer('room', transferModel);
+    console.log(room);
     this.room = room;
     // 开namepace?????????
+    this.onRoomUpdate(transferModel);
     this.resolve('room:join');
+  }
+
+  private onRoomUpdate(transferModel: TransferModel<'room'>) {
+    // let room = this.modelService.createModelFromTransfer('room', transferModel);
+    // this.room = room;
+    // this.roomScene.onUpdate();
   }
 }
