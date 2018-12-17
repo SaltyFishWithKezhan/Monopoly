@@ -3,6 +3,12 @@
     "files": [
       {
         "type": "image",
+        "key": "board-bg",
+        "url": "assets/lg-bg.jpg",
+        "overwrite": false
+      },
+      {
+        "type": "image",
         "key": "green-block",
         "url": "assets/green-block.png",
         "overwrite": false
@@ -27,6 +33,30 @@
       },
       {
         "type": "image",
+        "key": "neutral",
+        "url": "assets/neutral.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "start",
+        "url": "assets/start.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "parking",
+        "url": "assets/parking.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "jail",
+        "url": "assets/jail.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
         "key": "building-1",
         "url": "assets/building-1.png",
         "overwrite": false
@@ -46,6 +76,12 @@
       {
         "type": "image",
         "key": "building-4",
+        "url": "assets/building-4.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-5",
         "url": "assets/building-5.png",
         "overwrite": false
       },
@@ -59,6 +95,30 @@
         "type": "image",
         "key": "building-7",
         "url": "assets/building-7.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "player1",
+        "url": "assets/player1.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "player2",
+        "url": "assets/player2.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "player3",
+        "url": "assets/player3.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "player0",
+        "url": "assets/player4.png",
         "overwrite": false
       }
     ]
