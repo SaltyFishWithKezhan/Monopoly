@@ -3,7 +3,11 @@ import 'animate.css';
 import $ from 'jquery';
 import {Scene} from 'phaser';
 
-import {modelService, playerService} from '../../service-entrances';
+import {
+  modelService,
+  playerService,
+  socketService,
+} from '../../service-entrances';
 import {
   gameHeight,
   gameWidth,

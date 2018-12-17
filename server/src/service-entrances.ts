@@ -5,6 +5,7 @@ import {ModelService} from 'shared';
 import socketIO from 'socket.io';
 
 import {
+  GameService,
   HTTPService,
   PlayerService,
   RoomService,
@@ -27,6 +28,8 @@ export const modelService = new ModelService();
 export const playerService = new PlayerService(socketService, modelService);
 
 export const roomService = new RoomService(socketService, modelService);
+
+export const gameService = new GameService(socketService, modelService);
 
 export const servicesReady = Promise.all([]);
 
