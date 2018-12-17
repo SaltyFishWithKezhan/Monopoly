@@ -91,6 +91,9 @@ export class BoardScene extends Scene {
   private landGroup!: Phaser.GameObjects.Group;
   private playerGroup!: Phaser.GameObjects.Group;
 
+  private bezierCurve!: Phaser.Curves.CubicBezier;
+  private bezierGraphics = this.add.graphics();
+
   constructor() {
     super({key: 'BoardScene'});
   }
@@ -238,4 +241,51 @@ export class BoardScene extends Scene {
   }
 
   private playerJump(step: number): void {}
+
+  private movePlayer = (start, end): void => {
+    let stepX = (gameOptions.hexagonWidth / 2) * delta;
+    let stepY = (gameOptions.hexagonHeight / 4) * 3;
+    this.playerMove = false;
+    let startPoint = new Phaser.Math.Vector2(start.x, start.y);
+    let endPoint = new Phaser.Math.Vector2(end.x + stepX, end.y + stepY);
+    let controlPoint1 = new Phaser.Math.Vector2(
+      this.marker.x + stepX,
+      this.marker.y + stepY / 2,
+    );
+    let controlPoint2 = new Phaser.Math.Vector2(
+      this.marker.x + stepX,
+      this.marker.y + stepY / 2,
+    );
+    this.bezierCurve = new Phaser.Curves.CubicBezier(
+      startPoint,
+      controlPoint1,
+      controlPoint2,
+      endPoint,
+    );
+    this.bezierGraphics.y = 0;
+    this.bezierGraphics.clear();
+    this.bezierGraphics.lineStyle(4, 0xffffff);
+    this.bezierCurve.draw(this.bezierGraphics);
+    let tweenValue = {
+      value: 0,
+      previousValue: 0,
+    };
+    this.tweens.add({
+      targets: tweenValue,
+      value: 1,
+      duration: 100,
+      callbackScope: this,
+      onComplete: () => {
+        this.playerMove = true;
+      },
+      onUpdate: (tween, target) => {
+        let position = this.bezierCurve.getPoint(target.value);
+        let prevPosition = this.bezierCurve.getPoint(target.previousValue);
+        let step = target.value - target.previousValue;
+        this.marker.x += position.x - prevPosition.x;
+        this.marker.y += position.y - prevPosition.y;
+        target.previousValue = target.value;
+      },
+    });
+  };
 }
