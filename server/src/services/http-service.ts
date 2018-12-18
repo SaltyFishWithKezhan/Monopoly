@@ -13,6 +13,10 @@ export class HTTPService {
     this.httpServer.listen(port);
   }
 
+  stop(): void {
+    this.httpServer.close();
+  }
+
   private initialize(): void {
     this.app.use(express.static(CLIENT_BUILD_DIR));
     this.app.use(express.static(CLIENT_PUBLIC_DIR));

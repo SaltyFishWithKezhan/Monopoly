@@ -7,7 +7,7 @@
     "start": "node bld/main.js",
     "build": "rimraf bld && tsc --project ./",
     "lint": "tslint -c ./tslint.json -p ./tsconfig.json",
-    "test": "jest"
+    "test": "jest --detectOpenHandles"
   },
   "dependencies": {
     "express": "^4.16.4",

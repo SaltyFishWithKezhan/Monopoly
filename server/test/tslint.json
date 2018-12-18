@@ -4,6 +4,8 @@
     "@magicspace/configs/tslint-override-dev"
   ],
   "rules": {
-    "no-implicit-dependencies": false
+    "no-implicit-dependencies": false,
+    "no-unused-expression": false,
+    "no-unused-variable": false
   }
 }
