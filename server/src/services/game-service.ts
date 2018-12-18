@@ -131,13 +131,14 @@ export class GameService {
         socket
           .in(room.getRoomURL())
           .emit('game:game-step', 'bail-from-jail', packModel(currentPlayer));
-        return;
+      } else {
+        currentPlayer.serveJailTime();
+        socket
+          .in(room.getRoomURL())
+          .emit('game:game-step', 'serve-jail-time', packModel(currentPlayer));
       }
 
-      currentPlayer.serveJailTime();
-      socket
-        .in(room.getRoomURL())
-        .emit('game:game-step', 'serve-jail-time', packModel(currentPlayer));
+      this.moveOnToNextPlayer(socket);
     });
 
     socket.on('game:dice-and-decide', (diceValue: number, ...args: any[]) => {
@@ -183,6 +184,8 @@ export class GameService {
       } else if (isJailLand(landModel)) {
         this.playerMoveOnJailLand(socket, room, currentPlayer, landModel);
       }
+
+      this.moveOnToNextPlayer(socket);
     });
   }
 
@@ -279,7 +282,13 @@ export class GameService {
     jailLand: JailLand,
   ): void {}
 
-  private moveOnToNextPlayer(): void {}
+  private moveOnToNextPlayer(socket: SocketIO.Socket): void {
+    let room = socket.room!;
+    let gameId = room.getGame()!;
+    let game = this.modelService.getModelById('game', gameId)!;
+
+    game.moveOnToNextPlayer();
+  }
 }
 
 function createNormalBoardLands(
