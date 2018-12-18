@@ -182,7 +182,7 @@ export class GameService {
           args[0],
         );
       } else if (isJailLand(landModel)) {
-        this.playerMoveOnJailLand(socket, room, currentPlayer, landModel);
+        this.playerMoveOnJailLand(socket, room, currentPlayer);
       }
 
       this.moveOnToNextPlayer(socket);
@@ -279,8 +279,13 @@ export class GameService {
     socket: SocketIO.Socket,
     room: Room,
     player: Player,
-    jailLand: JailLand,
-  ): void {}
+  ): void {
+    player.putIntoJail();
+
+    socket
+      .in(room.getRoomURL())
+      .emit('game:game-step', 'move-on-jail-land', packModel(player));
+  }
 
   private moveOnToNextPlayer(socket: SocketIO.Socket): void {
     let room = socket.room!;
