@@ -89,10 +89,11 @@ export class BoardScene extends Scene {
   ];
 
   private paddingX: number = 10;
-  private paddingY: number = 5;
+  private paddingY: number = 10;
   private playerStyle = [
     {
       // top-left
+      img: 'player0',
       land: 'yellow-block',
       backgroundLine: 'yellow-bg',
       color: '#fccf39',
@@ -101,6 +102,7 @@ export class BoardScene extends Scene {
     },
     {
       // bottom-right
+      img: 'player1',
       land: 'blue-block',
       backgroundLine: 'blue-bg',
       color: '#355973',
@@ -109,6 +111,7 @@ export class BoardScene extends Scene {
     },
     {
       // top-right
+      img: 'player2',
       land: 'green-block',
       backgroundLine: 'green-bg',
       color: '#65bc16',
@@ -117,6 +120,7 @@ export class BoardScene extends Scene {
     },
     {
       // bottom-left
+      img: 'player3',
       land: 'red-block',
       backgroundLine: 'red-bg',
       color: '#b91124',
@@ -259,9 +263,15 @@ export class BoardScene extends Scene {
     let concatStrNum = (str: string, num: number): string => str + num;
 
     for (let i = 0; i < playerNum; i++) {
-      console.log(this.playerStyle[i].posX);
+      let playerLine = this.add.image(
+        this.playerStyle[i].posX,
+        this.playerStyle[i].posY + height(5),
+        this.playerStyle[i].backgroundLine,
+      );
+      scaleGameObject(playerLine, 0.5);
 
-      let playerInfo = this.add.text(
+      console.log(this.playerStyle[i].posX);
+      let playerInfoText = this.add.text(
         this.playerStyle[i].posX,
         this.playerStyle[i].posY,
         'Player1',
@@ -271,13 +281,18 @@ export class BoardScene extends Scene {
           color: this.playerStyle[i].color,
         },
       );
-      playerInfo.setOrigin(0.5, 0.5);
-      playerInfo
+      playerInfoText.setOrigin(0.5, 0.5);
+      playerInfoText
         .setStroke(this.playerStyle[i].color, 16)
         .setShadow(2, 2, '#fff', 2, true, true);
+      scaleGameObject(playerInfoText);
+      this.playerInfoGroup.add(playerInfoText);
 
-      scaleGameObject(playerInfo);
-      this.playerInfoGroup.add(playerInfo);
+      let playerImg = this.add.image(
+        this.playerStyle[i].posX,
+        this.playerStyle[i].posY,
+        this.playerStyle[i].img,
+      );
     }
   }
 
