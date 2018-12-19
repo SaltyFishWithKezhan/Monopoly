@@ -120,6 +120,30 @@
         "key": "player0",
         "url": "assets/player4.png",
         "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "yellow-bg",
+        "url": "assets/yellow-bg.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "blue-bg",
+        "url": "assets/blue-bg.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "green-bg",
+        "url": "assets/green-bg.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "red-bg",
+        "url": "assets/red-bg.png",
+        "overwrite": false
       }
     ]
   }

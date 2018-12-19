@@ -88,11 +88,52 @@ export class BoardScene extends Scene {
     },
   ];
 
+  private paddingX: number = 10;
+  private paddingY: number = 5;
+  private playerStyle = [
+    {
+      // top-left
+      land: 'yellow-block',
+      backgroundLine: 'yellow-bg',
+      color: '#fccf39',
+      posX: width(this.paddingX),
+      posY: height(this.paddingY),
+    },
+    {
+      // bottom-right
+      land: 'blue-block',
+      backgroundLine: 'blue-bg',
+      color: '#355973',
+      posX: gameWidth - width(this.paddingX),
+      posY: gameHeight - height(this.paddingY),
+    },
+    {
+      // top-right
+      land: 'green-block',
+      backgroundLine: 'green-bg',
+      color: '#65bc16',
+      posX: gameWidth - width(this.paddingX),
+      posY: height(this.paddingY),
+    },
+    {
+      // bottom-left
+      land: 'red-block',
+      backgroundLine: 'red-bg',
+      color: '#b91124',
+      posX: width(this.paddingX),
+      posY: gameHeight - height(this.paddingY),
+    },
+  ];
+
   private landGroup!: Phaser.GameObjects.Group;
   private playerGroup!: Phaser.GameObjects.Group;
+  private playerInfoGroup!: Phaser.GameObjects.Group;
 
+  private bezierGraphics: Phaser.GameObjects.Graphics;
+  // private player!:Phaser.GameObjects.Image;
   private bezierCurve!: Phaser.Curves.CubicBezier;
-  private bezierGraphics = this.add.graphics();
+
+  private i: number = 0;
 
   constructor() {
     super({key: 'BoardScene'});
@@ -107,12 +148,19 @@ export class BoardScene extends Scene {
     });
 
     this.load.script('dice-script', '/js/dice.js');
+    this.load.script(
+      'webfont',
+      'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js',
+    );
   }
 
   create(): void {
     this.createScene();
     this.landGroup = this.add.group();
     this.playerGroup = this.add.group();
+    this.playerInfoGroup = this.add.group();
+
+    this.bezierGraphics = this.add.graphics();
     // 计算board坐标
     this.analyseBoard();
     this.boardData = this.cache.json.get('board-pos');
@@ -130,7 +178,9 @@ export class BoardScene extends Scene {
 
     this.rollDice(6); // for test
 
-    this.playerJump(1); // for test
+    // this.playerJump(1); // for test
+
+    this.createPlayersInfo(4); // for test
   }
 
   private createScene(): void {}
@@ -205,7 +255,33 @@ export class BoardScene extends Scene {
     }
   }
 
-  private createDice(): void {
+  private createPlayersInfo(playerNum: number): void {
+    let concatStrNum = (str: string, num: number): string => str + num;
+
+    for (let i = 0; i < playerNum; i++) {
+      console.log(this.playerStyle[i].posX);
+
+      let playerInfo = this.add.text(
+        this.playerStyle[i].posX,
+        this.playerStyle[i].posY,
+        'Player1',
+        {
+          fontFamily: 'Arial Black',
+          fontSize: 74,
+          color: this.playerStyle[i].color,
+        },
+      );
+      playerInfo.setOrigin(0.5, 0.5);
+      playerInfo
+        .setStroke(this.playerStyle[i].color, 16)
+        .setShadow(2, 2, '#fff', 2, true, true);
+
+      scaleGameObject(playerInfo);
+      this.playerInfoGroup.add(playerInfo);
+    }
+  }
+
+  private createDice = (): void => {
     if ($('#area').length) {
       return;
     }
@@ -231,30 +307,50 @@ export class BoardScene extends Scene {
     // $('#stop-btn').on('click', () => {
     //   myDice.stop();
     // });
-  }
+  };
 
-  private rollDice(faceValue: number): void {
+  private rollDice = (faceValue: number): void => {
     $('#roll-btn').on('click', () => {
       this.myDice.roll(faceValue);
-      this.playerJump(1); // for test
+      this.playerJump(this.i); // for test
+      this.i = (this.i + 1) % ((this.gameOptions.landCount - 1) * 4);
+      console.log(this.boardPosList[this.i]);
     });
-  }
+  };
 
-  private playerJump(step: number): void {}
+  private playerJump = (pos: number): void => {
+    // for (let i = 0; i < (this.gameOptions.landCount - 1) * 4 - 1; i++) {
+    console.log(this.boardPosList[pos]);
+    console.log(this.boardPosList[pos + 1]);
+    let start = {
+      x: this.boardPosList[pos].x * gameWidth,
+      y: this.boardPosList[pos].y * gameHeight,
+    };
+    let nextPos = (pos + 1) % ((this.gameOptions.landCount - 1) * 4);
+    let end = {
+      x: this.boardPosList[nextPos].x * gameWidth,
+      y: this.boardPosList[nextPos].y * gameHeight,
+    };
+    this.movePlayer(start, end);
+    // }
 
-  private movePlayer = (start, end): void => {
-    let stepX = (gameOptions.hexagonWidth / 2) * delta;
-    let stepY = (gameOptions.hexagonHeight / 4) * 3;
-    this.playerMove = false;
+    // this.movePlayer({x: 100, y: 100}, {x: 200, y: 200});
+  };
+
+  private movePlayer = (start: any, end: any): void => {
     let startPoint = new Phaser.Math.Vector2(start.x, start.y);
-    let endPoint = new Phaser.Math.Vector2(end.x + stepX, end.y + stepY);
+    let endPoint = new Phaser.Math.Vector2(end.x, end.y);
+    let stepX = end.x - start.x;
+    let stepY = end.y - start.y;
+    console.log(start.x);
+    let marker = this.playerGroup.getChildren()[0] as Phaser.GameObjects.Image;
     let controlPoint1 = new Phaser.Math.Vector2(
-      this.marker.x + stepX,
-      this.marker.y + stepY / 2,
+      marker.x + (stepX * 2) / 3,
+      marker.y + stepY / 2,
     );
     let controlPoint2 = new Phaser.Math.Vector2(
-      this.marker.x + stepX,
-      this.marker.y + stepY / 2,
+      marker.x + (stepX * 2) / 3,
+      marker.y + stepY / 2,
     );
     this.bezierCurve = new Phaser.Curves.CubicBezier(
       startPoint,
@@ -273,17 +369,15 @@ export class BoardScene extends Scene {
     this.tweens.add({
       targets: tweenValue,
       value: 1,
-      duration: 100,
+      duration: 500,
       callbackScope: this,
-      onComplete: () => {
-        this.playerMove = true;
-      },
-      onUpdate: (tween, target) => {
+      onComplete: () => {},
+      onUpdate: (tween: Phaser.Tweens.TweenManager, target: any) => {
         let position = this.bezierCurve.getPoint(target.value);
         let prevPosition = this.bezierCurve.getPoint(target.previousValue);
         let step = target.value - target.previousValue;
-        this.marker.x += position.x - prevPosition.x;
-        this.marker.y += position.y - prevPosition.y;
+        marker.x += position.x - prevPosition.x;
+        marker.y += position.y - prevPosition.y;
         target.previousValue = target.value;
       },
     });
