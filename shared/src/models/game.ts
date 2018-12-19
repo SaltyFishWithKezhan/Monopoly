@@ -1,24 +1,14 @@
 import {Model} from '../core';
 
-enum GameState {
-  WAIT_FOR_ROLL = 0,
-  WAIT_FOR_DECISION = 1,
-  GAME_ENDED = 2,
-}
-
 export interface GameData {
-  playerNum: number;
   players: string[];
-  gameState: GameState;
   board: string | undefined;
   currentPlayerIndex: number;
 }
 
 export class Game extends Model {
   data: GameData = {
-    playerNum: 0,
     players: [],
-    gameState: GameState.WAIT_FOR_ROLL,
     board: undefined,
     currentPlayerIndex: 0,
   };
@@ -29,6 +19,10 @@ export class Game extends Model {
 
   getBoard(): string | undefined {
     return this.data.board;
+  }
+
+  setPlayers(playerIds: string[]): void {
+    this.data.players = playerIds;
   }
 
   addPlayer(playerId: string): boolean {

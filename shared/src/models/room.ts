@@ -46,6 +46,10 @@ export class Room extends Model {
       this.data.owner = playerId;
     }
 
+    if (players.includes(playerId)) {
+      return;
+    }
+
     this.data.players.push(playerId);
   }
 

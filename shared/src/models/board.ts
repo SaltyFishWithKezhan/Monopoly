@@ -33,7 +33,7 @@ export class Board extends Model {
   addLand({type, id}: LandInfo): boolean {
     let {lands} = this.data;
 
-    if (this.indexOfLand({type, id}) < 0) {
+    if (this.indexOfLand({type, id}) >= 0) {
       return false;
     }
 

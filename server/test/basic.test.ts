@@ -5,7 +5,7 @@ import {runServer, stopServer} from './utils';
 
 const PLAYER_NAME = 'Dizy';
 
-jest.setTimeout(999999);
+jest.setTimeout(5000);
 
 let io = SocketIO('http://localhost:8090');
 
@@ -78,5 +78,37 @@ test('join room', () => {
     expect(action).toBe('room:join');
     expect(roomTransfer).toHaveProperty('id', roomId);
     expect(roomTransfer['data']['players']).toContain(PLAYER_NAME);
+  });
+});
+
+test('start game', () => {
+  let promise = new Promise<any>(resolve => {
+    io.on(
+      'game:game-start',
+      (
+        d1: object,
+        d2: object[],
+        d3: object,
+        d4: object,
+        d5: object[],
+        d6: object[],
+        d7: object[],
+        d8: object[],
+      ) => {
+        let data = [d1, d2, d3, d4, d5, d6, d7, d8];
+        resolve(data);
+      },
+    );
+
+    io.on('game:fail', (action: string, code: number) => {
+      resolve({action, code});
+    });
+
+    io.emit('game:start');
+  });
+
+  return promise.then(data => {
+    expect(typeof data).toBe('object');
+    console.log(data);
   });
 });

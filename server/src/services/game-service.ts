@@ -21,6 +21,8 @@ import {
 import {SocketService} from './socket-service';
 
 export class GameService {
+  private io = this.socketService.io;
+
   constructor(
     private socketService: SocketService,
     private modelService: ModelService,
@@ -49,7 +51,11 @@ export class GameService {
       let game = new Game();
       this.modelService.addModel('game', game);
 
-      socket.room.setGame(game.id);
+      let room = socket.room;
+
+      room.setGame(game.id);
+
+      game.setPlayers(room.getPlayerIds());
 
       let board = new Board();
 
@@ -77,7 +83,7 @@ export class GameService {
 
       let roomPlayers = this.modelService.getModelsByIds(
         'player',
-        socket.room.data.players,
+        room.data.players,
       );
 
       for (let roomPlayer of roomPlayers) {
@@ -95,7 +101,7 @@ export class GameService {
         packModels(parkingLands),
       ];
 
-      socket.in(socket.room.getRoomURL()).emit('game:game-start', ...data);
+      this.io.in(room.getRoomURL()).emit('game:game-start', ...data);
     });
 
     socket.on('game:serve-jail-time', (bail: boolean) => {
@@ -128,12 +134,12 @@ export class GameService {
 
       if (bail) {
         currentPlayer.bail(land.getBailPrice());
-        socket
+        this.io
           .in(room.getRoomURL())
           .emit('game:game-step', 'bail-from-jail', packModel(currentPlayer));
       } else {
         currentPlayer.serveJailTime();
-        socket
+        this.io
           .in(room.getRoomURL())
           .emit('game:game-step', 'serve-jail-time', packModel(currentPlayer));
       }
@@ -158,7 +164,7 @@ export class GameService {
         return;
       }
 
-      socket
+      this.io
         .in(room.getRoomURL())
         .emit('game:roll-the-dice', currentPlayerId, diceValue);
 
@@ -190,20 +196,20 @@ export class GameService {
   }
 
   private playerMoveOnGoLand(
-    socket: SocketIO.Socket,
+    _socket: SocketIO.Socket,
     room: Room,
     player: Player,
     land: GoLand,
   ): void {
     player.increaseMoney(land.data.salary);
 
-    socket
+    this.io
       .in(room.getRoomURL())
       .emit('game:game-step', 'move-on-go-land', packModel(player));
   }
 
   private playerMoveOnConstructionLand(
-    socket: SocketIO.Socket,
+    _socket: SocketIO.Socket,
     room: Room,
     player: Player,
     land: ConstructionLand,
@@ -219,7 +225,7 @@ export class GameService {
 
         player.decreaseMoney(rentPrice);
 
-        socket
+        this.io
           .in(room.getRoomURL())
           .emit(
             'game:game-step',
@@ -240,7 +246,7 @@ export class GameService {
 
         player.decreaseMoney(price);
         land.setOwner(player.id);
-        socket
+        this.io
           .in(room.getRoomURL())
           .emit(
             'game:game-step',
@@ -263,7 +269,7 @@ export class GameService {
         player.decreaseMoney(upgradePrice);
         land.upgrade();
 
-        socket
+        this.io
           .in(room.getRoomURL())
           .emit(
             'game:game-step',
@@ -276,13 +282,13 @@ export class GameService {
   }
 
   private playerMoveOnJailLand(
-    socket: SocketIO.Socket,
+    _socket: SocketIO.Socket,
     room: Room,
     player: Player,
   ): void {
     player.putIntoJail();
 
-    socket
+    this.io
       .in(room.getRoomURL())
       .emit('game:game-step', 'move-on-jail-land', packModel(player));
   }
