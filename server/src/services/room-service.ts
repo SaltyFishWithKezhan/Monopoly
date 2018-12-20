@@ -51,13 +51,18 @@ export class RoomService {
 
       let room = this.modelService.getModelById('room', roomName)!;
 
+      if (room.hasPlayer(socket.player.id)) {
+        socket.emit('room:fail', 'room:join', 403, '已在该房间中！');
+        return;
+      }
+
       if (room.data.players.length >= 4) {
-        socket.emit('room:fail', 'room:join', 403, '房间人数已满！');
+        socket.emit('room:fail', 'room:join', 404, '房间人数已满！');
         return;
       }
 
       if (room.getGame()) {
-        socket.emit('room:fail', 'room:join', 404, '房间内游戏正在进行中！');
+        socket.emit('room:fail', 'room:join', 405, '房间内游戏正在进行中！');
         return;
       }
 

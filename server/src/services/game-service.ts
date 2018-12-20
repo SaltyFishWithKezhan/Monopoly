@@ -217,7 +217,7 @@ export class GameService {
   ): void {
     switch (operation) {
       case 'rent':
-        if (land.data.owner === player.id) {
+        if (!land.data.owner || land.data.owner === player.id) {
           return;
         }
 
