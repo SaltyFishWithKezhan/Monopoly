@@ -17,7 +17,7 @@ import './style.less';
 export interface LandPos {
   x: number;
   y: number;
-  type: string | undefined;
+  type: string;
 }
 
 export class BoardScene extends Scene {
@@ -144,7 +144,7 @@ export class BoardScene extends Scene {
   }
 
   preload(): void {
-    this.load.pack('board', 'data/asset-pack.json', null, this);
+    this.load.pack('board', 'data/asset-pack.json', undefined, this);
     // this.load.image('green-block', 'assets/green-block.png');
     this.load.json({
       key: 'board-pos',
@@ -211,7 +211,7 @@ export class BoardScene extends Scene {
     this.boardPosList[count * 2].type = 'jail';
     this.boardPosList[count].type = 'parking';
     this.boardPosList[count * 3].type = 'parking';
-    console.log(this.boardPosList);
+    console.info(this.boardPosList);
     // this.load.saveJSON(boardJson, 'file/test.json');
   }
 
@@ -272,7 +272,7 @@ export class BoardScene extends Scene {
         this.playerStyle[i].backgroundLine,
       );
       scaleGameObject(playerLine, 0.5);
-      console.log(infoLinePos);
+      console.info(infoLinePos);
 
       let infoTextPos = this.statInfoPos(paddingX - 1, paddingY + 10, i);
       let playerInfoText = this.add.text(
@@ -389,14 +389,14 @@ export class BoardScene extends Scene {
       this.myDice.roll(faceValue);
       this.playerJump(this.i); // for test
       this.i = (this.i + 1) % ((this.gameOptions.landCount - 1) * 4);
-      console.log(this.boardPosList[this.i]);
+      console.info(this.boardPosList[this.i]);
     });
   };
 
   private playerJump = (pos: number): void => {
     // for (let i = 0; i < (this.gameOptions.landCount - 1) * 4 - 1; i++) {
-    console.log(this.boardPosList[pos]);
-    console.log(this.boardPosList[pos + 1]);
+    console.info(this.boardPosList[pos]);
+    console.info(this.boardPosList[pos + 1]);
     let start = {
       x: this.boardPosList[pos].x * gameWidth,
       y: this.boardPosList[pos].y * gameHeight,
@@ -417,7 +417,7 @@ export class BoardScene extends Scene {
     let endPoint = new Phaser.Math.Vector2(end.x, end.y);
     let stepX = end.x - start.x;
     let stepY = end.y - start.y;
-    console.log(start.x);
+    console.info(start.x);
     let marker = this.playerGroup.getChildren()[0] as Phaser.GameObjects.Image;
     let controlPoint1 = new Phaser.Math.Vector2(
       marker.x + (stepX * 2) / 3,
