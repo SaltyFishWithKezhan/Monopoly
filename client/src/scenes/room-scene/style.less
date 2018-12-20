@@ -17,7 +17,20 @@
     position: absolute;
   }
 
-  #login-player {
+  #room-player {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 7px;
+    border-width: 0;
+    text-align: center;
+    outline: none;
+    transition: all 0.5s;
+    &:focus {
+      background-color: rgba(0, 0, 0, 0.07);
+      transition: all 0.5s;
+    }
+  }
+
+  .room-player {
     background-color: rgba(0, 0, 0, 0.03);
     border-radius: 7px;
     border-width: 0;

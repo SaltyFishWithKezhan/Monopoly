@@ -63,15 +63,12 @@ export class RoomScene extends Scene {
               height: ${height(60)}px;"
       >
         <div class="text-player" style="margin-top: ${height(
-          16,
+          1,
         )}px; width: ${width(7)}px; height: ${width(7 * 0.5)}px;">
             <img src="/assets/lg-text-player.png"/>
         </div>
-        <input id="login-player" type="text" placeholder="您的名字" style="margin-top: ${height(
-          5.5,
-        )}px; height: ${height(6)}px; line-height: ${height(
-        8,
-      )}px; font-size: ${height(3)}px;" />
+        <div id="room-player-list">
+        </div>
         <button id="start-game-btn" style="margin-top: ${height(
           4,
         )}px; width: ${height(15.5)}px; height: ${height(15.5 * 0.6)}px;" />
@@ -90,7 +87,7 @@ export class RoomScene extends Scene {
         )}px; width: ${width(7)}px; height: ${width(7 * 0.5)}px;">
             <img src="/assets/lg-text-player.png"/>
         </div>
-        <input id="login-player" type="text" disabled placeholder="${
+        <input id="room-player" type="text" disabled placeholder="${
           playerService.player!.id
         }" style="margin-top: ${height(5.5)}px; height: ${height(
         6,
@@ -129,6 +126,18 @@ export class RoomScene extends Scene {
     console.info(roomName, playerService.player!.id);
     roomService.joinRoom(roomName, (_room, players) => {
       console.info('Now players:', players.map(player => player.id));
+
+      $('#room-player-list').empty();
+
+      for (let it of players) {
+        $('#room-player-list').append(
+          `<input class="room-player" type="text" disabled placeholder="${
+            it.id
+          }" style="margin-top: ${height(5.5)}px; height: ${height(
+            6,
+          )}px; line-height: ${height(8)}px; font-size: ${height(3)}px;" />`,
+        );
+      }
     });
   };
 
