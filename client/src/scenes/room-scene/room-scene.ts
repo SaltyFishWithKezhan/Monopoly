@@ -3,16 +3,11 @@ import 'animate.css';
 import $ from 'jquery';
 import {Scene} from 'phaser';
 
-import {
-  playerService,
-  roomService,
-  socketService,
-} from '../../service-entrances';
+import {gameService, playerService, roomService} from '../../service-entrances';
 import {
   gameHeight,
   gameWidth,
   height,
-  ratio,
   scaleGameObject,
   width,
 } from '../../utils/ratio';
@@ -25,13 +20,13 @@ export class RoomScene extends Scene {
   }
 
   init(data: {}): void {
-    console.log('in room scene data: ', data);
+    console.info('in room scene data: ', data);
 
-    if (playerService.player == null) {
+    if (!playerService.player) {
       alert('你不应该出现在这里！！！');
       this.scene.switch('LoginScene');
     } else {
-      console.log('Current player id: ', playerService.player.id);
+      console.info('Current player id: ', playerService.player.id);
     }
   }
 
@@ -41,6 +36,7 @@ export class RoomScene extends Scene {
 
   create(): void {
     this.events.on('destroy', this.onSceneDestroy);
+    this.events.on('sleep', this.onSceneDestroy);
     this.createLoginForm();
     this.createScene();
   }
@@ -52,12 +48,12 @@ export class RoomScene extends Scene {
   }
 
   private createLoginForm(): void {
-    if ($('#room-form-div').length) {
+    if ($('.room-form-div').length) {
       return;
     }
 
     $('#game-playground').append(
-      //right panel
+      // right panel
       `<div
         id="room-form-div"
         class="room-form-div"
@@ -76,7 +72,7 @@ export class RoomScene extends Scene {
         )}px; height: ${height(6)}px; line-height: ${height(
         8,
       )}px; font-size: ${height(3)}px;" />
-        <button id="login-join-btn" style="margin-top: ${height(
+        <button id="start-game-btn" style="margin-top: ${height(
           4,
         )}px; width: ${height(15.5)}px; height: ${height(15.5 * 0.6)}px;" />
       </div>`,
@@ -103,9 +99,7 @@ export class RoomScene extends Scene {
           4,
         )}px; width: ${height(15.5)}px; height: ${height(15.5 * 0.6)}px;" />
         <input id="room-number" type="text" placeholder="${
-          roomService.room == null
-            ? '请黏贴房间号或创建房间'
-            : roomService.room.id
+          !roomService.room ? '请黏贴房间号或创建房间' : roomService.room.id
         }" style="margin-top: ${height(5.5)}px; height: ${height(
         6,
       )}px; line-height: ${height(8)}px; font-size: ${height(3)}px;" />
@@ -117,6 +111,7 @@ export class RoomScene extends Scene {
 
     $('#room-create-btn').on('click', this.onRoomCreate);
     $('#room-join-btn').on('click', this.onJoinRoom);
+    $('#start-game-btn').on('click', this.onStartGame);
   }
 
   private onRoomCreate = (): void => {
@@ -125,37 +120,29 @@ export class RoomScene extends Scene {
       .then(() => {
         let textBox = $('#room-number');
         textBox.val(roomService.room!.id);
+        // tslint:disable-next-line
         console.log('create success');
       })
-      .catch(error => {
-        console.log(error);
-      });
+      .catch(console.error);
   };
 
   private onJoinRoom = (): void => {
     let roomName = $('#room-number').val() as string;
-    console.log(roomName, playerService.player!.id);
-    roomService
-      .joinRoom(roomName, playerService.player!.id)
-      .then(() => {
-        console.log(roomService.room);
-        console.log('in join room');
-      })
-      .catch(error => {
-        console.log(error);
-        alert(error);
-      });
-  };
-
-  onUpdate = (): void => {
-    console.log(roomService.room);
+    console.info(roomName, playerService.player!.id);
+    roomService.joinRoom(roomName, (room, players) => {});
   };
 
   private onSceneDestroy = (): void => {
     this.destroyLoginForm();
   };
 
+  private onStartGame = (): void => {
+    gameService.startGame(() => {
+      this.scene.switch('BoardScene');
+    });
+  };
+
   private destroyLoginForm(): void {
-    $('#login-form-div').remove();
+    $('.room-form-div').remove();
   }
 }

@@ -8,6 +8,10 @@ export class GameService {
 
   private ee: EventEmitter;
 
+  private game: Game | undefined;
+
+  private board: Board | undefined;
+
   constructor(
     private socketService: SocketService,
     private modelService: ModelService,
@@ -32,7 +36,7 @@ export class GameService {
       (
         roomTransfer: TransferModel<'room'>,
         playerTransfers: TransferModel<'player'>[],
-        gameTransfer: TransferModel<'player'>,
+        gameTransfer: TransferModel<'game'>,
         boardTransfer: TransferModel<'board'>,
         goLandTransfers: TransferModel<'goLand'>[],
         constructionLandTransfers: TransferModel<'constructionLand'>[],
@@ -45,10 +49,16 @@ export class GameService {
           'game',
           gameTransfer,
         );
+
+        this.game = game;
+
         let board = this.modelService.updateModelFromTransfer(
           'board',
           boardTransfer,
         );
+
+        this.board = board;
+
         this.modelService.updateModelFromTransfers('goLand', goLandTransfers);
         this.modelService.updateModelFromTransfers(
           'constructionLand',
