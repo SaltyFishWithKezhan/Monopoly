@@ -314,6 +314,7 @@ export class BoardScene extends Scene {
         infoImgPos!.y,
         this.playerStyle[i].img,
       );
+      scaleGameObject(playerImg, 1);
     }
   }
 
