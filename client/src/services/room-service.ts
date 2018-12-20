@@ -39,16 +39,16 @@ export class RoomService extends PromisePool {
         case 'room:create':
           this._onRoomCreate(args[0]);
           break;
-        case 'room:join':
-          this._onRoomJoin(args[0], args[1]);
-          break;
       }
     });
 
     this.io.on('room:fail', (event: string, _code: number, message: string) => {
       let error = new Error(message);
+      console.error(error);
       this.reject(event, error);
     });
+
+    this.io.on('room:player-join', this._onRoomJoin);
   }
 
   private _onRoomCreate(transferModel: TransferModel<'room'>): void {
@@ -58,10 +58,10 @@ export class RoomService extends PromisePool {
     this.resolve('room:create');
   }
 
-  private _onRoomJoin(
+  private _onRoomJoin = (
     roomTransfer: TransferModel<'room'>,
     playerTransfers: TransferModel<'player'>[],
-  ): void {
+  ): void => {
     let room = this.modelService.updateModelFromTransfer('room', roomTransfer);
     this.room = room;
 
@@ -71,5 +71,5 @@ export class RoomService extends PromisePool {
     );
 
     this.ee.emit('join-room', room, players);
-  }
+  };
 }

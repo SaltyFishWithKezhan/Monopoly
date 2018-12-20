@@ -120,8 +120,6 @@ export class RoomScene extends Scene {
       .then(() => {
         let textBox = $('#room-number');
         textBox.val(roomService.room!.id);
-        // tslint:disable-next-line
-        console.log('create success');
       })
       .catch(console.error);
   };
@@ -129,7 +127,9 @@ export class RoomScene extends Scene {
   private onJoinRoom = (): void => {
     let roomName = $('#room-number').val() as string;
     console.info(roomName, playerService.player!.id);
-    roomService.joinRoom(roomName, (room, players) => {});
+    roomService.joinRoom(roomName, (_room, players) => {
+      console.info('Now players:', players.map(player => player.id));
+    });
   };
 
   private onSceneDestroy = (): void => {

@@ -8,9 +8,9 @@ export class GameService {
 
   private ee: EventEmitter;
 
-  private game: Game | undefined;
+  game: Game | undefined;
 
-  private board: Board | undefined;
+  board: Board | undefined;
 
   constructor(
     private socketService: SocketService,

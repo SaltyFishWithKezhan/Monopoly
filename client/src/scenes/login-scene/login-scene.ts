@@ -3,16 +3,11 @@ import 'animate.css';
 import $ from 'jquery';
 import {Scene} from 'phaser';
 
-import {
-  modelService,
-  playerService,
-  socketService,
-} from '../../service-entrances';
+import {playerService} from '../../service-entrances';
 import {
   gameHeight,
   gameWidth,
   height,
-  ratio,
   scaleGameObject,
   width,
 } from '../../utils/ratio';
@@ -80,7 +75,6 @@ export class LoginScene extends Scene {
   }
 
   private onSceneDestroy = (): void => {
-    console.log('onDestoryCalled');
     this.destroyLoginForm();
   };
 
@@ -90,7 +84,6 @@ export class LoginScene extends Scene {
     playerService
       .login(name)
       .then(() => {
-        console.log('login success');
         this.scene.switch('RoomScene');
       })
       .catch(error => {
