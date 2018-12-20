@@ -17,7 +17,7 @@ import './style.less';
 export interface LandPos {
   x: number;
   y: number;
-  type: string;
+  type: string | undefined;
 }
 
 export class BoardScene extends Scene {
@@ -261,19 +261,23 @@ export class BoardScene extends Scene {
 
   private createPlayersInfo(playerNum: number): void {
     let concatStrNum = (str: string, num: number): string => str + num;
+    let paddingX = 10;
+    let paddingY = 5;
 
     for (let i = 0; i < playerNum; i++) {
+      let infoLinePos = this.statInfoPos(paddingX + 2, paddingY + 6, i);
       let playerLine = this.add.image(
-        this.playerStyle[i].posX,
-        this.playerStyle[i].posY + height(5),
+        infoLinePos!.x,
+        infoLinePos!.y,
         this.playerStyle[i].backgroundLine,
       );
       scaleGameObject(playerLine, 0.5);
+      console.log(infoLinePos);
 
-      console.log(this.playerStyle[i].posX);
+      let infoTextPos = this.statInfoPos(paddingX, paddingY, i);
       let playerInfoText = this.add.text(
-        this.playerStyle[i].posX,
-        this.playerStyle[i].posY,
+        infoTextPos!.x,
+        infoTextPos!.y,
         'Player1',
         {
           fontFamily: 'Arial Black',
@@ -288,12 +292,52 @@ export class BoardScene extends Scene {
       scaleGameObject(playerInfoText);
       this.playerInfoGroup.add(playerInfoText);
 
+      let infoImgPos = this.statInfoPos(paddingX + 12, paddingY + 2, i);
       let playerImg = this.add.image(
-        this.playerStyle[i].posX,
-        this.playerStyle[i].posY,
+        infoImgPos!.x,
+        infoImgPos!.y,
         this.playerStyle[i].img,
       );
     }
+  }
+
+  private statInfoPos(
+    paddingx: number,
+    paddingy: number,
+    index: number,
+  ): LandPos | undefined {
+    let ret: LandPos | undefined;
+    switch (index) {
+      case 0:
+        ret = {
+          x: width(paddingx),
+          y: height(paddingy),
+          type: 'top-left',
+        };
+        break;
+      case 1:
+        ret = {
+          x: gameWidth - width(paddingx),
+          y: gameHeight - height(paddingy),
+          type: 'bottom-right',
+        };
+        break;
+      case 2:
+        ret = {
+          x: gameWidth - width(paddingx),
+          y: height(paddingy),
+          type: 'top-right',
+        };
+        break;
+      case 3:
+        ret = {
+          x: width(paddingx),
+          y: gameHeight - height(paddingy),
+          type: 'bottom-left',
+        };
+        break;
+    }
+    return ret;
   }
 
   private createDice = (): void => {
@@ -373,10 +417,12 @@ export class BoardScene extends Scene {
       controlPoint2,
       endPoint,
     );
-    this.bezierGraphics.y = 0;
+    this.bezierGraphics.x = 0.02 * gameWidth;
+    this.bezierGraphics.y = -0.05 * gameHeight;
     this.bezierGraphics.clear();
     this.bezierGraphics.lineStyle(4, 0xffffff);
     this.bezierCurve.draw(this.bezierGraphics);
+    this.bezierGraphics.setDepth(50);
     let tweenValue = {
       value: 0,
       previousValue: 0,
