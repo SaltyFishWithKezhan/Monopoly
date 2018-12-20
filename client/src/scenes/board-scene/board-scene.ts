@@ -17,7 +17,7 @@ import './style.less';
 export interface LandPos {
   x: number;
   y: number;
-  type: string;
+  type: string | undefined;
 }
 
 export class BoardScene extends Scene {
@@ -89,10 +89,11 @@ export class BoardScene extends Scene {
   ];
 
   private paddingX: number = 10;
-  private paddingY: number = 5;
+  private paddingY: number = 10;
   private playerStyle = [
     {
       // top-left
+      img: 'player0',
       land: 'yellow-block',
       backgroundLine: 'yellow-bg',
       color: '#fccf39',
@@ -101,6 +102,7 @@ export class BoardScene extends Scene {
     },
     {
       // bottom-right
+      img: 'player1',
       land: 'blue-block',
       backgroundLine: 'blue-bg',
       color: '#355973',
@@ -109,6 +111,7 @@ export class BoardScene extends Scene {
     },
     {
       // top-right
+      img: 'player2',
       land: 'green-block',
       backgroundLine: 'green-bg',
       color: '#65bc16',
@@ -117,6 +120,7 @@ export class BoardScene extends Scene {
     },
     {
       // bottom-left
+      img: 'player3',
       land: 'red-block',
       backgroundLine: 'red-bg',
       color: '#b91124',
@@ -257,13 +261,23 @@ export class BoardScene extends Scene {
 
   private createPlayersInfo(playerNum: number): void {
     let concatStrNum = (str: string, num: number): string => str + num;
+    let paddingX = 10;
+    let paddingY = 5;
 
     for (let i = 0; i < playerNum; i++) {
-      console.log(this.playerStyle[i].posX);
+      let infoLinePos = this.statInfoPos(paddingX + 2, paddingY + 6, i);
+      let playerLine = this.add.image(
+        infoLinePos!.x,
+        infoLinePos!.y,
+        this.playerStyle[i].backgroundLine,
+      );
+      scaleGameObject(playerLine, 0.5);
+      console.log(infoLinePos);
 
-      let playerInfo = this.add.text(
-        this.playerStyle[i].posX,
-        this.playerStyle[i].posY,
+      let infoTextPos = this.statInfoPos(paddingX, paddingY, i);
+      let playerInfoText = this.add.text(
+        infoTextPos!.x,
+        infoTextPos!.y,
         'Player1',
         {
           fontFamily: 'Arial Black',
@@ -271,14 +285,59 @@ export class BoardScene extends Scene {
           color: this.playerStyle[i].color,
         },
       );
-      playerInfo.setOrigin(0.5, 0.5);
-      playerInfo
+      playerInfoText.setOrigin(0.5, 0.5);
+      playerInfoText
         .setStroke(this.playerStyle[i].color, 16)
         .setShadow(2, 2, '#fff', 2, true, true);
+      scaleGameObject(playerInfoText);
+      this.playerInfoGroup.add(playerInfoText);
 
-      scaleGameObject(playerInfo);
-      this.playerInfoGroup.add(playerInfo);
+      let infoImgPos = this.statInfoPos(paddingX + 12, paddingY + 2, i);
+      let playerImg = this.add.image(
+        infoImgPos!.x,
+        infoImgPos!.y,
+        this.playerStyle[i].img,
+      );
     }
+  }
+
+  private statInfoPos(
+    paddingx: number,
+    paddingy: number,
+    index: number,
+  ): LandPos | undefined {
+    let ret: LandPos | undefined;
+    switch (index) {
+      case 0:
+        ret = {
+          x: width(paddingx),
+          y: height(paddingy),
+          type: 'top-left',
+        };
+        break;
+      case 1:
+        ret = {
+          x: gameWidth - width(paddingx),
+          y: gameHeight - height(paddingy),
+          type: 'bottom-right',
+        };
+        break;
+      case 2:
+        ret = {
+          x: gameWidth - width(paddingx),
+          y: height(paddingy),
+          type: 'top-right',
+        };
+        break;
+      case 3:
+        ret = {
+          x: width(paddingx),
+          y: gameHeight - height(paddingy),
+          type: 'bottom-left',
+        };
+        break;
+    }
+    return ret;
   }
 
   private createDice = (): void => {
@@ -358,10 +417,12 @@ export class BoardScene extends Scene {
       controlPoint2,
       endPoint,
     );
-    this.bezierGraphics.y = 0;
+    this.bezierGraphics.x = 0.02 * gameWidth;
+    this.bezierGraphics.y = -0.05 * gameHeight;
     this.bezierGraphics.clear();
     this.bezierGraphics.lineStyle(4, 0xffffff);
     this.bezierCurve.draw(this.bezierGraphics);
+    this.bezierGraphics.setDepth(50);
     let tweenValue = {
       value: 0,
       previousValue: 0,
