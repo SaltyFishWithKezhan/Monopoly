@@ -17,7 +17,7 @@ import './style.less';
 export interface LandPos {
   x: number;
   y: number;
-  type: string | undefined;
+  type: string;
 }
 
 export class BoardScene extends Scene {
@@ -144,7 +144,7 @@ export class BoardScene extends Scene {
   }
 
   preload(): void {
-    this.load.pack('board', 'data/asset-pack.json', null, this);
+    this.load.pack('board', 'data/asset-pack.json', undefined, this);
     // this.load.image('green-block', 'assets/green-block.png');
     this.load.json({
       key: 'board-pos',
@@ -211,7 +211,7 @@ export class BoardScene extends Scene {
     this.boardPosList[count * 2].type = 'jail';
     this.boardPosList[count].type = 'parking';
     this.boardPosList[count * 3].type = 'parking';
-    console.log(this.boardPosList);
+    console.info(this.boardPosList);
     // this.load.saveJSON(boardJson, 'file/test.json');
   }
 
@@ -265,23 +265,23 @@ export class BoardScene extends Scene {
     let paddingY = 5;
 
     for (let i = 0; i < playerNum; i++) {
-      let infoLinePos = this.statInfoPos(paddingX + 2, paddingY + 6, i);
+      let infoLinePos = this.statInfoPos(paddingX, paddingY + 4, i);
       let playerLine = this.add.image(
         infoLinePos!.x,
         infoLinePos!.y,
         this.playerStyle[i].backgroundLine,
       );
       scaleGameObject(playerLine, 0.5);
-      console.log(infoLinePos);
+      console.info(infoLinePos);
 
-      let infoTextPos = this.statInfoPos(paddingX, paddingY, i);
+      let infoTextPos = this.statInfoPos(paddingX - 1, paddingY + 10, i);
       let playerInfoText = this.add.text(
         infoTextPos!.x,
         infoTextPos!.y,
         'Player1',
         {
           fontFamily: 'Arial Black',
-          fontSize: 74,
+          fontSize: 60,
           color: this.playerStyle[i].color,
         },
       );
@@ -292,12 +292,29 @@ export class BoardScene extends Scene {
       scaleGameObject(playerInfoText);
       this.playerInfoGroup.add(playerInfoText);
 
-      let infoImgPos = this.statInfoPos(paddingX + 12, paddingY + 2, i);
+      let infoMoneyPos = this.statInfoPos(paddingX - 1, paddingY - 1, i);
+      let playerMoney = this.add.text(
+        infoMoneyPos!.x,
+        infoMoneyPos!.y,
+        '¥4599',
+        {
+          fontFamily: 'Arial Black',
+          fontSize: 60,
+          color: this.playerStyle[i].color,
+        },
+      );
+      playerMoney.setOrigin(0.5, 0.5);
+      playerMoney.setStroke('#fff', 16).setShadow(2, 2, '#fff', 2, true, true);
+      scaleGameObject(playerMoney);
+      // this.playerInfoGroup.add(playerInfoText);
+
+      let infoImgPos = this.statInfoPos(paddingX + 10, paddingY + 2, i);
       let playerImg = this.add.image(
         infoImgPos!.x,
         infoImgPos!.y,
         this.playerStyle[i].img,
       );
+      scaleGameObject(playerImg, 1);
     }
   }
 
@@ -348,7 +365,7 @@ export class BoardScene extends Scene {
     $('#game-playground').append(
       `<div id="area"
        style=" width: ${width(30)}px;
-              height: ${height(28)}px;">
+              height: ${height(22)}px;">
         <div id="dice-area"></div>
         <div id="operation">
         <button id="roll-btn"
@@ -373,14 +390,14 @@ export class BoardScene extends Scene {
       this.myDice.roll(faceValue);
       this.playerJump(this.i); // for test
       this.i = (this.i + 1) % ((this.gameOptions.landCount - 1) * 4);
-      console.log(this.boardPosList[this.i]);
+      console.info(this.boardPosList[this.i]);
     });
   };
 
   private playerJump = (pos: number): void => {
     // for (let i = 0; i < (this.gameOptions.landCount - 1) * 4 - 1; i++) {
-    console.log(this.boardPosList[pos]);
-    console.log(this.boardPosList[pos + 1]);
+    console.info(this.boardPosList[pos]);
+    console.info(this.boardPosList[pos + 1]);
     let start = {
       x: this.boardPosList[pos].x * gameWidth,
       y: this.boardPosList[pos].y * gameHeight,
@@ -401,7 +418,7 @@ export class BoardScene extends Scene {
     let endPoint = new Phaser.Math.Vector2(end.x, end.y);
     let stepX = end.x - start.x;
     let stepY = end.y - start.y;
-    console.log(start.x);
+    console.info(start.x);
     let marker = this.playerGroup.getChildren()[0] as Phaser.GameObjects.Image;
     let controlPoint1 = new Phaser.Math.Vector2(
       marker.x + (stepX * 2) / 3,
