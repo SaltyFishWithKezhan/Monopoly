@@ -158,6 +158,20 @@ export class ModelService {
     return map.get(model.id)! as any;
   }
 
+  updateModelFromTransfers<T extends keyof ModelMaps>(
+    type: T,
+    transferModels: TransferModel<T>[],
+  ): ModelByMapKey<T>[] {
+    let result: ModelByMapKey<T>[] = [];
+
+    for (let transfer of transferModels) {
+      let model = this.updateModelFromTransfer(type, transfer);
+      result.push(model);
+    }
+
+    return result;
+  }
+
   removeModel<T extends keyof ModelMaps>(type: T, id: string): boolean {
     if (!(type in this.modelMaps)) {
       throw new Error(`Model type '${type}' is unknown`);

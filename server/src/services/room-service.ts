@@ -13,6 +13,8 @@ declare global {
 }
 
 export class RoomService {
+  private io = this.socketService.io;
+
   constructor(
     private socketService: SocketService,
     private modelService: Shared.ModelService,
@@ -65,13 +67,16 @@ export class RoomService {
 
       socket.join(room.getRoomURL());
 
-      socket.emit('room:success', 'room:join', Shared.packModel(room));
-      socket
-        .to(room.getRoomURL())
+      let ids = room.getPlayerIds();
+
+      let players = this.modelService.getModelsByIds('player', ids);
+
+      this.io
+        .in(room.getRoomURL())
         .emit(
           'room:player-join',
           Shared.packModel(room),
-          Shared.packModel(socket.player),
+          Shared.packModels(players),
         );
     });
   }
