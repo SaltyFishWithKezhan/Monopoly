@@ -53,6 +53,12 @@ export class Room extends Model {
     this.data.players.push(playerId);
   }
 
+  hasPlayer(playerId: string): boolean {
+    let {players} = this.data;
+
+    return players.includes(playerId);
+  }
+
   removePlayer(playerId: string): boolean {
     let index = this.data.players.indexOf(playerId);
 
