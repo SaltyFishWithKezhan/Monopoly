@@ -265,7 +265,7 @@ export class BoardScene extends Scene {
     let paddingY = 5;
 
     for (let i = 0; i < playerNum; i++) {
-      let infoLinePos = this.statInfoPos(paddingX + 2, paddingY + 6, i);
+      let infoLinePos = this.statInfoPos(paddingX, paddingY + 4, i);
       let playerLine = this.add.image(
         infoLinePos!.x,
         infoLinePos!.y,
@@ -274,14 +274,14 @@ export class BoardScene extends Scene {
       scaleGameObject(playerLine, 0.5);
       console.log(infoLinePos);
 
-      let infoTextPos = this.statInfoPos(paddingX, paddingY, i);
+      let infoTextPos = this.statInfoPos(paddingX - 1, paddingY + 10, i);
       let playerInfoText = this.add.text(
         infoTextPos!.x,
         infoTextPos!.y,
         'Player1',
         {
           fontFamily: 'Arial Black',
-          fontSize: 74,
+          fontSize: 60,
           color: this.playerStyle[i].color,
         },
       );
@@ -292,7 +292,23 @@ export class BoardScene extends Scene {
       scaleGameObject(playerInfoText);
       this.playerInfoGroup.add(playerInfoText);
 
-      let infoImgPos = this.statInfoPos(paddingX + 12, paddingY + 2, i);
+      let infoMoneyPos = this.statInfoPos(paddingX - 1, paddingY - 1, i);
+      let playerMoney = this.add.text(
+        infoMoneyPos!.x,
+        infoMoneyPos!.y,
+        '¥4599',
+        {
+          fontFamily: 'Arial Black',
+          fontSize: 60,
+          color: this.playerStyle[i].color,
+        },
+      );
+      playerMoney.setOrigin(0.5, 0.5);
+      playerMoney.setStroke('#fff', 16).setShadow(2, 2, '#fff', 2, true, true);
+      scaleGameObject(playerMoney);
+      // this.playerInfoGroup.add(playerInfoText);
+
+      let infoImgPos = this.statInfoPos(paddingX + 10, paddingY + 2, i);
       let playerImg = this.add.image(
         infoImgPos!.x,
         infoImgPos!.y,
@@ -348,7 +364,7 @@ export class BoardScene extends Scene {
     $('#game-playground').append(
       `<div id="area"
        style=" width: ${width(30)}px;
-              height: ${height(28)}px;">
+              height: ${height(22)}px;">
         <div id="dice-area"></div>
         <div id="operation">
         <button id="roll-btn"
