@@ -218,6 +218,14 @@ export class BoardScene extends Scene {
       this.notCurrentPlayer();
     }
 
+    this.input.on(
+      'gameobjectup',
+      (_pointer: any, gameObject: any) => {
+        gameObject.emit('click', gameObject);
+      },
+      this,
+    );
+
     // register call backs
     gameService.onMoveOnGoLand(player => {
       console.log(playerService.player);
@@ -248,6 +256,7 @@ export class BoardScene extends Scene {
       ] as Phaser.GameObjects.Text;
       mdfPlayerMoney.setText(`¥${player.data.money}`);
       let landIndex = this.findLandIndexByModelId(land.id);
+      console.log('index!!!:::', landIndex);
       this.changeLand(landIndex, playerIndex);
     });
 
@@ -312,15 +321,27 @@ export class BoardScene extends Scene {
 
       let oldLandIndex = this.findLandIndexByModelId(oldLandId);
 
-      let newLandIndex = this.findLandIndexByModelId(player.getLand().id);
+      let newLandIndex = this.findLandIndexByModelId(
+        currentPlayer.getLand().id,
+      );
 
       let step = newLandIndex - oldLandIndex;
 
       step = step < 0 ? gameService.board!.getLands().length + step : step;
 
-      let playerIndex = this.findPlayerIndexByPlayerName(player.id);
+      console.log('====================================');
+      console.log(
+        oldLandId,
+        oldLandIndex,
+        currentPlayer.getLand().id,
+        newLandIndex,
+        step,
+      );
+      console.log('====================================');
 
-      this.playerJump(playerIndex, oldLandIndex, step);
+      let playerIndex = this.findPlayerIndexByPlayerName(currentPlayer.id);
+
+      this.playerJump(playerIndex, oldLandIndex, step, false);
     });
 
     // this.rollDice(); // for test
@@ -406,7 +427,7 @@ export class BoardScene extends Scene {
 
   private changeLand(landNum: number, newOwnerIndex: number): void {
     let oldLand = this.landGroup.getChildren()[
-      newOwnerIndex
+      landNum
     ] as Phaser.GameObjects.Image;
     oldLand.setTexture(this.playerStyle[newOwnerIndex].land);
     // console.info(this.landGroup.getChildren());
@@ -553,16 +574,9 @@ export class BoardScene extends Scene {
         <div id="operation">
         <button id="roll-btn"
         style="margin: ${height(4)}px;
-               width: $
-{height(13.5)}
-px;
-
-               height: $
-
-{height(13.5 * 0.6)}
-
-px;"
-               ></button>
+               width: ${height(13.5)}px;
+               height: ${height(13.5 * 0.6)}px;"
+        ></button>
       </div>
     </div>
       `,
@@ -587,11 +601,16 @@ px;"
       // console.info(this.boardPosList[this.i]);
       let landIndex = this.i;
       // this.findLandIndexByModelId(this.player!.landId);
-      let endLand = this.playerJump(landIndex, faceValue);
+      let playerIndex = this.findPlayerIndexByPlayerName(
+        playerService.player!.id,
+      );
+      let endLand = this.playerJump(playerIndex, landIndex, faceValue);
       this.i = endLand;
       console.log(endLand);
 
-      this.landEvent(faceValue, endLand);
+      setTimeout(() => {
+        this.landEvent(faceValue, endLand);
+      }, 3000 + 1000 * faceValue);
     });
   };
 
@@ -620,6 +639,7 @@ px;"
     playerIndex: number,
     pos: number,
     step: number,
+    delay: boolean = true,
   ): number => {
     // pos init
     let nextPos = pos;
@@ -641,7 +661,7 @@ px;"
       this.time.delayedCall(
         1000 * (stepTurn - pos + 1),
         () => {
-          this.movePlayer(playerIndex, start, end);
+          this.movePlayer(playerIndex, start, end, delay);
         },
         [],
         this,
@@ -652,7 +672,12 @@ px;"
     return nextPos;
   };
 
-  private movePlayer = (playerIndex: number, start: any, end: any): void => {
+  private movePlayer = (
+    playerIndex: number,
+    start: any,
+    end: any,
+    delay: boolean = true,
+  ): void => {
     console.log(start);
     let startPoint = new Phaser.Math.Vector2(start.x, start.y);
     let endPoint = new Phaser.Math.Vector2(end.x, end.y);
@@ -692,7 +717,7 @@ px;"
       value: 1,
       duration: 800,
       callbackScope: this,
-      delay: 2500,
+      delay: delay ? 2500 : undefined,
       onComplete: () => {},
       onUpdate: (tween: Phaser.Tweens.TweenManager, target: any) => {
         let position = bezierCurve.getPoint(target.value);
@@ -727,17 +752,30 @@ px;"
     this.decisionGroup.add(decisionHint);
 
     let decisionBtnYes = this.add.image(width(45), height(57), 'game-btn-yes');
-    decisionBtnYes.on('click', () => {
-      cb(true);
-    });
+
+    decisionBtnYes.setInteractive();
+    decisionBtnYes.on(
+      'click',
+      () => {
+        this.closeDecision();
+        cb(true);
+      },
+      this,
+    );
     scaleGameObject(decisionBtnYes, 0);
     decisionBtnYes.setDepth(30);
     this.decisionGroup.add(decisionBtnYes);
 
     let decisionBtnNo = this.add.image(width(55), height(57), 'game-btn-no');
-    decisionBtnNo.on('click', () => {
-      cb(false);
-    });
+    decisionBtnNo.setInteractive();
+    decisionBtnNo.on(
+      'click',
+      () => {
+        this.closeDecision();
+        cb(false);
+      },
+      this,
+    );
     scaleGameObject(decisionBtnNo, 0);
     decisionBtnNo.setDepth(30);
     this.decisionGroup.add(decisionBtnNo);
@@ -818,33 +856,28 @@ px;"
   }
 
   private isCurrentPlayer(): void {
+    this.closeStatus();
     $('#area').show();
   }
 
   private notCurrentPlayer(): void {
     this.popupStatus(
-      `$
-
-{this.playerNames![this.currentPlayerId!]}\
-
-n正在进行游戏,请稍等`,
+      `${this.playerNames![this.currentPlayerId!]}\n正在进行游戏,请稍等`,
     );
   }
 
   private landEvent(step: number, pos: number): void {
+    let landType = this.board![pos].type;
     let landId = this.board![pos].id;
-    let land = modelService.getModelById('constructionLand', landId);
 
-    if (!land) {
-      throw new Error(`Construction land $
-
-{landId}
-
- doesn't exist`);
-    }
-
-    switch (land.getType()) {
+    switch (landType) {
       case LandType.construction:
+        let land = modelService.getModelById('constructionLand', landId);
+
+        if (!land) {
+          throw new Error(`Construction land ${landId} doesn't exist`);
+        }
+
         this.checkLandAndPopupOptions(step, land);
         break;
       default:
@@ -860,7 +893,7 @@ n正在进行游戏,请稍等`,
       // Can upgrade
       if (land.getLevel() < 2 && land.getUpgradePrice() < player.getMoney()) {
         this.popupDecision(
-          `您可以花$${land.getUpgradePrice()}升级房屋到${land.getLevel() +
+          `您可以花$${land.getUpgradePrice()}升级房\n屋到${land.getLevel() +
             1}级，是否升级？`,
           yes => {
             if (yes) {
@@ -876,7 +909,7 @@ n正在进行游戏,请稍等`,
     } else {
       if (land.getLevel() < 2 && land.getPrice() < player.getMoney()) {
         this.popupDecision(
-          `您可以花$${land.getPrice()}来购买该房屋，是否购买？`,
+          `您可以花$${land.getPrice()}来购买该房屋，\n是否购买？`,
           yes => {
             if (yes) {
               gameService.diceAndDecide(step, 'buy');

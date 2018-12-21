@@ -28,7 +28,7 @@ export class GameService {
     this.initialize();
   }
 
-  startGame(cb: (game: Game, board: Board) => void): void {
+  startGame(): void {
     this.io.emit('game:start');
   }
 
@@ -38,6 +38,10 @@ export class GameService {
 
   diceAndDecide(diceValue: number, ...args: any[]): void {
     this.io.emit('game:dice-and-decide', diceValue, ...args);
+  }
+
+  onGameStart(cb: (game: Game, board: Game) => void): void {
+    this.ee.on('game-start', cb);
   }
 
   onDiceRolled(cb: (oldLandId: string, player: Player) => void): void {

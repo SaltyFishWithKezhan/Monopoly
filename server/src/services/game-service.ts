@@ -59,6 +59,8 @@ export class GameService {
 
       let board = new Board();
 
+      game.setBoard(board.id);
+
       // Normal Map
       createNormalBoardLands(this.modelService, board);
 
@@ -162,6 +164,10 @@ export class GameService {
 
       if (currentPlayer.isInJail()) {
         return;
+      }
+
+      if (!board) {
+        throw new Error(`BoardId ${boardId} not found!`);
       }
 
       let landInfo = board.getNextLand(oldLandInfo, diceValue)!;

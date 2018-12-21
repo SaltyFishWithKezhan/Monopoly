@@ -29,7 +29,6 @@ export class RoomService extends PromisePool {
 
   joinRoom(room: string, cb: (room: Room, players: Player[]) => void): void {
     this.ee.on('join-room', cb);
-    this.ee.on('game-start', cb);
 
     this.io.emit('room:join', room);
   }

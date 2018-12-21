@@ -144,6 +144,10 @@ export class RoomScene extends Scene {
         );
       }
     });
+
+    gameService.onGameStart(() => {
+      this.scene.switch('BoardScene');
+    });
   };
 
   private onSceneDestroy = (): void => {
@@ -151,9 +155,7 @@ export class RoomScene extends Scene {
   };
 
   private onStartGame = (): void => {
-    gameService.startGame(() => {
-      this.scene.switch('BoardScene');
-    });
+    gameService.startGame();
   };
 
   private destroyLoginForm(): void {
