@@ -14,6 +14,7 @@ import {
   isConstructionLand,
   isGoLand,
   isJailLand,
+  isParkingLand,
   packModel,
   packModels,
 } from 'shared';
@@ -164,10 +165,6 @@ export class GameService {
         return;
       }
 
-      this.io
-        .in(room.getRoomURL())
-        .emit('game:roll-the-dice', currentPlayerId, diceValue);
-
       let landInfo = board.getNextLand(oldLandInfo, diceValue)!;
 
       let landModel = this.modelService.getModelById(
@@ -176,6 +173,10 @@ export class GameService {
       )!;
 
       currentPlayer.setLand(landModel.getLandInfo());
+
+      this.io
+        .in(room.getRoomURL())
+        .emit('game:roll-the-dice', packModel(currentPlayer));
 
       if (isGoLand(landModel)) {
         this.playerMoveOnGoLand(socket, room, currentPlayer, landModel);
