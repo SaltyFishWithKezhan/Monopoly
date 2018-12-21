@@ -219,13 +219,24 @@ export class BoardScene extends Scene {
       console.log(playerService.player);
     });
 
-    gameService.onBailJail(player => {});
+    gameService.onBailJail(player => {
+      let index = this.findPlayerIndexByPlayerName(player.id);
+      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[index] as Phaser.GameObjects.Text;
+      mdfPlayerMoney.setText(`¥${player.data.money}`);
+    });
 
-    gameService.onServeJail(player => {});
+    gameService.onServeJail(player => {
+    });
 
-    gameService.onMoveConRent(player => {});
+    gameService.onMoveConRent(player => {
+      let index = this.findPlayerIndexByPlayerName(player.id);
+      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[index] as Phaser.GameObjects.Text;
+      mdfPlayerMoney.setText(`¥${player.data.money}`);
+    });
 
-    gameService.onMoveConBuy((player, land) => {});
+    gameService.onMoveConBuy((player, land) => {
+
+    });
 
     gameService.onMoveConUpgrade((player, land) => {});
 
@@ -410,13 +421,13 @@ export class BoardScene extends Scene {
         .setStroke(this.playerStyle[i].color, 4)
         .setShadow(2, 2, '#fff', 8, true, true);
       scaleGameObject(playerInfoText);
-      this.playerInfoGroup.add(playerInfoText);
+      // this.playerInfoGroup.add(playerInfoText);
 
       let infoMoneyPos = this.statInfoPos(paddingX - 1, paddingY - 1, i);
       let playerMoney = this.add.text(
         infoMoneyPos!.x,
         infoMoneyPos!.y,
-        concatStrNum('¥', this.playerDetails![i].data.money),
+        `¥${this.playerDetails![i].data.money}`,
         {
           fontFamily: 'Arial Black',
           fontSize: 60,
@@ -426,7 +437,7 @@ export class BoardScene extends Scene {
       playerMoney.setOrigin(0.5, 0.5);
       playerMoney.setStroke('#fff', 16).setShadow(2, 2, '#fff', 2, true, true);
       scaleGameObject(playerMoney);
-      // this.playerInfoGroup.add(playerInfoText);
+      this.playerInfoGroup.add(playerMoney);
 
       let infoImgPos = this.statInfoPos(paddingX + 10, paddingY + 2, i);
       let playerImg = this.add.image(
@@ -490,8 +501,15 @@ export class BoardScene extends Scene {
         <div id="operation">
         <button id="roll-btn"
         style="margin: ${height(4)}px;
-               width: ${height(13.5)}px;
-               height: ${height(13.5 * 0.6)}px;"
+               width: $
+{height(13.5)}
+px;
+
+               height: $
+
+{height(13.5 * 0.6)}
+
+px;"
                ></button>
       </div>
     </div>
@@ -528,6 +546,16 @@ export class BoardScene extends Scene {
   private findLandIndexByModelId = (modelId: string): number => {
     for (let index = 0; index < this.board!.length; index++) {
       if (this.board![index].id === modelId) {
+        return index;
+      }
+    }
+
+    return -1;
+  };
+
+  private findPlayerIndexByPlayerName = (modelId: string): number => {
+    for (let index = 0; index < this.playerNames!.length; index++) {
+      if (this.playerNames![index] === modelId) {
         return index;
       }
     }
@@ -739,7 +767,11 @@ export class BoardScene extends Scene {
 
   private notCurrentPlayer(): void {
     this.popupStatus(
-      `${this.playerNames![this.currentPlayerId!]}\n正在进行游戏,请稍等`,
+      `$
+
+{this.playerNames![this.currentPlayerId!]}\
+
+n正在进行游戏,请稍等`,
     );
   }
 
@@ -748,10 +780,18 @@ export class BoardScene extends Scene {
     let land = modelService.getModelById('constructionLand', landId);
 
     if (!land) {
-      throw new Error(`Construction land ${landId} doesn't exist`);
+      throw new Error(`Construction land $
+
+{landId}
+
+ doesn't exist`);
     }
 
-    switch (land.getType()) {
+    switch (land.getType
+
+())
+
+ {
       case LandType.construction:
         this.checkLandAndPopupOptions(step, land);
         break;
@@ -761,10 +801,14 @@ export class BoardScene extends Scene {
     }
   }
 
-  private checkLandAndPopupOptions(step: number, land: ConstructionLand): void {
+  private
+
+ checkLandAndPopupOptions(step: number, land: ConstructionLand): void {
     let player = playerService.player!;
 
-    if (land.getOwner() === player.id) {
+    if (land.getOwner() === player.id)
+
+ {
       // Can upgrade
       if (land.getLevel() < 2 && land.getUpgradePrice() < player.getMoney()) {
         this.popupDecision(
@@ -781,7 +825,9 @@ export class BoardScene extends Scene {
       } else {
         gameService.diceAndDecide(step, 'pass');
       }
-    } else {
+    } else
+
+ {
       if (land.getLevel() < 2 && land.getPrice() < player.getMoney()) {
         this.popupDecision(
           `您可以花$${land.getPrice()}来购买该房屋，是否购买？`,
@@ -795,5 +841,6 @@ export class BoardScene extends Scene {
         );
       }
     }
+
   }
 }
