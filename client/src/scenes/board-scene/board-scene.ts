@@ -1,8 +1,8 @@
 import 'animate.css';
 
 import $ from 'jquery';
-import {GameObjects, Scene} from 'phaser';
-import {Board, Land, LandInfo, LandType, Player, PlayerData} from 'shared';
+import {Scene} from 'phaser';
+import {ConstructionLand, LandInfo, LandType, Player, PlayerData} from 'shared';
 
 import {
   gameService,
@@ -13,7 +13,6 @@ import {
   gameHeight,
   gameWidth,
   height,
-  ratio,
   scale,
   scaleGameObject,
   width,
@@ -175,7 +174,7 @@ export class BoardScene extends Scene {
   }
 
   preload(): void {
-    this.load.pack('board', 'data/asset-pack.json', undefined, this);
+    this.load.pack('board', 'data/asset-pack.json', undefined, this as any);
     // this.load.image('green-block', 'assets/green-block.png');
     // this.load.json({
     //   key: 'board-pos',
@@ -470,7 +469,7 @@ export class BoardScene extends Scene {
       // this.i = (this.i + 1) % ((this.gameOptions.landCount - 1) * 4);
       // console.info(this.boardPosList[this.i]);
       let landIndex = this.i;
-      //this.findLandIndexByModelId(this.player!.landId);
+      // this.findLandIndexByModelId(this.player!.landId);
       let endLand = this.playerJump(landIndex, faceValue);
       this.i = endLand;
       console.log(endLand);
@@ -575,23 +574,18 @@ export class BoardScene extends Scene {
     });
   };
 
-  private popupDecision(): void {
+  private popupDecision(message: string, cb: (yes: boolean) => void): void {
     $('#area').hide();
     let decisionBox = this.add.image(width(50), height(49), 'decision-bg');
     decisionBox.setDepth(20);
     scaleGameObject(decisionBox, 0);
     this.decisionGroup.add(decisionBox);
 
-    let decisionHint = this.add.text(
-      width(50),
-      height(45),
-      '请问是否要花费\n¥120购买这块地?',
-      {
-        fontFamily: 'Arial Black',
-        fontSize: 100,
-        color: '#f1c50e',
-      },
-    );
+    let decisionHint = this.add.text(width(50), height(45), message, {
+      fontFamily: 'Arial Black',
+      fontSize: 100,
+      color: '#f1c50e',
+    });
     decisionHint.setOrigin(0.5, 0.5);
     decisionHint.setDepth(100);
     decisionHint.setStroke('#000', 15).setShadow(2, 2, '#222', 10, true, true);
@@ -602,16 +596,22 @@ export class BoardScene extends Scene {
     this.decisionGroup.add(decisionHint);
 
     let decisionBtnYes = this.add.image(width(45), height(57), 'game-btn-yes');
+    decisionBtnYes.on('click', () => {
+      cb(true);
+    });
     scaleGameObject(decisionBtnYes, 0);
     decisionBtnYes.setDepth(30);
     this.decisionGroup.add(decisionBtnYes);
 
     let decisionBtnNo = this.add.image(width(55), height(57), 'game-btn-no');
+    decisionBtnNo.on('click', () => {
+      cb(false);
+    });
     scaleGameObject(decisionBtnNo, 0);
     decisionBtnNo.setDepth(30);
     this.decisionGroup.add(decisionBtnNo);
 
-    let timeline = this.tweens.timeline({
+    this.tweens.timeline({
       targets: this.decisionGroup.getChildren(),
       ease: 'Sine.easeInOut',
       totalDuration: 300,
@@ -653,7 +653,7 @@ export class BoardScene extends Scene {
     scaleGameObject(statusHint, 0);
     this.statusGroup.add(statusHint);
 
-    let timeline = this.tweens.timeline({
+    this.tweens.timeline({
       targets: this.statusGroup.getChildren(),
       ease: 'Sine.easeInOut',
       totalDuration: 300,
@@ -697,21 +697,56 @@ export class BoardScene extends Scene {
   }
 
   private landEvent(step: number, pos: number): void {
-    let landType = this.board![pos].type;
-    switch (landType) {
-      case LandType.go:
-        gameService.diceAndDecide(step);
-        break;
+    let landId = this.board![pos].id;
+    let land = modelService.getModelById('constructionLand', landId);
+
+    if (!land) {
+      throw new Error(`Construction land ${landId} doesn't exist`);
+    }
+
+    switch (land.getType()) {
       case LandType.construction:
-        // need more logic
+        this.checkLandAndPopupOptions(step, land);
+        break;
+      default:
         gameService.diceAndDecide(step);
         break;
-      case LandType.jail:
-        gameService.diceAndDecide(step);
-        break;
-      case LandType.parking:
-        gameService.diceAndDecide(step);
-        break;
+    }
+  }
+
+  private checkLandAndPopupOptions(step: number, land: ConstructionLand): void {
+    let player = playerService.player!;
+
+    if (land.getOwner() === player.id) {
+      // Can upgrade
+      if (land.getLevel() < 2 && land.getUpgradePrice() < player.getMoney()) {
+        this.popupDecision(
+          `您可以花$${land.getUpgradePrice()}升级房屋到${land.getLevel() +
+            1}级，是否升级？`,
+          yes => {
+            if (yes) {
+              gameService.diceAndDecide(step, 'upgrade');
+            } else {
+              gameService.diceAndDecide(step, 'pass');
+            }
+          },
+        );
+      } else {
+        gameService.diceAndDecide(step, 'pass');
+      }
+    } else {
+      if (land.getLevel() < 2 && land.getPrice() < player.getMoney()) {
+        this.popupDecision(
+          `您可以花$${land.getPrice()}来购买该房屋，是否购买？`,
+          yes => {
+            if (yes) {
+              gameService.diceAndDecide(step, 'buy');
+            } else if (land.getOwner()) {
+              gameService.diceAndDecide(step, 'rent');
+            }
+          },
+        );
+      }
     }
   }
 }

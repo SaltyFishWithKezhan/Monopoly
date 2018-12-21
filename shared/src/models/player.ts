@@ -36,6 +36,10 @@ export class Player extends Model {
     this.data.money -= amount;
   }
 
+  getMoney(): number {
+    return this.data.money;
+  }
+
   isBroke(): boolean {
     return this.data.money <= 0;
   }

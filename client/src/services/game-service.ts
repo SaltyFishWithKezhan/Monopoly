@@ -31,15 +31,19 @@ export class GameService {
     this.io.emit('game:start');
   }
 
-  moveOnGoLand(cb: (player: Player) => void): void {
-    this.ee.on('game-on-go-land', cb);
+  serveJailTime(bail: true): void {
+    this.io.emit('game:serve-jail-time', bail);
   }
 
   diceAndDecide(diceValue: number, ...args: any[]): void {
     this.io.emit('game:dice-and-decide', diceValue, ...args);
   }
 
-  onMoveOnNextPlayer(cb:  => void): void {
+  onMoveOnGoLand(cb: (player: Player) => void): void {
+    this.ee.on('game-on-go-land', cb);
+  }
+
+  onMoveOnNextPlayer(cb: () => void): void {
     this.ee.on('game-next-player', cb);
   }
 
