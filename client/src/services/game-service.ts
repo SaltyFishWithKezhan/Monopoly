@@ -1,5 +1,11 @@
 import EventEmitter from 'eventemitter3';
-import {Board, Game, ModelService, TransferModel} from 'shared';
+import {
+  Board,
+  Game,
+  ModelService,
+  TransferModel,
+  ConstructionLandArrivalOperation,
+} from 'shared';
 
 import {SocketService} from './socket-service';
 
@@ -21,13 +27,17 @@ export class GameService {
   }
 
   startGame(cb: (game: Game, board: Board) => void): void {
-    this.io.emit('game:start');
-
     this.ee.on('game-start', cb);
+    this.io.emit('game:start');
   }
 
-  serveJailTime(bail: boolean): void {
-    this.io.emit('game:serve-jail-time', bail);
+  diceAndDecide(diceValue: number, ...args: any[]): void {
+    this.ee.on;
+    this.io.emit('game:dice-and-decide', diceValue, args);
+  }
+
+  onMoveOnNextPlayer(cb: () => void): void {
+    this.ee.on('game-next-player', cb);
   }
 
   private initialize(): void {
@@ -77,7 +87,7 @@ export class GameService {
       },
     );
 
-    this.io.on('game:step', (event: string, ...args: any[]) => {
+    this.io.on('game:game-step', (event: string, ...args: any[]) => {
       switch (event) {
         case 'bail-from-jail':
           this._onBailFromJail(args[0]);
@@ -122,7 +132,14 @@ export class GameService {
   private _onMoveOnConstructionLandAndUpgrade(
     playerTransfer: TransferModel<'player'>,
     landTransfer: TransferModel<'constructionLand'>,
-  ): void {}
+  ): void {
+    this.modelService.updateModelFromTransfer('player', playerTransfer);
+    this.modelService.updateModelFromTransfer('constructionLand', landTransfer);
+    this.ee.emit('game-');
+  }
 
-  private _onMoveOnNextPlayer(gameTransfer: TransferModel<'game'>): void {}
+  private _onMoveOnNextPlayer(gameTransfer: TransferModel<'game'>): void {
+    this.modelService.updateModelFromTransfer('game', gameTransfer);
+    this.ee.emit('game-next-player');
+  }
 }
