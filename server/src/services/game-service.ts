@@ -14,7 +14,6 @@ import {
   isConstructionLand,
   isGoLand,
   isJailLand,
-  isParkingLand,
   packModel,
   packModels,
 } from 'shared';
