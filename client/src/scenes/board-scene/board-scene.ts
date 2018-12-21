@@ -11,6 +11,7 @@ import {
   PlayerData,
 } from 'shared';
 
+import {game} from '../../main';
 import {
   gameService,
   modelService,
@@ -302,7 +303,25 @@ export class BoardScene extends Scene {
       }
     });
 
-    gameService.onDiceRolled(player => {});
+    gameService.onDiceRolled((oldLandId, currentPlayer) => {
+      let player = playerService.player!;
+
+      if (player.id === currentPlayer.id) {
+        return;
+      }
+
+      let oldLandIndex = this.findLandIndexByModelId(oldLandId);
+
+      let newLandIndex = this.findLandIndexByModelId(player.getLand().id);
+
+      let step = newLandIndex - oldLandIndex;
+
+      step = step < 0 ? gameService.board!.getLands().length + step : step;
+
+      let playerIndex = this.findPlayerIndexByPlayerName(player.id);
+
+      this.playerJump(playerIndex, oldLandIndex, step);
+    });
 
     // this.rollDice(); // for test
 
@@ -597,7 +616,11 @@ px;"
   };
 
   // this.playerJump(this.i); // for test
-  private playerJump = (pos: number, step: number): number => {
+  private playerJump = (
+    playerIndex: number,
+    pos: number,
+    step: number,
+  ): number => {
     // pos init
     let nextPos = pos;
 
@@ -615,10 +638,10 @@ px;"
 
       console.log(firstPos, nextPos);
 
-      let timedEvent = this.time.delayedCall(
+      this.time.delayedCall(
         1000 * (stepTurn - pos + 1),
         () => {
-          this.movePlayer(start, end);
+          this.movePlayer(playerIndex, start, end);
         },
         [],
         this,
@@ -629,7 +652,7 @@ px;"
     return nextPos;
   };
 
-  private movePlayer = (start: any, end: any): void => {
+  private movePlayer = (playerIndex: number, start: any, end: any): void => {
     console.log(start);
     let startPoint = new Phaser.Math.Vector2(start.x, start.y);
     let endPoint = new Phaser.Math.Vector2(end.x, end.y);
@@ -637,7 +660,7 @@ px;"
     let stepY = end.y - start.y;
     console.info(start.x);
     let marker = this.playerGroup.getChildren()[
-      this.currentPlayerId!
+      playerIndex
     ] as Phaser.GameObjects.Image;
     let controlPoint1 = new Phaser.Math.Vector2(
       start.x,
@@ -830,9 +853,7 @@ n正在进行游戏,请稍等`,
     }
   }
 
-  private;
-
-  checkLandAndPopupOptions(step: number, land: ConstructionLand): void {
+  private checkLandAndPopupOptions(step: number, land: ConstructionLand): void {
     let player = playerService.player!;
 
     if (land.getOwner() === player.id) {
