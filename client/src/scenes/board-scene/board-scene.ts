@@ -261,7 +261,15 @@ export class BoardScene extends Scene {
       }
     });
 
-    gameService.onDiceRolled(player => {});
+    gameService.onDiceRolled(currentPlayer => {
+      let player = playerService.player!;
+
+      if (player.id === currentPlayer.id) {
+        return;
+      }
+
+      this.movePlayer();
+    });
 
     // this.rollDice(); // for test
 
@@ -560,7 +568,7 @@ export class BoardScene extends Scene {
     return nextPos;
   };
 
-  private movePlayer = (start: any, end: any): void => {
+  private movePlayer = (playerIndex: number, start: any, end: any): void => {
     console.log(start);
     let startPoint = new Phaser.Math.Vector2(start.x, start.y);
     let endPoint = new Phaser.Math.Vector2(end.x, end.y);
@@ -568,7 +576,7 @@ export class BoardScene extends Scene {
     let stepY = end.y - start.y;
     console.info(start.x);
     let marker = this.playerGroup.getChildren()[
-      this.currentPlayerId!
+      playerIndex
     ] as Phaser.GameObjects.Image;
     let controlPoint1 = new Phaser.Math.Vector2(
       start.x,
