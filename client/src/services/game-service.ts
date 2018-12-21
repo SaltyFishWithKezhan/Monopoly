@@ -4,6 +4,7 @@ import {
   ConstructionLandArrivalOperation,
   Game,
   ModelService,
+  Player,
   TransferModel,
 } from 'shared';
 
@@ -27,18 +28,39 @@ export class GameService {
   }
 
   startGame(cb: (game: Game, board: Board) => void): void {
-    this.ee.on('game-start', cb);
     this.io.emit('game:start');
   }
 
-  // diceAndDecide(diceValue: number, ...args: any[]): void {
-  //   this.ee.on;
-  //   this.io.emit('game:dice-and-decide', diceValue, args);
+  moveOnGoLand(cb: (player: Player) => void): void {
+    this.ee.on('game-on-go-land', cb);
+  }
 
-  // }
+  diceAndDecide(diceValue: number, ...args: any[]): void {
+    this.io.emit('game:dice-and-decide', diceValue, ...args);
+  }
 
   onMoveOnNextPlayer(cb: () => void): void {
     this.ee.on('game-next-player', cb);
+  }
+
+  onServeJail(cb: () => void): void {
+    this.ee.on('game-bail-jail', cb);
+  }
+
+  onBailJail(cb: () => void): void {
+    this.ee.on('game-serve-jail', cb);
+  }
+
+  onMoveConRent(cb: () => void): void {
+    this.ee.on('game-cons-land-rent', cb);
+  }
+
+  onMoveConBuy(cb: () => void): void {
+    this.ee.on('game-cons-land-buy', cb);
+  }
+
+  onMoveConUpgrade(cb: () => void): void {
+    this.ee.on('game-cons-land-upgrade', cb);
   }
 
   private initialize(): void {
@@ -117,20 +139,36 @@ export class GameService {
     });
   }
 
-  private _onBailFromJail(playerTransfer: TransferModel<'player'>): void {}
+  private _onBailFromJail(playerTransfer: TransferModel<'player'>): void {
+    this.modelService.updateModelFromTransfer('player', playerTransfer);
+    this.ee.emit('game-bail-jail');
+  }
 
-  private _onServeJailTime(playerTransfer: TransferModel<'player'>): void {}
+  private _onServeJailTime(playerTransfer: TransferModel<'player'>): void {
+    this.modelService.updateModelFromTransfer('player', playerTransfer);
+    this.ee.emit('game-serve-jail');
+  }
 
-  private _onMoveOnGoLand(playerTransfer: TransferModel<'player'>): void {}
+  private _onMoveOnGoLand(playerTransfer: TransferModel<'player'>): void {
+    this.modelService.updateModelFromTransfer('player', playerTransfer);
+    this.ee.emit('game-on-go-land');
+  }
 
   private _onMoveOnConstructionLandAndRent(
     playerTransfer: TransferModel<'player'>,
-  ): void {}
+  ): void {
+    this.modelService.updateModelFromTransfer('player', playerTransfer);
+    this.ee.emit('game-cons-land-rent');
+  }
 
   private _onMoveOnConstructionLandAndBuy(
     playerTransfer: TransferModel<'player'>,
     landTransfer: TransferModel<'constructionLand'>,
-  ): void {}
+  ): void {
+    this.modelService.updateModelFromTransfer('player', playerTransfer);
+    this.modelService.updateModelFromTransfer('constructionLand', landTransfer);
+    this.ee.emit('game-cons-land-buy');
+  }
 
   private _onMoveOnConstructionLandAndUpgrade(
     playerTransfer: TransferModel<'player'>,
@@ -138,7 +176,7 @@ export class GameService {
   ): void {
     this.modelService.updateModelFromTransfer('player', playerTransfer);
     this.modelService.updateModelFromTransfer('constructionLand', landTransfer);
-    this.ee.emit('game-');
+    this.ee.emit('game-cons-land-upgrade');
   }
 
   private _onMoveOnNextPlayer(gameTransfer: TransferModel<'game'>): void {

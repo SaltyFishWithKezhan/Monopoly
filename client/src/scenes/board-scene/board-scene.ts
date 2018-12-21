@@ -2,7 +2,7 @@ import 'animate.css';
 
 import $ from 'jquery';
 import {GameObjects, Scene} from 'phaser';
-import {Board, LandInfo, Player, PlayerData} from 'shared';
+import {Board, Land, LandInfo, LandType, Player, PlayerData} from 'shared';
 
 import {
   gameService,
@@ -142,7 +142,7 @@ export class BoardScene extends Scene {
   private decisionGroup!: Phaser.GameObjects.Group;
   private statusGroup!: Phaser.GameObjects.Group;
 
-  private bezierGraphics: Phaser.GameObjects.Graphics;
+  private bezierGraphics!: Phaser.GameObjects.Graphics;
   // private player!:Phaser.GameObjects.Image;
   // private bezierCurve!: Phaser.Curves.CubicBezier;
   // private tween: Phaser.Tweens.Tween;
@@ -208,8 +208,18 @@ export class BoardScene extends Scene {
       this.notCurrentPlayer();
     }
 
-    // this.drawHouse(1, 1);// for test
+    // register call backs
+    gameService.moveOnGoLand(() => {
+      console.log(playerService.player);
+    });
 
+    gameService.onBailJail(() => {});
+
+    gameService.onServeJail(() => {});
+
+    gameService.onMoveConRent(() => {});
+
+    gameService.on;
     // this.rollDice(); // for test
 
     // this.playerJump(1); // for test
@@ -459,6 +469,8 @@ export class BoardScene extends Scene {
       let endLand = this.playerJump(landIndex, faceValue);
       this.i = endLand;
       console.log(endLand);
+
+      this.landEvent(faceValue, endLand);
     });
   };
 
@@ -615,23 +627,18 @@ export class BoardScene extends Scene {
     });
   }
 
-  private popupStatus(): void {
+  private popupStatus(text: string): void {
     $('#area').hide();
     let statusBox = this.add.image(width(50), height(49), 'decision-bg');
     statusBox.setDepth(20);
     scaleGameObject(statusBox, 0);
     this.statusGroup.add(statusBox);
 
-    let statusHint = this.add.text(
-      width(50),
-      height(50),
-      `${this.playerNames![this.currentPlayerId!]}\n正在进行游戏,请稍等`,
-      {
-        fontFamily: 'Arial Black',
-        fontSize: 100,
-        color: '#443f33',
-      },
-    );
+    let statusHint = this.add.text(width(50), height(50), text, {
+      fontFamily: 'Arial Black',
+      fontSize: 100,
+      color: '#443f33',
+    });
     statusHint.setOrigin(0.5, 0.5);
     statusHint.setDepth(100);
     statusHint.setStroke('#FFF', 10).setShadow(2, 2, '#222', 4, true, true);
@@ -679,42 +686,27 @@ export class BoardScene extends Scene {
   }
 
   private notCurrentPlayer(): void {
-    this.popupStatus();
+    this.popupStatus(
+      `${this.playerNames![this.currentPlayerId!]}\n正在进行游戏,请稍等`,
+    );
   }
 
-  private landEvent(pos:number):void{
+  private landEvent(step: number, pos: number): void {
     let landType = this.board![pos].type;
     switch (landType) {
-      // case "":
-      //   ret = {
-      //     x: width(paddingx),
-      //     y: height(paddingy),
-      //     type: 'top-left',
-      //   };
-      //   break;
-      // case "":
-      //   ret = {
-      //     x: gameWidth - width(paddingx),
-      //     y: gameHeight - height(paddingy),
-      //     type: 'bottom-right',
-      //   };
-      //   break;
-      // case "":
-      //   ret = {
-      //     x: gameWidth - width(paddingx),
-      //     y: height(paddingy),
-      //     type: 'top-right',
-      //   };
-      //   break;
-      // case "":
-      //   ret = {
-      //     x: width(paddingx),
-      //     y: gameHeight - height(paddingy),
-      //     type: 'bottom-left',
-      //   };
-      //   break;
+      case LandType.go:
+        gameService.diceAndDecide(step);
+        break;
+      case LandType.construction:
+        // need more logic
+        gameService.diceAndDecide(step);
+        break;
+      case LandType.jail:
+        gameService.diceAndDecide(step);
+        break;
+      case LandType.parking:
+        gameService.diceAndDecide(step);
+        break;
     }
   }
-
-
 }
