@@ -208,21 +208,23 @@ export class BoardScene extends Scene {
     }
 
     // register call backs
-    gameService.moveOnGoLand(() => {
+    gameService.onMoveOnGoLand(player => {
       console.log(playerService.player);
     });
 
-    gameService.onBailJail(() => {});
+    gameService.onBailJail(player => {});
 
-    gameService.onServeJail(() => {});
+    gameService.onServeJail(player => {});
 
-    gameService.onMoveConRent(() => {});
+    gameService.onMoveConRent(player => {});
 
-    gameService.onMoveConBuy(() => {});
+    gameService.onMoveConBuy((player, land) => {});
 
-    gameService.onMoveConUpgrade(() => {});
+    gameService.onMoveConUpgrade((player, land) => {});
 
-    gameService.onMoveOnNextPlayer(() => {});
+    gameService.onMoveOnNextPlayer(game => {});
+
+    gameService.onDiceRolled(player => {});
 
     // this.rollDice(); // for test
 

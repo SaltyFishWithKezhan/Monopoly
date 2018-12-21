@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import {
   Board,
+  ConstructionLand,
   ConstructionLandArrivalOperation,
   Game,
   ModelService,
@@ -39,31 +40,35 @@ export class GameService {
     this.io.emit('game:dice-and-decide', diceValue, ...args);
   }
 
+  onDiceRolled(cb: (player: Player) => void): void {
+    this.ee.on('dice-rolled', cb);
+  }
+
   onMoveOnGoLand(cb: (player: Player) => void): void {
     this.ee.on('game-on-go-land', cb);
   }
 
-  onMoveOnNextPlayer(cb: () => void): void {
+  onMoveOnNextPlayer(cb: (game: Game) => void): void {
     this.ee.on('game-next-player', cb);
   }
 
-  onServeJail(cb: () => void): void {
+  onServeJail(cb: (player: Player) => void): void {
     this.ee.on('game-bail-jail', cb);
   }
 
-  onBailJail(cb: () => void): void {
+  onBailJail(cb: (player: Player) => void): void {
     this.ee.on('game-serve-jail', cb);
   }
 
-  onMoveConRent(cb: () => void): void {
+  onMoveConRent(cb: (player: Player) => void): void {
     this.ee.on('game-cons-land-rent', cb);
   }
 
-  onMoveConBuy(cb: () => void): void {
+  onMoveConBuy(cb: (player: Player, land: ConstructionLand) => void): void {
     this.ee.on('game-cons-land-buy', cb);
   }
 
-  onMoveConUpgrade(cb: () => void): void {
+  onMoveConUpgrade(cb: (player: Player, land: ConstructionLand) => void): void {
     this.ee.on('game-cons-land-upgrade', cb);
   }
 
@@ -115,6 +120,14 @@ export class GameService {
         this.ee.emit('game-start', game, board);
       },
     );
+
+    this.io.on('game:roll-the-dice', (playerTrans: TransferModel<'player'>) => {
+      let player = this.modelService.updateModelFromTransfer(
+        'player',
+        playerTrans,
+      );
+      this.ee.emit('dice-rolled', player);
+    });
 
     this.io.on('game:game-step', (event: string, ...args: any[]) => {
       switch (event) {
