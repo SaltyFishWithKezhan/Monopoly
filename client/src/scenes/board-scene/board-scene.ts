@@ -194,6 +194,7 @@ export class BoardScene extends Scene {
     this.playerGroup = this.add.group();
     this.playerInfoGroup = this.add.group();
     this.decisionGroup = this.add.group();
+    this.statusGroup = this.add.group();
     this.bezierGraphics = this.add.graphics();
 
     this.createScene();
@@ -511,7 +512,9 @@ export class BoardScene extends Scene {
     let stepX = end.x - start.x;
     let stepY = end.y - start.y;
     console.info(start.x);
-    let marker = this.playerGroup.getChildren()[0] as Phaser.GameObjects.Image;
+    let marker = this.playerGroup.getChildren()[
+      this.currentPlayerId!
+    ] as Phaser.GameObjects.Image;
     let controlPoint1 = new Phaser.Math.Vector2(
       start.x,
       start.y - Math.abs((stepY * 2) / 3),
@@ -621,7 +624,7 @@ export class BoardScene extends Scene {
 
     let statusHint = this.add.text(
       width(50),
-      height(45),
+      height(50),
       `${this.playerNames![this.currentPlayerId!]}\n正在进行游戏,请稍等`,
       {
         fontFamily: 'Arial Black',
@@ -631,7 +634,7 @@ export class BoardScene extends Scene {
     );
     statusHint.setOrigin(0.5, 0.5);
     statusHint.setDepth(100);
-    statusHint.setStroke('#000', 15).setShadow(2, 2, '#222', 10, true, true);
+    statusHint.setStroke('#FFF', 10).setShadow(2, 2, '#222', 4, true, true);
     scaleGameObject(statusHint);
 
     statusHint.setDepth(30);

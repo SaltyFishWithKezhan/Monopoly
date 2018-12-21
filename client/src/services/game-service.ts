@@ -23,7 +23,7 @@ export class GameService {
   startGame(cb: (game: Game, board: Board) => void): void {
     this.io.emit('game:start');
 
-    this.ee.on('game-start', cb);
+
   }
 
   serveJailTime(bail: boolean): void {
