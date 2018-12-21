@@ -11,6 +11,7 @@ import {
   PlayerData,
 } from 'shared';
 
+import {game} from '../../main';
 import {
   gameService,
   modelService,
@@ -221,22 +222,23 @@ export class BoardScene extends Scene {
 
     gameService.onBailJail(player => {
       let index = this.findPlayerIndexByPlayerName(player.id);
-      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[index] as Phaser.GameObjects.Text;
+      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
+        index
+      ] as Phaser.GameObjects.Text;
       mdfPlayerMoney.setText(`¥${player.data.money}`);
     });
 
-    gameService.onServeJail(player => {
-    });
+    gameService.onServeJail(player => {});
 
     gameService.onMoveConRent(player => {
       let index = this.findPlayerIndexByPlayerName(player.id);
-      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[index] as Phaser.GameObjects.Text;
+      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
+        index
+      ] as Phaser.GameObjects.Text;
       mdfPlayerMoney.setText(`¥${player.data.money}`);
     });
 
-    gameService.onMoveConBuy((player, land) => {
-
-    });
+    gameService.onMoveConBuy((player, land) => {});
 
     gameService.onMoveConUpgrade((player, land) => {});
 
@@ -272,14 +274,24 @@ export class BoardScene extends Scene {
       }
     });
 
-    gameService.onDiceRolled(currentPlayer => {
+    gameService.onDiceRolled((oldLandId, currentPlayer) => {
       let player = playerService.player!;
 
       if (player.id === currentPlayer.id) {
         return;
       }
 
-      this.movePlayer();
+      let oldLandIndex = this.findLandIndexByModelId(oldLandId);
+
+      let newLandIndex = this.findLandIndexByModelId(player.getLand().id);
+
+      let step = newLandIndex - oldLandIndex;
+
+      step = step < 0 ? gameService.board!.getLands().length + step : step;
+
+      let playerIndex = this.findPlayerIndexByPlayerName(player.id);
+
+      this.playerJump(playerIndex, oldLandIndex, step);
     });
 
     // this.rollDice(); // for test
@@ -564,7 +576,11 @@ px;"
   };
 
   // this.playerJump(this.i); // for test
-  private playerJump = (pos: number, step: number): number => {
+  private playerJump = (
+    playerIndex: number,
+    pos: number,
+    step: number,
+  ): number => {
     // pos init
     let nextPos = pos;
 
@@ -582,10 +598,10 @@ px;"
 
       console.log(firstPos, nextPos);
 
-      let timedEvent = this.time.delayedCall(
+      this.time.delayedCall(
         1000 * (stepTurn - pos + 1),
         () => {
-          this.movePlayer(start, end);
+          this.movePlayer(playerIndex, start, end);
         },
         [],
         this,
@@ -787,11 +803,7 @@ n正在进行游戏,请稍等`,
  doesn't exist`);
     }
 
-    switch (land.getType
-
-())
-
- {
+    switch (land.getType()) {
       case LandType.construction:
         this.checkLandAndPopupOptions(step, land);
         break;
@@ -801,14 +813,10 @@ n正在进行游戏,请稍等`,
     }
   }
 
-  private
-
- checkLandAndPopupOptions(step: number, land: ConstructionLand): void {
+  private checkLandAndPopupOptions(step: number, land: ConstructionLand): void {
     let player = playerService.player!;
 
-    if (land.getOwner() === player.id)
-
- {
+    if (land.getOwner() === player.id) {
       // Can upgrade
       if (land.getLevel() < 2 && land.getUpgradePrice() < player.getMoney()) {
         this.popupDecision(
@@ -825,9 +833,7 @@ n正在进行游戏,请稍等`,
       } else {
         gameService.diceAndDecide(step, 'pass');
       }
-    } else
-
- {
+    } else {
       if (land.getLevel() < 2 && land.getPrice() < player.getMoney()) {
         this.popupDecision(
           `您可以花$${land.getPrice()}来购买该房屋，是否购买？`,
@@ -841,6 +847,5 @@ n正在进行游戏,请稍等`,
         );
       }
     }
-
   }
 }

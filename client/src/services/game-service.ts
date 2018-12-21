@@ -40,7 +40,7 @@ export class GameService {
     this.io.emit('game:dice-and-decide', diceValue, ...args);
   }
 
-  onDiceRolled(cb: (player: Player) => void): void {
+  onDiceRolled(cb: (oldLandId: string, player: Player) => void): void {
     this.ee.on('dice-rolled', cb);
   }
 
@@ -122,11 +122,16 @@ export class GameService {
     );
 
     this.io.on('game:roll-the-dice', (playerTrans: TransferModel<'player'>) => {
+      let oldPlayer = this.modelService.getModelById('player', playerTrans.id)!;
+
+      let oldLandId = oldPlayer.getLand().id;
+
       let player = this.modelService.updateModelFromTransfer(
         'player',
         playerTrans,
       );
-      this.ee.emit('dice-rolled', player);
+
+      this.ee.emit('dice-rolled', oldLandId, player);
     });
 
     this.io.on('game:game-step', (event: string, ...args: any[]) => {
