@@ -76,7 +76,7 @@ export class BoardScene extends Scene {
     },
     {
       offsetX: 0,
-      offsetY: -0.09,
+      offsetY: -0.08,
     },
     {
       offsetX: 0,
@@ -132,10 +132,12 @@ export class BoardScene extends Scene {
   private landGroup!: Phaser.GameObjects.Group;
   private playerGroup!: Phaser.GameObjects.Group;
   private playerInfoGroup!: Phaser.GameObjects.Group;
+  private decisionGroup!: Phaser.GameObjects.Group;
 
   private bezierGraphics: Phaser.GameObjects.Graphics;
   // private player!:Phaser.GameObjects.Image;
   private bezierCurve!: Phaser.Curves.CubicBezier;
+  private tween: Phaser.Tweens.Tween;
 
   private i: number = 0;
 
@@ -163,6 +165,7 @@ export class BoardScene extends Scene {
     this.landGroup = this.add.group();
     this.playerGroup = this.add.group();
     this.playerInfoGroup = this.add.group();
+    this.decisionGroup = this.add.group();
 
     this.bezierGraphics = this.add.graphics();
     // 计算board坐标
@@ -185,6 +188,12 @@ export class BoardScene extends Scene {
     // this.playerJump(1); // for test
 
     this.createPlayersInfo(4); // for test
+
+    this.popupDecision(); // for test
+  }
+
+  update(): void {
+    // Phaser.Actions.ScaleXY(this.decisionGroup.getChildren(), 5, 1, 2, 2);
   }
 
   private createScene(): void {}
@@ -254,7 +263,7 @@ export class BoardScene extends Scene {
       let y = (landPos.y + this.playerOffset[i].offsetY) * gameHeight;
       let player = this.add.image(x, y, playerName);
       scaleGameObject(player, 0.7);
-      player.setDepth(100);
+      player.setDepth(10);
       this.playerGroup.add(player);
     }
   }
@@ -287,7 +296,7 @@ export class BoardScene extends Scene {
       );
       playerInfoText.setOrigin(0.5, 0.5);
       playerInfoText
-        .setStroke(this.playerStyle[i].color, 16)
+        .setStroke(this.playerStyle[i].color, 8)
         .setShadow(2, 2, '#fff', 2, true, true);
       scaleGameObject(playerInfoText);
       this.playerInfoGroup.add(playerInfoText);
@@ -372,7 +381,7 @@ export class BoardScene extends Scene {
         style="margin: ${height(2)}px;
                width: ${height(15.5)}px;
                height: ${height(15.5 * 0.6)}px;"
-               >roll</button>
+               ></button>
       </div>
     </div>
       `,
@@ -439,7 +448,7 @@ export class BoardScene extends Scene {
     this.bezierGraphics.clear();
     this.bezierGraphics.lineStyle(4, 0xffffff);
     this.bezierCurve.draw(this.bezierGraphics);
-    this.bezierGraphics.setDepth(50);
+    this.bezierGraphics.setDepth(5);
     let tweenValue = {
       value: 0,
       previousValue: 0,
@@ -460,4 +469,63 @@ export class BoardScene extends Scene {
       },
     });
   };
+
+  private popupDecision(): void {
+    let decisionBox = this.add.image(
+      gameWidth / 2,
+      gameHeight / 2,
+      'decision-bg',
+    );
+    $('#area').hide();
+    decisionBox.setDepth(20);
+    scaleGameObject(decisionBox, 0);
+    this.decisionGroup.add(decisionBox);
+
+    let decisionHint = this.add.text(
+      width(50),
+      height(45),
+      '请问是否要花费\n¥120购买这块地?',
+      {
+        fontFamily: 'Arial Black',
+        fontSize: 20,
+        color: '#f00',
+      },
+    );
+    decisionHint.setOrigin(0.5, 0.5);
+    decisionHint.setDepth(100);
+    decisionHint.setStroke('#fff', 3).setShadow(2, 2, '#fff', 2, true, true);
+    scaleGameObject(decisionHint);
+    $('#area').hide();
+    decisionHint.setDepth(30);
+    scaleGameObject(decisionBox, 0);
+    this.decisionGroup.add(decisionHint);
+
+    let timeline = this.tweens.timeline({
+      targets: this.decisionGroup.getChildren(),
+      ease: 'Sine.easeInOut',
+      totalDuration: 400,
+      tweens: [
+        {
+          scaleX: 2.5,
+          scaleY: 2.5,
+        },
+        {
+          scaleX: 1.7,
+          scaleY: 1.7,
+        },
+        {
+          scaleX: 2,
+          scaleY: 2,
+        },
+      ],
+    });
+
+    this.closeDecision();
+  }
+
+  private closeDecision(): void {
+    this.decisionGroup.children.iterate(child => {
+      // child.setVisible(false);
+    }, 0);
+  }
 }
