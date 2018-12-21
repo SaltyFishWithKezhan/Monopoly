@@ -144,6 +144,12 @@
         "key": "red-bg",
         "url": "assets/red-bg.png",
         "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "decision-bg",
+        "url": "assets/decision-bg.png",
+        "overwrite": false
       }
     ]
   }
