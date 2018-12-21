@@ -8,6 +8,7 @@ import {
   gameWidth,
   height,
   ratio,
+  scale,
   scaleGameObject,
   width,
 } from '../../utils/ratio';
@@ -166,7 +167,6 @@ export class BoardScene extends Scene {
     this.playerGroup = this.add.group();
     this.playerInfoGroup = this.add.group();
     this.decisionGroup = this.add.group();
-
     this.bezierGraphics = this.add.graphics();
     // 计算board坐标
     this.analyseBoard();
@@ -471,11 +471,7 @@ export class BoardScene extends Scene {
   };
 
   private popupDecision(): void {
-    let decisionBox = this.add.image(
-      gameWidth / 2,
-      gameHeight / 2,
-      'decision-bg',
-    );
+    let decisionBox = this.add.image(width(50), height(49), 'decision-bg');
     $('#area').hide();
     decisionBox.setDepth(20);
     scaleGameObject(decisionBox, 0);
@@ -487,45 +483,53 @@ export class BoardScene extends Scene {
       '请问是否要花费\n¥120购买这块地?',
       {
         fontFamily: 'Arial Black',
-        fontSize: 20,
-        color: '#f00',
+        fontSize: 100,
+        color: '#f1c50e',
       },
     );
     decisionHint.setOrigin(0.5, 0.5);
     decisionHint.setDepth(100);
-    decisionHint.setStroke('#fff', 3).setShadow(2, 2, '#fff', 2, true, true);
+    decisionHint.setStroke('#000', 15).setShadow(2, 2, '#222', 10, true, true);
     scaleGameObject(decisionHint);
     $('#area').hide();
     decisionHint.setDepth(30);
     scaleGameObject(decisionBox, 0);
     this.decisionGroup.add(decisionHint);
 
-    let timeline = this.tweens.timeline({
+    let decisionBtnYes = this.add.image(width(45), height(57), 'game-btn-yes');
+    scaleGameObject(decisionBtnYes, 0);
+    decisionBtnYes.setDepth(30);
+    this.decisionGroup.add(decisionBtnYes);
+
+    let decisionBtnNo = this.add.image(width(55), height(57), 'game-btn-no');
+    scaleGameObject(decisionBtnNo, 0);
+    decisionBtnNo.setDepth(30);
+    this.decisionGroup.add(decisionBtnNo);
+
+    let btnTimeline = this.tweens.timeline({
       targets: this.decisionGroup.getChildren(),
       ease: 'Sine.easeInOut',
-      totalDuration: 400,
+      totalDuration: 300,
       tweens: [
         {
-          scaleX: 2.5,
-          scaleY: 2.5,
+          scaleX: scale(0.8),
+          scaleY: scale(0.8),
         },
         {
-          scaleX: 1.7,
-          scaleY: 1.7,
+          scaleX: scale(0.4),
+          scaleY: scale(0.4),
         },
         {
-          scaleX: 2,
-          scaleY: 2,
+          scaleX: scale(0.5),
+          scaleY: scale(0.5),
         },
       ],
     });
-
-    this.closeDecision();
   }
 
   private closeDecision(): void {
     this.decisionGroup.children.iterate(child => {
-      // child.setVisible(false);
+      child.setVisible(false);
     }, 0);
   }
 }

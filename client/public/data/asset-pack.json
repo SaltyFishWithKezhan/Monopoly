@@ -150,6 +150,42 @@
         "key": "decision-bg",
         "url": "assets/decision-bg.png",
         "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-yes",
+        "url": "assets/game-btn-yes.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-yes-hover",
+        "url": "assets/game-btn-yes-hover.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-yes-active",
+        "url": "assets/game-btn-yes-active.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-no",
+        "url": "assets/game-btn-no.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-no-hover",
+        "url": "assets/game-btn-no-hover.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-no-active",
+        "url": "assets/game-btn-no-active.png",
+        "overwrite": false
       }
     ]
   }
