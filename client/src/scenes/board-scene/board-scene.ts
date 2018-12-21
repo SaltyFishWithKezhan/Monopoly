@@ -218,7 +218,12 @@ export class BoardScene extends Scene {
 
     gameService.onMoveConRent(() => {});
 
-    gameService.on;
+    gameService.onMoveConBuy(() => {});
+
+    gameService.onMoveConUpgrade(() => {});
+
+    gameService.onMoveOnNextPlayer(() => {});
+
     // this.rollDice(); // for test
 
     // this.playerJump(1); // for test
