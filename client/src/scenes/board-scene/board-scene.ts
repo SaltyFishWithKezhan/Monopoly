@@ -2,7 +2,14 @@ import 'animate.css';
 
 import $ from 'jquery';
 import {Scene} from 'phaser';
-import {ConstructionLand, LandInfo, LandType, Player, PlayerData} from 'shared';
+import {
+  ConstructionLand,
+  LandInfo,
+  LandType,
+  LandTypeToModelTypeKey,
+  Player,
+  PlayerData,
+} from 'shared';
 
 import {
   gameService,
@@ -222,7 +229,37 @@ export class BoardScene extends Scene {
 
     gameService.onMoveConUpgrade((player, land) => {});
 
-    gameService.onMoveOnNextPlayer(game => {});
+    gameService.onMoveOnNextPlayer(game => {
+      let player = playerService.player!;
+
+      if (game.getCurrentPlayerId() === player.id) {
+        if (!player.isInJail()) {
+          this.isCurrentPlayer();
+          return;
+        }
+
+        let landInfo = player.getLand();
+
+        let jailLand = modelService.getModelById('jailLand', landInfo.id);
+
+        if (!jailLand) {
+          throw new Error(`JailLand ${landInfo.id} does not exist`);
+        }
+
+        if (jailLand.getBailPrice() >= player.getMoney()) {
+          gameService.serveJailTime(false);
+        } else {
+          this.popupDecision(
+            `您当前在监狱中，是否花$${jailLand.getBailPrice()}保释？`,
+            yes => {
+              gameService.serveJailTime(yes);
+            },
+          );
+        }
+      } else {
+        this.notCurrentPlayer();
+      }
+    });
 
     gameService.onDiceRolled(player => {});
 

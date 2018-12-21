@@ -32,7 +32,7 @@ export class GameService {
     this.io.emit('game:start');
   }
 
-  serveJailTime(bail: true): void {
+  serveJailTime(bail: boolean): void {
     this.io.emit('game:serve-jail-time', bail);
   }
 
