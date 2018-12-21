@@ -238,11 +238,13 @@ export class GameService {
           return;
         }
 
-        let price = land.getPrice();
+        if (land.data.owner) {
+          let rentPrice = land.getRentPrice();
 
-        if (player.data.money < price) {
-          return;
+          player.decreaseMoney(rentPrice);
         }
+
+        let price = land.getPrice();
 
         player.decreaseMoney(price);
         land.setOwner(player.id);
@@ -261,10 +263,6 @@ export class GameService {
         }
 
         let upgradePrice = land.getUpgradePrice();
-
-        if (player.data.money < upgradePrice) {
-          return;
-        }
 
         player.decreaseMoney(upgradePrice);
         land.upgrade();
