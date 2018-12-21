@@ -59,6 +59,10 @@ export class Room extends Model {
     return players.includes(playerId);
   }
 
+  isEmpty(): boolean {
+    return this.data.players.length === 0;
+  }
+
   removePlayer(playerId: string): boolean {
     let index = this.data.players.indexOf(playerId);
 
