@@ -73,6 +73,8 @@ export class GameService {
           parkingLandTransfers,
         );
 
+        console.info(game, board);
+
         this.ee.emit('game-start', game, board);
       },
     );
