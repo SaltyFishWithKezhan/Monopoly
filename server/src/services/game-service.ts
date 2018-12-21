@@ -297,6 +297,10 @@ export class GameService {
     let game = this.modelService.getModelById('game', gameId)!;
 
     game.moveOnToNextPlayer();
+
+    this.io
+      .in(room.getRoomURL())
+      .emit('game:game-step', 'move-on-next-player', packModel(game));
   }
 }
 
