@@ -1,10 +1,10 @@
 import EventEmitter from 'eventemitter3';
 import {
   Board,
+  ConstructionLandArrivalOperation,
   Game,
   ModelService,
   TransferModel,
-  ConstructionLandArrivalOperation,
 } from 'shared';
 
 import {SocketService} from './socket-service';
@@ -31,10 +31,11 @@ export class GameService {
     this.io.emit('game:start');
   }
 
-  diceAndDecide(diceValue: number, ...args: any[]): void {
-    this.ee.on;
-    this.io.emit('game:dice-and-decide', diceValue, args);
-  }
+  // diceAndDecide(diceValue: number, ...args: any[]): void {
+  //   this.ee.on;
+  //   this.io.emit('game:dice-and-decide', diceValue, args);
+
+  // }
 
   onMoveOnNextPlayer(cb: () => void): void {
     this.ee.on('game-next-player', cb);
@@ -82,6 +83,8 @@ export class GameService {
           'parkingLand',
           parkingLandTransfers,
         );
+
+        console.info(game, board);
 
         this.ee.emit('game-start', game, board);
       },

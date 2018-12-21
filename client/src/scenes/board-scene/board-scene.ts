@@ -2,7 +2,13 @@ import 'animate.css';
 
 import $ from 'jquery';
 import {GameObjects, Scene} from 'phaser';
+import {Board, LandInfo, Player, PlayerData} from 'shared';
 
+import {
+  gameService,
+  modelService,
+  playerService,
+} from '../../service-entrances';
 import {
   gameHeight,
   gameWidth,
@@ -23,7 +29,7 @@ export interface LandPos {
 
 export class BoardScene extends Scene {
   private gameOptions = {
-    landCount: 6,
+    landCount: 20,
     paddingX: width(10),
     paddingY: height(20),
   };
@@ -31,7 +37,7 @@ export class BoardScene extends Scene {
   // board 位置数组
   private boardPosList: LandPos[] = [];
 
-  private boardData: any;
+  // private boardData: any;
 
   private myDice: any | undefined;
 
@@ -134,25 +140,47 @@ export class BoardScene extends Scene {
   private playerGroup!: Phaser.GameObjects.Group;
   private playerInfoGroup!: Phaser.GameObjects.Group;
   private decisionGroup!: Phaser.GameObjects.Group;
+  private statusGroup!: Phaser.GameObjects.Group;
 
   private bezierGraphics: Phaser.GameObjects.Graphics;
   // private player!:Phaser.GameObjects.Image;
-  private bezierCurve!: Phaser.Curves.CubicBezier;
-  private tween: Phaser.Tweens.Tween;
+  // private bezierCurve!: Phaser.Curves.CubicBezier;
+  // private tween: Phaser.Tweens.Tween;
 
   private i: number = 0;
+
+  private player: PlayerData | undefined;
+  private board: LandInfo[] | undefined;
+  private playerNames: string[] | undefined; // name & id
+  private playerDetails: Player[] | undefined;
+  private currentPlayerId: number | undefined;
 
   constructor() {
     super({key: 'BoardScene'});
   }
 
+  init(): void {
+    console.info(gameService.board);
+    console.info(gameService.game);
+    console.info(playerService.player);
+    this.player = playerService.player!.data;
+    this.playerNames = gameService.game!.data.players;
+    this.board = gameService.board!.data.lands;
+    this.gameOptions.landCount = this.board.length;
+    this.playerDetails = modelService.getModelsByIds(
+      'player',
+      this.playerNames,
+    );
+    this.currentPlayerId = gameService.game!.data.currentPlayerIndex;
+  }
+
   preload(): void {
     this.load.pack('board', 'data/asset-pack.json', undefined, this);
     // this.load.image('green-block', 'assets/green-block.png');
-    this.load.json({
-      key: 'board-pos',
-      url: 'data/board.json',
-    });
+    // this.load.json({
+    //   key: 'board-pos',
+    //   url: 'data/board.json',
+    // });
 
     this.load.script('dice-script', '/js/dice.js');
     this.load.script(
@@ -162,44 +190,51 @@ export class BoardScene extends Scene {
   }
 
   create(): void {
-    this.createScene();
     this.landGroup = this.add.group();
     this.playerGroup = this.add.group();
     this.playerInfoGroup = this.add.group();
     this.decisionGroup = this.add.group();
+    this.statusGroup = this.add.group();
     this.bezierGraphics = this.add.graphics();
-    // 计算board坐标
-    this.analyseBoard();
-    this.boardData = this.cache.json.get('board-pos');
-    this.drawBoardFromJson();
+
+    this.createScene();
+
     this.createDice();
-    this.createPlayers(4);
+    this.onRollDice();
 
-    this.drawHouse(1, 1);
-    this.drawHouse(2, 2);
-    this.drawHouse(3, 3);
-    this.drawHouse(4, 4);
-    this.drawHouse(5, 5);
-    this.drawHouse(6, 6);
-    this.drawHouse(7, 7);
+    if (this.playerNames![this.currentPlayerId!] === playerService.player!.id) {
+      this.isCurrentPlayer();
+    } else {
+      this.notCurrentPlayer();
+    }
 
-    this.rollDice(6); // for test
+    // this.drawHouse(1, 1);// for test
+
+    // this.rollDice(); // for test
 
     // this.playerJump(1); // for test
 
-    this.createPlayersInfo(4); // for test
-
-    this.popupDecision(); // for test
+    // this.popupDecision(); // for test
   }
 
   update(): void {
     // Phaser.Actions.ScaleXY(this.decisionGroup.getChildren(), 5, 1, 2, 2);
   }
 
-  private createScene(): void {}
+  private createScene(): void {
+    this.createBoard();
+    this.createPlayersInfo(this.playerNames!.length);
+    this.createPlayers(this.playerNames!.length);
+  }
 
+  private createBoard(): void {
+    this.analyseBoard();
+    this.drawBoardFromJson();
+  }
+
+  // 计算board坐标
   private analyseBoard(): void {
-    let count = this.gameOptions.landCount - 1;
+    let count = this.gameOptions.landCount / 4;
     let offsetX = (gameWidth / 2 - this.gameOptions.paddingX) / count;
     let offsetY = (gameHeight / 2 - this.gameOptions.paddingY) / count;
     this.points.forEach(element => {
@@ -216,18 +251,27 @@ export class BoardScene extends Scene {
         this.boardPosList.push(posJson);
       }
     });
-    this.boardPosList[0].type = 'start';
-    this.boardPosList[count * 2].type = 'jail';
-    this.boardPosList[count].type = 'parking';
-    this.boardPosList[count * 3].type = 'parking';
+
+    for (let index = 0; index < this.board!.length; index++) {
+      switch (this.board![index].type) {
+        case 0:
+          this.boardPosList[index].type = 'start';
+          break;
+        case 1:
+          this.boardPosList[index].type = 'neutral';
+          break;
+        case 2:
+          this.boardPosList[index].type = 'jail';
+          break;
+        case 3:
+          this.boardPosList[index].type = 'parking';
+          break;
+      }
+    }
+
+    console.info('this.boardPosList');
     console.info(this.boardPosList);
     // this.load.saveJSON(boardJson, 'file/test.json');
-  }
-
-  private drawLand(x: number, y: number, image: string): void {
-    let land = this.add.image(x, y, image);
-    scaleGameObject(land, 6 / this.gameOptions.landCount);
-    this.landGroup.add(land);
   }
 
   private drawBoardFromJson(): void {
@@ -238,6 +282,13 @@ export class BoardScene extends Scene {
         element.type,
       );
     });
+  }
+
+  private drawLand(x: number, y: number, image: string): void {
+    let land = this.add.image(x, y, image);
+    scaleGameObject(land, 24 / this.gameOptions.landCount);
+    this.landGroup.add(land);
+    // console.info(this.landGroup.getChildren());
   }
 
   private drawHouse(landNum: number, houseNum: number): void {
@@ -258,10 +309,10 @@ export class BoardScene extends Scene {
     let landPos = this.boardPosList[0];
 
     for (let i = 0; i < playerNum; i++) {
-      let playerName = concatStrNum('player', i);
+      let playerImgName = concatStrNum('player', i);
       let x = (landPos.x + this.playerOffset[i].offsetX) * gameWidth;
       let y = (landPos.y + this.playerOffset[i].offsetY) * gameHeight;
-      let player = this.add.image(x, y, playerName);
+      let player = this.add.image(x, y, playerImgName);
       scaleGameObject(player, 0.7);
       player.setDepth(10);
       this.playerGroup.add(player);
@@ -281,13 +332,12 @@ export class BoardScene extends Scene {
         this.playerStyle[i].backgroundLine,
       );
       scaleGameObject(playerLine, 0.5);
-      console.info(infoLinePos);
-
+      // console.info(infoLinePos);
       let infoTextPos = this.statInfoPos(paddingX - 1, paddingY + 10, i);
       let playerInfoText = this.add.text(
         infoTextPos!.x,
         infoTextPos!.y,
-        'Player1',
+        this.playerNames![i],
         {
           fontFamily: 'Arial Black',
           fontSize: 60,
@@ -296,8 +346,8 @@ export class BoardScene extends Scene {
       );
       playerInfoText.setOrigin(0.5, 0.5);
       playerInfoText
-        .setStroke(this.playerStyle[i].color, 8)
-        .setShadow(2, 2, '#fff', 2, true, true);
+        .setStroke(this.playerStyle[i].color, 4)
+        .setShadow(2, 2, '#fff', 8, true, true);
       scaleGameObject(playerInfoText);
       this.playerInfoGroup.add(playerInfoText);
 
@@ -305,7 +355,7 @@ export class BoardScene extends Scene {
       let playerMoney = this.add.text(
         infoMoneyPos!.x,
         infoMoneyPos!.y,
-        '¥4599',
+        concatStrNum('¥', this.playerDetails![i].data.money),
         {
           fontFamily: 'Arial Black',
           fontSize: 60,
@@ -373,14 +423,14 @@ export class BoardScene extends Scene {
 
     $('#game-playground').append(
       `<div id="area"
-       style=" width: ${width(30)}px;
-              height: ${height(22)}px;">
+       style=" width: ${width(25)}px;
+              height: ${height(20)}px;">
         <div id="dice-area"></div>
         <div id="operation">
         <button id="roll-btn"
-        style="margin: ${height(2)}px;
-               width: ${height(15.5)}px;
-               height: ${height(15.5 * 0.6)}px;"
+        style="margin: ${height(4)}px;
+               width: ${height(13.5)}px;
+               height: ${height(13.5 * 0.6)}px;"
                ></button>
       </div>
     </div>
@@ -394,60 +444,97 @@ export class BoardScene extends Scene {
     // });
   };
 
-  private rollDice = (faceValue: number): void => {
+  private onRollDice = (): void => {
     $('#roll-btn').on('click', () => {
+      let faceValue = Math.ceil(Math.random() * 6);
       this.myDice.roll(faceValue);
-      this.playerJump(this.i); // for test
-      this.i = (this.i + 1) % ((this.gameOptions.landCount - 1) * 4);
-      console.info(this.boardPosList[this.i]);
+      console.info(faceValue);
+      // $('#roll-btn').attr('disabled', 'true');
+
+      // $('#roll-btn').removeAttr('disable');
+      // this.i = (this.i + 1) % ((this.gameOptions.landCount - 1) * 4);
+      // console.info(this.boardPosList[this.i]);
+      let landIndex = this.i;
+      //this.findLandIndexByModelId(this.player!.landId);
+      let endLand = this.playerJump(landIndex, faceValue);
+      this.i = endLand;
+      console.log(endLand);
     });
   };
 
-  private playerJump = (pos: number): void => {
-    // for (let i = 0; i < (this.gameOptions.landCount - 1) * 4 - 1; i++) {
-    console.info(this.boardPosList[pos]);
-    console.info(this.boardPosList[pos + 1]);
-    let start = {
-      x: this.boardPosList[pos].x * gameWidth,
-      y: this.boardPosList[pos].y * gameHeight,
-    };
-    let nextPos = (pos + 1) % ((this.gameOptions.landCount - 1) * 4);
-    let end = {
-      x: this.boardPosList[nextPos].x * gameWidth,
-      y: this.boardPosList[nextPos].y * gameHeight,
-    };
-    this.movePlayer(start, end);
-    // }
+  private findLandIndexByModelId = (modelId: string): number => {
+    for (let index = 0; index < this.board!.length; index++) {
+      if (this.board![index].id === modelId) {
+        return index;
+      }
+    }
+
+    return -1;
+  };
+
+  // this.playerJump(this.i); // for test
+  private playerJump = (pos: number, step: number): number => {
+    // pos init
+    let nextPos = pos;
+
+    for (let stepTurn = pos; stepTurn < pos + step; stepTurn++) {
+      let firstPos = stepTurn % this.gameOptions.landCount;
+      let start = {
+        x: this.boardPosList[firstPos].x * gameWidth,
+        y: this.boardPosList[firstPos].y * gameHeight,
+      };
+      nextPos = (stepTurn + 1) % this.gameOptions.landCount;
+      let end = {
+        x: this.boardPosList[nextPos].x * gameWidth,
+        y: this.boardPosList[nextPos].y * gameHeight,
+      };
+
+      console.log(firstPos, nextPos);
+
+      let timedEvent = this.time.delayedCall(
+        1000 * (stepTurn - pos + 1),
+        () => {
+          this.movePlayer(start, end);
+        },
+        [],
+        this,
+      );
+    }
 
     // this.movePlayer({x: 100, y: 100}, {x: 200, y: 200});
+    return nextPos;
   };
 
   private movePlayer = (start: any, end: any): void => {
+    console.log(start);
     let startPoint = new Phaser.Math.Vector2(start.x, start.y);
     let endPoint = new Phaser.Math.Vector2(end.x, end.y);
     let stepX = end.x - start.x;
     let stepY = end.y - start.y;
     console.info(start.x);
-    let marker = this.playerGroup.getChildren()[0] as Phaser.GameObjects.Image;
+    let marker = this.playerGroup.getChildren()[
+      this.currentPlayerId!
+    ] as Phaser.GameObjects.Image;
     let controlPoint1 = new Phaser.Math.Vector2(
-      marker.x + (stepX * 2) / 3,
-      marker.y + stepY / 2,
+      start.x,
+      start.y - Math.abs((stepY * 2) / 3),
     );
     let controlPoint2 = new Phaser.Math.Vector2(
-      marker.x + (stepX * 2) / 3,
-      marker.y + stepY / 2,
+      end.x,
+      end.y - Math.abs((stepY * 2) / 3),
     );
-    this.bezierCurve = new Phaser.Curves.CubicBezier(
+    let bezierCurve = new Phaser.Curves.CubicBezier(
       startPoint,
       controlPoint1,
       controlPoint2,
       endPoint,
     );
-    this.bezierGraphics.x = 0.02 * gameWidth;
-    this.bezierGraphics.y = -0.05 * gameHeight;
+    // this.bezierGraphics.x = 0.02 * gameWidth;
+    this.bezierGraphics.y = 0; // -0.05 * gameHeight;
     this.bezierGraphics.clear();
     this.bezierGraphics.lineStyle(4, 0xffffff);
-    this.bezierCurve.draw(this.bezierGraphics);
+    bezierCurve.draw(this.bezierGraphics);
+
     this.bezierGraphics.setDepth(5);
     let tweenValue = {
       value: 0,
@@ -456,12 +543,13 @@ export class BoardScene extends Scene {
     this.tweens.add({
       targets: tweenValue,
       value: 1,
-      duration: 500,
+      duration: 800,
       callbackScope: this,
+      delay: 2500,
       onComplete: () => {},
       onUpdate: (tween: Phaser.Tweens.TweenManager, target: any) => {
-        let position = this.bezierCurve.getPoint(target.value);
-        let prevPosition = this.bezierCurve.getPoint(target.previousValue);
+        let position = bezierCurve.getPoint(target.value);
+        let prevPosition = bezierCurve.getPoint(target.previousValue);
         let step = target.value - target.previousValue;
         marker.x += position.x - prevPosition.x;
         marker.y += position.y - prevPosition.y;
@@ -471,8 +559,8 @@ export class BoardScene extends Scene {
   };
 
   private popupDecision(): void {
-    let decisionBox = this.add.image(width(50), height(49), 'decision-bg');
     $('#area').hide();
+    let decisionBox = this.add.image(width(50), height(49), 'decision-bg');
     decisionBox.setDepth(20);
     scaleGameObject(decisionBox, 0);
     this.decisionGroup.add(decisionBox);
@@ -491,7 +579,7 @@ export class BoardScene extends Scene {
     decisionHint.setDepth(100);
     decisionHint.setStroke('#000', 15).setShadow(2, 2, '#222', 10, true, true);
     scaleGameObject(decisionHint);
-    $('#area').hide();
+
     decisionHint.setDepth(30);
     scaleGameObject(decisionBox, 0);
     this.decisionGroup.add(decisionHint);
@@ -506,8 +594,55 @@ export class BoardScene extends Scene {
     decisionBtnNo.setDepth(30);
     this.decisionGroup.add(decisionBtnNo);
 
-    let btnTimeline = this.tweens.timeline({
+    let timeline = this.tweens.timeline({
       targets: this.decisionGroup.getChildren(),
+      ease: 'Sine.easeInOut',
+      totalDuration: 300,
+      tweens: [
+        {
+          scaleX: scale(0.8),
+          scaleY: scale(0.8),
+        },
+        {
+          scaleX: scale(0.4),
+          scaleY: scale(0.4),
+        },
+        {
+          scaleX: scale(0.5),
+          scaleY: scale(0.5),
+        },
+      ],
+    });
+  }
+
+  private popupStatus(): void {
+    $('#area').hide();
+    let statusBox = this.add.image(width(50), height(49), 'decision-bg');
+    statusBox.setDepth(20);
+    scaleGameObject(statusBox, 0);
+    this.statusGroup.add(statusBox);
+
+    let statusHint = this.add.text(
+      width(50),
+      height(50),
+      `${this.playerNames![this.currentPlayerId!]}\n正在进行游戏,请稍等`,
+      {
+        fontFamily: 'Arial Black',
+        fontSize: 100,
+        color: '#443f33',
+      },
+    );
+    statusHint.setOrigin(0.5, 0.5);
+    statusHint.setDepth(100);
+    statusHint.setStroke('#FFF', 10).setShadow(2, 2, '#222', 4, true, true);
+    scaleGameObject(statusHint);
+
+    statusHint.setDepth(30);
+    scaleGameObject(statusHint, 0);
+    this.statusGroup.add(statusHint);
+
+    let timeline = this.tweens.timeline({
+      targets: this.statusGroup.getChildren(),
       ease: 'Sine.easeInOut',
       totalDuration: 300,
       tweens: [
@@ -532,4 +667,54 @@ export class BoardScene extends Scene {
       child.setVisible(false);
     }, 0);
   }
+
+  private closeStatus(): void {
+    this.statusGroup.children.iterate(child => {
+      child.setVisible(false);
+    }, 0);
+  }
+
+  private isCurrentPlayer(): void {
+    $('#area').show();
+  }
+
+  private notCurrentPlayer(): void {
+    this.popupStatus();
+  }
+
+  private landEvent(pos:number):void{
+    let landType = this.board![pos].type;
+    switch (landType) {
+      // case "":
+      //   ret = {
+      //     x: width(paddingx),
+      //     y: height(paddingy),
+      //     type: 'top-left',
+      //   };
+      //   break;
+      // case "":
+      //   ret = {
+      //     x: gameWidth - width(paddingx),
+      //     y: gameHeight - height(paddingy),
+      //     type: 'bottom-right',
+      //   };
+      //   break;
+      // case "":
+      //   ret = {
+      //     x: gameWidth - width(paddingx),
+      //     y: height(paddingy),
+      //     type: 'top-right',
+      //   };
+      //   break;
+      // case "":
+      //   ret = {
+      //     x: width(paddingx),
+      //     y: gameHeight - height(paddingy),
+      //     type: 'bottom-left',
+      //   };
+      //   break;
+    }
+  }
+
+
 }

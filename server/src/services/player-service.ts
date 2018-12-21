@@ -1,4 +1,10 @@
-import {ModelService, Player, packModel} from 'shared';
+import {
+  LandTypeToModelTypeKey,
+  ModelService,
+  Player,
+  Room,
+  packModel,
+} from 'shared';
 import SocketIO from 'socket.io';
 
 import {SocketService} from './socket-service';
@@ -53,9 +59,50 @@ export class PlayerService {
 
       this.modelService.removeModel('player', player.id);
 
-      socket
-        .to(room.getRoomURL())
-        .emit('room:player-leave', player.id, packModel(room));
+      if (room.isEmpty()) {
+        this.modelService.removeModel('room', room.id);
+        this.cleanUpRoom(room);
+      } else {
+        socket
+          .to(room.getRoomURL())
+          .emit('room:player-leave', player.id, packModel(room));
+      }
     });
+  }
+
+  private cleanUpRoom(room: Room): void {
+    let gameId = room.getGame();
+
+    if (!gameId) {
+      return;
+    }
+
+    let game = this.modelService.getModelById('game', gameId);
+
+    if (!game) {
+      return;
+    }
+
+    this.modelService.removeModel('game', game.id);
+
+    let boardId = game.getBoard();
+
+    if (!boardId) {
+      return;
+    }
+
+    let board = this.modelService.getModelById('board', boardId);
+
+    if (!board) {
+      return;
+    }
+
+    let landInfos = board.getLands();
+
+    for (let {id, type} of landInfos) {
+      let key = LandTypeToModelTypeKey(type);
+
+      this.modelService.removeModel(key, id);
+    }
   }
 }
