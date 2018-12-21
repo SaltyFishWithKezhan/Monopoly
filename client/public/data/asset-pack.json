@@ -57,44 +57,194 @@
       },
       {
         "type": "image",
-        "key": "building-1",
+        "key": "building-level2-1",
         "url": "assets/building-1.png",
         "overwrite": false
       },
       {
         "type": "image",
-        "key": "building-2",
+        "key": "building-level2-2",
         "url": "assets/building-2.png",
         "overwrite": false
       },
       {
         "type": "image",
-        "key": "building-3",
+        "key": "building-level2-3",
         "url": "assets/building-3.png",
         "overwrite": false
       },
       {
         "type": "image",
-        "key": "building-4",
+        "key": "building-level2-4",
         "url": "assets/building-4.png",
         "overwrite": false
       },
       {
         "type": "image",
-        "key": "building-5",
+        "key": "building-level2-5",
         "url": "assets/building-5.png",
         "overwrite": false
       },
       {
         "type": "image",
-        "key": "building-6",
+        "key": "building-level2-6",
         "url": "assets/building-6.png",
         "overwrite": false
       },
       {
         "type": "image",
-        "key": "building-7",
+        "key": "building-level2-7",
         "url": "assets/building-7.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-8",
+        "url": "assets/building-8.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-9",
+        "url": "assets/building-9.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-10",
+        "url": "assets/building-10.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-11",
+        "url": "assets/building-11.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-12",
+        "url": "assets/building-12.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-13",
+        "url": "assets/building-13.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-14",
+        "url": "assets/building-21.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-15",
+        "url": "assets/building-22.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-16",
+        "url": "assets/building-23.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-1",
+        "url": "assets/building-14.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-2",
+        "url": "assets/building-15.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-3",
+        "url": "assets/building-16.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-4",
+        "url": "assets/building-17.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-5",
+        "url": "assets/building-18.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-6",
+        "url": "assets/building-19.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-7",
+        "url": "assets/building-20.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-8",
+        "url": "assets/building-24.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-9",
+        "url": "assets/building-25.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-10",
+        "url": "assets/building-26.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-11",
+        "url": "assets/building-27.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level-12",
+        "url": "assets/building-28.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-13",
+        "url": "assets/building-29.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-14",
+        "url": "assets/building-30.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-15",
+        "url": "assets/building-31.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-16",
+        "url": "assets/building-32.png",
         "overwrite": false
       },
       {

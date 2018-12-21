@@ -143,6 +143,7 @@ export class BoardScene extends Scene {
   ];
 
   private landGroup!: Phaser.GameObjects.Group;
+  private houseGroup!: Phaser.GameObjects.Group;
   private playerGroup!: Phaser.GameObjects.Group;
   private playerInfoGroup!: Phaser.GameObjects.Group;
   private decisionGroup!: Phaser.GameObjects.Group;
@@ -154,6 +155,7 @@ export class BoardScene extends Scene {
   // private tween: Phaser.Tweens.Tween;
 
   private i: number = 0;
+  private houseMap = new Map<number, Phaser.GameObjects.Image>();
 
   private player: PlayerData | undefined;
   private board: LandInfo[] | undefined;
@@ -197,6 +199,7 @@ export class BoardScene extends Scene {
 
   create(): void {
     this.landGroup = this.add.group();
+    this.houseGroup = this.add.group();
     this.playerGroup = this.add.group();
     this.playerInfoGroup = this.add.group();
     this.decisionGroup = this.add.group();
@@ -221,24 +224,51 @@ export class BoardScene extends Scene {
 
     gameService.onBailJail(player => {
       let index = this.findPlayerIndexByPlayerName(player.id);
-      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[index] as Phaser.GameObjects.Text;
+      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
+        index
+      ] as Phaser.GameObjects.Text;
       mdfPlayerMoney.setText(`¥${player.data.money}`);
     });
 
-    gameService.onServeJail(player => {
-    });
+    gameService.onServeJail(player => {});
 
     gameService.onMoveConRent(player => {
       let index = this.findPlayerIndexByPlayerName(player.id);
-      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[index] as Phaser.GameObjects.Text;
+      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
+        index
+      ] as Phaser.GameObjects.Text;
       mdfPlayerMoney.setText(`¥${player.data.money}`);
     });
 
     gameService.onMoveConBuy((player, land) => {
-
+      let playerIndex = this.findPlayerIndexByPlayerName(player.id);
+      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
+        playerIndex
+      ] as Phaser.GameObjects.Text;
+      mdfPlayerMoney.setText(`¥${player.data.money}`);
+      let landIndex = this.findLandIndexByModelId(land.id);
+      this.changeLand(landIndex, playerIndex);
     });
 
-    gameService.onMoveConUpgrade((player, land) => {});
+    gameService.onMoveConUpgrade((player, land) => {
+      let playerIndex = this.findPlayerIndexByPlayerName(player.id);
+      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
+        playerIndex
+      ] as Phaser.GameObjects.Text;
+      mdfPlayerMoney.setText(`¥${player.data.money}`);
+      let landIndex = this.findLandIndexByModelId(land.id);
+      this.changeLand(landIndex, playerIndex);
+      switch (land.data.level) {
+        case 1:
+          console.info('买一级平房');
+          this.drawHouse(landIndex, land.data.level);
+          break;
+        case 2:
+          console.info('买二级小楼房');
+          this.drawHouse(landIndex, land.data.level);
+          break;
+      }
+    });
 
     gameService.onMoveOnNextPlayer(game => {
       let player = playerService.player!;
@@ -355,17 +385,28 @@ export class BoardScene extends Scene {
     // console.info(this.landGroup.getChildren());
   }
 
-  private drawHouse(landNum: number, houseNum: number): void {
-    let concatStrNum = (str: string, num: number): string => str + num;
-    let houseImage = concatStrNum('building-', houseNum);
+  private changeLand(landNum: number, newOwnerIndex: number): void {
+    let oldLand = this.landGroup.getChildren()[
+      newOwnerIndex
+    ] as Phaser.GameObjects.Image;
+    oldLand.setTexture(this.playerStyle[newOwnerIndex].land);
+    // console.info(this.landGroup.getChildren());
+  }
+
+  private drawHouse(landNum: number, type: number): void {
     let landPos = this.boardPosList[landNum];
+
+    if (this.houseMap.get(landNum)) {
+      this.houseMap.get(landNum)!.destroy();
+    }
+
     let house = this.add.image(
       (landPos.x - 0.02) * gameWidth,
       (landPos.y - 0.05) * gameHeight,
-      houseImage,
+      `building-level${type}-${landNum}`,
     );
     scaleGameObject(house, 0.4);
-    this.landGroup.add(house);
+    this.houseMap.set(landNum, house);
   }
 
   private createPlayers(playerNum: number): void {
@@ -779,11 +820,7 @@ n正在进行游戏,请稍等`,
  doesn't exist`);
     }
 
-    switch (land.getType
-
-())
-
- {
+    switch (land.getType()) {
       case LandType.construction:
         this.checkLandAndPopupOptions(step, land);
         break;
@@ -793,14 +830,12 @@ n正在进行游戏,请稍等`,
     }
   }
 
-  private
+  private;
 
- checkLandAndPopupOptions(step: number, land: ConstructionLand): void {
+  checkLandAndPopupOptions(step: number, land: ConstructionLand): void {
     let player = playerService.player!;
 
-    if (land.getOwner() === player.id)
-
- {
+    if (land.getOwner() === player.id) {
       // Can upgrade
       if (land.getLevel() < 2 && land.getUpgradePrice() < player.getMoney()) {
         this.popupDecision(
@@ -817,9 +852,7 @@ n正在进行游戏,请稍等`,
       } else {
         gameService.diceAndDecide(step, 'pass');
       }
-    } else
-
- {
+    } else {
       if (land.getLevel() < 2 && land.getPrice() < player.getMoney()) {
         this.popupDecision(
           `您可以花$${land.getPrice()}来购买该房屋，是否购买？`,
@@ -833,6 +866,5 @@ n正在进行游戏,请稍等`,
         );
       }
     }
-
   }
 }
