@@ -68,6 +68,10 @@ export class ConstructionLand extends Land {
     this.data.owner = playerId;
   }
 
+  getOwner(): string | undefined {
+    return this.data.owner;
+  }
+
   getPrice(): number {
     if (this.data.owner) {
       return this.data.landPrice * 1.1;
