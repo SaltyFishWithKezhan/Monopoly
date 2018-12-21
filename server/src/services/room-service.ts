@@ -76,6 +76,10 @@ export class RoomService {
 
       let players = this.modelService.getModelsByIds('player', ids);
 
+      console.log(
+        'fuckeeeeeeeeeeeeeeeeeeeeeeeemeeeeeeeeeeeeeeeeeeeeeeeeee',
+        socket.player.id,
+      );
       this.io
         .in(room.getRoomURL())
         .emit(

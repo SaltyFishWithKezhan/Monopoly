@@ -70,6 +70,8 @@ export class RoomService extends PromisePool {
       playerTransfers,
     );
 
+    console.info('_onRoom Join called', room, players);
+
     this.ee.emit('join-room', room, players);
   };
 }

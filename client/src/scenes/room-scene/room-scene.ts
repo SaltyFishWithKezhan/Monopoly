@@ -2,6 +2,7 @@ import 'animate.css';
 
 import $ from 'jquery';
 import {Scene} from 'phaser';
+import {Player} from 'shared';
 
 import {gameService, playerService, roomService} from '../../service-entrances';
 import {
@@ -67,7 +68,9 @@ export class RoomScene extends Scene {
         )}px; width: ${width(7)}px; height: ${width(7 * 0.5)}px;">
             <img src="/assets/lg-text-player.png"/>
         </div>
-        <div id="room-player-list">
+        <div id="room-player-list" style="height: ${height(
+          40,
+        )}px; margin-top: ${height(3)}px; width: ${width(20)}px">
         </div>
         <button id="start-game-btn" style="margin-top: ${height(
           4,
@@ -131,11 +134,13 @@ export class RoomScene extends Scene {
 
       for (let it of players) {
         $('#room-player-list').append(
-          `<input class="room-player" type="text" disabled placeholder="${
-            it.id
-          }" style="margin-top: ${height(5.5)}px; height: ${height(
-            6,
-          )}px; line-height: ${height(8)}px; font-size: ${height(3)}px;" />`,
+          `<div class="room-player-in-list" style="margin: ${height(
+            0.5,
+          )}px 0; height: ${height(4)}px; line-height: ${height(
+            4,
+          )}px; font-size: ${height(3)}px; padding:10px">
+          ${it.id}
+          </div>`,
         );
       }
     });

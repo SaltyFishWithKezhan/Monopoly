@@ -30,15 +30,20 @@
     }
   }
 
-  .room-player {
-    background-color: rgba(0, 0, 0, 0.03);
-    border-radius: 7px;
+  #room-player-list {
+    overflow-y: auto;
+    flex-direction: column;
+    align-items: center;
+    display: flex;
+  }
+
+  .room-player-in-list {
     border-width: 0;
     text-align: center;
     outline: none;
     transition: all 0.5s;
-    &:focus {
-      background-color: rgba(0, 0, 0, 0.07);
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.03);
       transition: all 0.5s;
     }
   }
@@ -64,17 +69,17 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url(../../../public/assets/lg-btn-join.png);
+    background-image: url(../../../public/assets/room-btn-create.png);
     background-color: transparent;
     transition: all 0.3s;
 
     &:hover {
-      background-image: url(../../../public/assets/lg-btn-join-hover.png);
+      background-image: url(../../../public/assets/room-btn-create-hover.png);
       transition: all 0.3s;
     }
 
     &:active {
-      background-image: url(../../../public/assets/lg-btn-join-active.png);
+      background-image: url(../../../public/assets/room-btn-create-active.png);
       transition: all 0.3s;
     }
   }
@@ -86,17 +91,39 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url(../../../public/assets/lg-btn-join.png);
+    background-image: url(../../../public/assets/room-btn-join.png);
     background-color: transparent;
     transition: all 0.3s;
 
     &:hover {
-      background-image: url(../../../public/assets/lg-btn-join-hover.png);
+      background-image: url(../../../public/assets/room-btn-join-hover.png);
       transition: all 0.3s;
     }
 
     &:active {
-      background-image: url(../../../public/assets/lg-btn-join-active.png);
+      background-image: url(../../../public/assets/room-btn-join-active.png);
+      transition: all 0.3s;
+    }
+  }
+
+  #start-game-btn {
+    border: none;
+    border-width: 0;
+    outline: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(../../../public/assets/game-btn-start.png);
+    background-color: transparent;
+    transition: all 0.3s;
+
+    &:hover {
+      background-image: url(../../../public/assets/game-btn-start-hover.png);
+      transition: all 0.3s;
+    }
+
+    &:active {
+      background-image: url(../../../public/assets/game-btn-start-active.png);
       transition: all 0.3s;
     }
   }
