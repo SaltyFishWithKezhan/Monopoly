@@ -668,6 +668,12 @@ export class BoardScene extends Scene {
     }, 0);
   }
 
+  private closeStatus(): void {
+    this.statusGroup.children.iterate(child => {
+      child.setVisible(false);
+    }, 0);
+  }
+
   private isCurrentPlayer(): void {
     $('#area').show();
   }
@@ -675,4 +681,40 @@ export class BoardScene extends Scene {
   private notCurrentPlayer(): void {
     this.popupStatus();
   }
+
+  private landEvent(pos:number):void{
+    let landType = this.board![pos].type;
+    switch (landType) {
+      // case "":
+      //   ret = {
+      //     x: width(paddingx),
+      //     y: height(paddingy),
+      //     type: 'top-left',
+      //   };
+      //   break;
+      // case "":
+      //   ret = {
+      //     x: gameWidth - width(paddingx),
+      //     y: gameHeight - height(paddingy),
+      //     type: 'bottom-right',
+      //   };
+      //   break;
+      // case "":
+      //   ret = {
+      //     x: gameWidth - width(paddingx),
+      //     y: height(paddingy),
+      //     type: 'top-right',
+      //   };
+      //   break;
+      // case "":
+      //   ret = {
+      //     x: width(paddingx),
+      //     y: gameHeight - height(paddingy),
+      //     type: 'bottom-left',
+      //   };
+      //   break;
+    }
+  }
+
+
 }
