@@ -951,8 +951,7 @@ export class BoardScene extends Scene {
       let delayTime = 0;
 
       if(ownerId){
-        this.popupStatus(`您需要向
-        ${land.getOwner()}支付\n&${land.getRentPrice()}租金哦~`)
+        this.popupStatus(`您需要向${land.getOwner()}支付\n&${land.getRentPrice()}租金哦~`)
         delayTime = 2000;
       }
 
