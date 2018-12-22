@@ -4,7 +4,7 @@ import {
   ConstructionLandArrivalOperation,
   Game,
   GoLand,
-  JailLand,
+  // JailLand,
   LandType,
   LandTypeToModelTypeKey,
   ModelService,
@@ -231,12 +231,17 @@ export class GameService {
 
         player.decreaseMoney(rentPrice);
 
+        let owner = this.modelService.getModelById('player', land.data.owner)!;
+
+        owner.increaseMoney(rentPrice);
+
         this.io
           .in(room.getRoomURL())
           .emit(
             'game:game-step',
             'move-on-construction-land-and-rent',
             packModel(player),
+            packModel(owner),
           );
         break;
       case 'buy':
@@ -330,19 +335,25 @@ function createNormalBoardLands(
 
   createConstructionLands(4);
 
-  let jailLand = new JailLand();
+  // let jailLand = new JailLand();
 
-  modelService.addModel('jailLand', jailLand);
+  // modelService.addModel('jailLand', jailLand);
 
-  board.addLand(jailLand.getLandInfo());
-
-  createConstructionLands(4);
+  // board.addLand(jailLand.getLandInfo());
 
   let parkingLand2 = new ParkingLand();
 
-  modelService.addModel('parkingLand', parkingLand2);
+  modelService.addModel('parkingLand', parkingLand1);
 
   board.addLand(parkingLand2.getLandInfo());
+
+  createConstructionLands(4);
+
+  let parkingLand3 = new ParkingLand();
+
+  modelService.addModel('parkingLand', parkingLand2);
+
+  board.addLand(parkingLand3.getLandInfo());
 
   createConstructionLands(4);
 

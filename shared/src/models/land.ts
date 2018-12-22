@@ -74,18 +74,18 @@ export class ConstructionLand extends Land {
 
   getPrice(): number {
     if (this.data.owner) {
-      return this.data.landPrice * 1.1;
+      return Math.ceil(this.data.landPrice * 1.1);
     }
 
-    return this.data.landPrice;
+    return Math.ceil(this.data.landPrice);
   }
 
   getRentPrice(): number {
-    return this.data.rentPrice;
+    return Math.ceil(this.data.rentPrice);
   }
 
   getUpgradePrice(): number {
-    return this.data.upgradePrice;
+    return Math.ceil(this.data.upgradePrice);
   }
 
   setPrice(amount: number): void {
@@ -131,7 +131,7 @@ export class JailLand extends Land {
   };
 
   getBailPrice(): number {
-    return this.data.bailPrice;
+    return Math.ceil(this.data.bailPrice);
   }
 }
 

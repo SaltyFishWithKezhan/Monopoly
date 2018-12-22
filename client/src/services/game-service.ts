@@ -64,7 +64,7 @@ export class GameService {
     this.ee.on('game-serve-jail', cb);
   }
 
-  onMoveConRent(cb: (player: Player) => void): void {
+  onMoveConRent(cb: (player: Player, owner: Player) => void): void {
     this.ee.on('game-cons-land-rent', cb);
   }
 
@@ -150,7 +150,7 @@ export class GameService {
           this._onMoveOnGoLand(args[0]);
           break;
         case 'move-on-construction-land-and-rent':
-          this._onMoveOnConstructionLandAndRent(args[0]);
+          this._onMoveOnConstructionLandAndRent(args[0], args[1]);
           break;
         case 'move-on-construction-land-and-buy':
           this._onMoveOnConstructionLandAndBuy(args[0], args[1]);
@@ -191,12 +191,18 @@ export class GameService {
 
   private _onMoveOnConstructionLandAndRent(
     playerTransfer: TransferModel<'player'>,
+    ownerTransfer: TransferModel<'player'>,
   ): void {
-    let data = this.modelService.updateModelFromTransfer(
+    let player = this.modelService.updateModelFromTransfer(
       'player',
       playerTransfer,
     );
-    this.ee.emit('game-cons-land-rent', data);
+
+    let owner = this.modelService.updateModelFromTransfer(
+      'player',
+      ownerTransfer,
+    );
+    this.ee.emit('game-cons-land-rent', player, owner);
   }
 
   private _onMoveOnConstructionLandAndBuy(

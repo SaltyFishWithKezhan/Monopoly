@@ -2,16 +2,8 @@ import 'animate.css';
 
 import $ from 'jquery';
 import {Scene} from 'phaser';
-import {
-  ConstructionLand,
-  LandInfo,
-  LandType,
-  LandTypeToModelTypeKey,
-  Player,
-  PlayerData,
-} from 'shared';
+import {ConstructionLand, LandInfo, LandType, Player, PlayerData} from 'shared';
 
-import {game} from '../../main';
 import {
   gameService,
   modelService,
@@ -228,7 +220,11 @@ export class BoardScene extends Scene {
 
     // register call backs
     gameService.onMoveOnGoLand(player => {
-      console.log(playerService.player);
+      let index = this.findPlayerIndexByPlayerName(player.id);
+      let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
+        index
+      ] as Phaser.GameObjects.Text;
+      mdfPlayerMoney.setText(`¥${player.data.money}`);
     });
 
     gameService.onBailJail(player => {
@@ -236,17 +232,23 @@ export class BoardScene extends Scene {
       let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
         index
       ] as Phaser.GameObjects.Text;
-      mdfPlayerMoney.setText(`¥${player.data.money}`);
+      mdfPlayerMoney.setText(`¥${player.getMoney()}`);
     });
 
     gameService.onServeJail(player => {});
 
-    gameService.onMoveConRent(player => {
-      let index = this.findPlayerIndexByPlayerName(player.id);
+    gameService.onMoveConRent((player, owner) => {
+      let playerIndex = this.findPlayerIndexByPlayerName(player.id);
       let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
-        index
+        playerIndex
       ] as Phaser.GameObjects.Text;
-      mdfPlayerMoney.setText(`¥${player.data.money}`);
+      mdfPlayerMoney.setText(`¥${player.getMoney()}`);
+
+      let ownerIndex = this.findPlayerIndexByPlayerName(owner.id);
+      let mdfOwnerMoney = this.playerInfoGroup.getChildren()[
+        ownerIndex
+      ] as Phaser.GameObjects.Text;
+      mdfOwnerMoney.setText(`¥${owner.getMoney()}`);
     });
 
     gameService.onMoveConBuy((player, land) => {
@@ -301,7 +303,7 @@ export class BoardScene extends Scene {
           gameService.serveJailTime(false);
         } else {
           this.popupDecision(
-            `您当前在监狱中，是否花$${jailLand.getBailPrice()}保释？`,
+            `您当前在监狱中，是否花¥${jailLand.getBailPrice()}保释？`,
             yes => {
               gameService.serveJailTime(yes);
             },
@@ -328,16 +330,6 @@ export class BoardScene extends Scene {
       let step = newLandIndex - oldLandIndex;
 
       step = step < 0 ? gameService.board!.getLands().length + step : step;
-
-      console.log('====================================');
-      console.log(
-        oldLandId,
-        oldLandIndex,
-        currentPlayer.getLand().id,
-        newLandIndex,
-        step,
-      );
-      console.log('====================================');
 
       let playerIndex = this.findPlayerIndexByPlayerName(currentPlayer.id);
 
@@ -893,7 +885,7 @@ export class BoardScene extends Scene {
       // Can upgrade
       if (land.getLevel() < 2 && land.getUpgradePrice() < player.getMoney()) {
         this.popupDecision(
-          `您可以花$${land.getUpgradePrice()}升级房\n屋到${land.getLevel() +
+          `您可以花¥${land.getUpgradePrice()}升级房\n屋到${land.getLevel() +
             1}级，是否升级？`,
           yes => {
             if (yes) {
@@ -909,7 +901,7 @@ export class BoardScene extends Scene {
     } else {
       if (land.getLevel() < 2 && land.getPrice() < player.getMoney()) {
         this.popupDecision(
-          `您可以花$${land.getPrice()}来购买该房屋，\n是否购买？`,
+          `您可以花¥${land.getPrice()}来购买该房屋，\n是否购买？`,
           yes => {
             if (yes) {
               gameService.diceAndDecide(step, 'buy');
