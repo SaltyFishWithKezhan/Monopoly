@@ -600,9 +600,14 @@ export class BoardScene extends Scene {
       this.i = endLand;
       console.log(endLand);
 
-      setTimeout(() => {
-        this.landEvent(faceValue, endLand);
-      }, 3000 + 1000 * faceValue);
+      this.time.delayedCall(
+        3000 + 800 * faceValue,
+        () => {
+          this.landEvent(faceValue, endLand);
+        },
+        [],
+        this,
+      );
     });
   };
 
@@ -651,7 +656,7 @@ export class BoardScene extends Scene {
       console.log(firstPos, nextPos);
 
       this.time.delayedCall(
-        1000 * (stepTurn - pos + 1),
+        800 * (stepTurn - pos + 1),
         () => {
           this.movePlayer(playerIndex, start, end, delay);
         },
