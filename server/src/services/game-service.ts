@@ -249,10 +249,18 @@ export class GameService {
           return;
         }
 
+        let landOwner: Player | undefined;
+
         if (land.data.owner) {
           let rentPrice = land.getRentPrice();
 
           player.decreaseMoney(rentPrice);
+
+          landOwner = this.modelService.getModelById(
+            'player',
+            land.data.owner,
+          )!;
+          landOwner.increaseMoney(rentPrice);
         }
 
         let price = land.getPrice();
@@ -266,6 +274,7 @@ export class GameService {
             'move-on-construction-land-and-buy',
             packModel(player),
             packModel(land),
+            landOwner ? packModel(landOwner) : undefined,
           );
         break;
       case 'upgrade':
