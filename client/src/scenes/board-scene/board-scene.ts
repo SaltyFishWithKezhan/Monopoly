@@ -860,6 +860,12 @@ export class BoardScene extends Scene {
     }, 0);
   }
 
+  private showStatus(): void {
+    this.statusGroup.children.iterate(child => {
+      child.setVisible(true);
+    }, 0);
+  }
+
   private isCurrentPlayer(): void {
     this.closeStatus();
     $('#area').show();
@@ -867,11 +873,21 @@ export class BoardScene extends Scene {
   }
 
   private notCurrentPlayer(): void {
-    this.popupStatus(
-      `${
-        this.playerNames![gameService.game!.data.currentPlayerIndex]
-      }\n正在进行游戏,请稍等`,
-    );
+    if (this.statusGroup.getLength() === 0) {
+      this.popupStatus(
+        `${
+          this.playerNames![gameService.game!.data.currentPlayerIndex]
+        }\n正在进行游戏,请稍等`,
+      );
+    } else {
+      this.showStatus();
+      let statusBox = this.statusGroup.getChildren()[0] as Phaser.GameObjects.Text;
+      statusBox.setText(
+        `${
+          this.playerNames![gameService.game!.data.currentPlayerIndex]
+        }\n正在进行游戏,请稍等`,
+      );
+    }
   }
 
   private landEvent(step: number, pos: number): void {

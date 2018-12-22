@@ -352,7 +352,7 @@ function createNormalBoardLands(
 
   let parkingLand2 = new ParkingLand();
 
-  modelService.addModel('parkingLand', parkingLand1);
+  modelService.addModel('parkingLand', parkingLand2);
 
   board.addLand(parkingLand2.getLandInfo());
 
@@ -360,7 +360,7 @@ function createNormalBoardLands(
 
   let parkingLand3 = new ParkingLand();
 
-  modelService.addModel('parkingLand', parkingLand2);
+  modelService.addModel('parkingLand', parkingLand3);
 
   board.addLand(parkingLand3.getLandInfo());
 
