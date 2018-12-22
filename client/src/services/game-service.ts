@@ -81,6 +81,10 @@ export class GameService {
     this.ee.on('game-cons-land-upgrade', cb);
   }
 
+  onGameOver(cb: (player: Player) => void): void {
+    this.ee.on('game-over', cb);
+  }
+
   private initialize(): void {
     this.io.on(
       'game:game-start',
@@ -167,6 +171,12 @@ export class GameService {
           this._onMoveOnNextPlayer(args[0]);
           break;
       }
+    });
+
+    this.io.on('game:game-over', (winnerId: string) => {
+      let player = this.modelService.getModelById('player', winnerId)!;
+
+      this.ee.emit('game-over', player);
     });
   }
 

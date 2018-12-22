@@ -321,11 +321,37 @@ export class GameService {
     let gameId = room.getGame()!;
     let game = this.modelService.getModelById('game', gameId)!;
 
-    game.moveOnToNextPlayer();
+    let playerIds = room.getPlayerIds();
 
-    this.io
-      .in(room.getRoomURL())
-      .emit('game:game-step', 'move-on-next-player', packModel(game));
+    let players = this.modelService.getModelsByIds('player', playerIds);
+
+    let gameOver = false;
+
+    let winnerId: string | undefined;
+    let winnerMoney: number = 0;
+
+    for (let player of players) {
+      let money = player.getMoney();
+
+      if (money <= 0) {
+        gameOver = true;
+
+        if (money > winnerMoney) {
+          winnerId = player.id;
+          winnerMoney = money;
+        }
+      }
+    }
+
+    if (!gameOver) {
+      game.moveOnToNextPlayer();
+
+      this.io
+        .in(room.getRoomURL())
+        .emit('game:game-step', 'move-on-next-player', packModel(game));
+    } else {
+      this.io.in(room.getRoomURL()).emit('game:game-over', winnerId);
+    }
   }
 }
 
