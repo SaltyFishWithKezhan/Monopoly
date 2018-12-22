@@ -900,6 +900,10 @@ export class BoardScene extends Scene {
           this.playerNames![gameService.game!.data.currentPlayerIndex]
         }\n正在进行游戏,请稍等`,
       );
+
+      console.log( `${
+        this.playerNames![gameService.game!.data.currentPlayerIndex]
+      }\n正在进行游戏,请稍等`);
   }
 
   private landEvent(step: number, pos: number): void {
