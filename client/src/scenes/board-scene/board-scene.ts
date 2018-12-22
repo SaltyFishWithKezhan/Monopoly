@@ -434,16 +434,24 @@ export class BoardScene extends Scene {
   }
 
   private drawHouse(landNum: number, type: number): void {
-    let landPos = this.boardPosList[(landNum % 16) + 1];
+    let landPos = this.boardPosList[landNum];
 
     if (this.houseMap.get(landNum)) {
       this.houseMap.get(landNum)!.destroy();
     }
 
+    let offsetX = -0.02;
+    let offsetY = -0.05;
+
+    if (type === 1) {
+      offsetX = -0.03;
+      offsetY = -0.03;
+    }
+
     let house = this.add.image(
-      (landPos.x - 0.02) * gameWidth,
-      (landPos.y - 0.05) * gameHeight,
-      `building-level${type}-${landNum}`,
+      (landPos.x + offsetX) * gameWidth,
+      (landPos.y + offsetY) * gameHeight,
+      `building-level${type}-${(landNum % 16) + 1}`,
     );
     scaleGameObject(house, 0.4);
     this.houseMap.set(landNum, house);
@@ -873,6 +881,15 @@ export class BoardScene extends Scene {
   }
 
   private notCurrentPlayer(): void {
+    $('#area').hide();
+    console.log('-============================================');
+    console.log('this.statusGroup.getLength()', this.statusGroup.getLength());
+    console.log(
+      'currentPlayerIndex',
+      this.playerNames![gameService.game!.data.currentPlayerIndex],
+    );
+    console.log('-============================================');
+
     if (this.statusGroup.getLength() === 0) {
       this.popupStatus(
         `${
