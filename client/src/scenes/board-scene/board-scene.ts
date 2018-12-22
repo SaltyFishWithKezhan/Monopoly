@@ -426,7 +426,7 @@ export class BoardScene extends Scene {
   }
 
   private drawHouse(landNum: number, type: number): void {
-    let landPos = this.boardPosList[landNum];
+    let landPos = this.boardPosList[landNum%16+1];
 
     if (this.houseMap.get(landNum)) {
       this.houseMap.get(landNum)!.destroy();
