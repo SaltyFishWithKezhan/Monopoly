@@ -814,7 +814,17 @@ export class BoardScene extends Scene {
     });
   }
 
-  private popupStatus(text: string): void {
+  private popupStatus(text:string):void{
+    if (this.statusGroup.getLength() === 0) {
+      this.createStatus(text);
+    } else {
+      this.showStatus();
+      let statusBox = this.statusGroup.getChildren()[1] as Phaser.GameObjects.Text;
+      statusBox.setText(text);
+    }
+  }
+
+  private createStatus(text: string): void {
     $('#area').hide();
     let statusBox = this.add.image(width(50), height(49), 'decision-bg');
     statusBox.setDepth(20);
@@ -882,29 +892,12 @@ export class BoardScene extends Scene {
 
   private notCurrentPlayer(): void {
     $('#area').hide();
-    console.log('-============================================');
-    console.log('this.statusGroup.getLength()', this.statusGroup.getLength());
-    console.log(
-      'currentPlayerIndex',
-      this.playerNames![gameService.game!.data.currentPlayerIndex],
-    );
-    console.log('-============================================');
 
-    if (this.statusGroup.getLength() === 0) {
       this.popupStatus(
         `${
           this.playerNames![gameService.game!.data.currentPlayerIndex]
         }\n正在进行游戏,请稍等`,
       );
-    } else {
-      this.showStatus();
-      let statusBox = this.statusGroup.getChildren()[0] as Phaser.GameObjects.Text;
-      statusBox.setText(
-        `${
-          this.playerNames![gameService.game!.data.currentPlayerIndex]
-        }\n正在进行游戏,请稍等`,
-      );
-    }
   }
 
   private landEvent(step: number, pos: number): void {
@@ -948,18 +941,37 @@ export class BoardScene extends Scene {
         gameService.diceAndDecide(step, 'pass');
       }
     } else {
-      if (land.getLevel() < 2 && land.getPrice() < player.getMoney()) {
-        this.popupDecision(
-          `您可以花¥${land.getPrice()}来购买该房屋，\n是否购买？`,
-          yes => {
-            if (yes) {
-              gameService.diceAndDecide(step, 'buy');
-            } else if (land.getOwner()) {
-              gameService.diceAndDecide(step, 'rent');
-            }
-          },
-        );
+      let ownerId = land.getOwner();
+      let delayTime = 0;
+
+      if(ownerId){
+        this.popupStatus(`您需要向
+        ${land.getOwner()}支付\n&${land.getRentPrice()}租金哦~`)
+        delayTime = 2000;
       }
-    }
+
+
+      this.time.delayedCall(
+        delayTime,
+        () => {
+          this.closeStatus();
+
+          if (land.getLevel() < 2 && land.getPrice() < player.getMoney()) {
+            this.popupDecision(
+              `您可以花¥${land.getPrice()}来购买该房屋，\n是否购买？`,
+              yes => {
+                if (yes) {
+                  gameService.diceAndDecide(step, 'buy');
+                } else if (land.getOwner()) {
+                  gameService.diceAndDecide(step, 'rent');
+                }
+              },
+            );
+          }
+        },
+        [],
+        this,
+      );
+
   }
 }
