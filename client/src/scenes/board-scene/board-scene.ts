@@ -815,6 +815,8 @@ export class BoardScene extends Scene {
   }
 
   private popupStatus(text:string):void{
+    $('#area').hide();
+
     if (this.statusGroup.getLength() === 0) {
       this.createStatus(text);
     } else {
