@@ -867,7 +867,7 @@ export class BoardScene extends Scene {
 
   private notCurrentPlayer(): void {
     this.popupStatus(
-      `${this.playerNames![this.currentPlayerId!]}\n正在进行游戏,请稍等`,
+      `${this.playerNames![gameService.game!.data.currentPlayerIndex]}\n正在进行游戏,请稍等`,
     );
   }
 
