@@ -434,7 +434,7 @@ export class BoardScene extends Scene {
   }
 
   private drawHouse(landNum: number, type: number): void {
-    let landPos = this.boardPosList[landNum%16+1];
+    let landPos = this.boardPosList[(landNum % 16) + 1];
 
     if (this.houseMap.get(landNum)) {
       this.houseMap.get(landNum)!.destroy();
@@ -594,7 +594,7 @@ export class BoardScene extends Scene {
       let faceValue = Math.ceil(Math.random() * 6);
       this.myDice.roll(faceValue);
       console.info(faceValue);
-      // $('#roll-btn').attr('disabled', 'true');
+      $('#roll-btn').attr('disabled', 'true');
 
       // $('#roll-btn').removeAttr('disable');
       // this.i = (this.i + 1) % ((this.gameOptions.landCount - 1) * 4);
@@ -858,11 +858,14 @@ export class BoardScene extends Scene {
   private isCurrentPlayer(): void {
     this.closeStatus();
     $('#area').show();
+    $('#roll-btn').removeAttr('disabled');
   }
 
   private notCurrentPlayer(): void {
     this.popupStatus(
-      `${this.playerNames![gameService.game!.data.currentPlayerIndex]}\n正在进行游戏,请稍等`,
+      `${
+        this.playerNames![gameService.game!.data.currentPlayerIndex]
+      }\n正在进行游戏,请稍等`,
     );
   }
 
