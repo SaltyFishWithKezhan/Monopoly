@@ -266,6 +266,11 @@ export class GameService {
         let price = land.getPrice();
 
         player.decreaseMoney(price);
+
+        if (landOwner) {
+          landOwner.increaseMoney(price);
+        }
+
         land.setOwner(player.id);
         this.io
           .in(room.getRoomURL())
