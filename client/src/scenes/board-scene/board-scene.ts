@@ -251,7 +251,7 @@ export class BoardScene extends Scene {
       mdfOwnerMoney.setText(`¥${owner.getMoney()}`);
     });
 
-    gameService.onMoveConBuy((player, land) => {
+    gameService.onMoveConBuy((player, land, owner) => {
       let playerIndex = this.findPlayerIndexByPlayerName(player.id);
       let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
         playerIndex
@@ -260,6 +260,14 @@ export class BoardScene extends Scene {
       let landIndex = this.findLandIndexByModelId(land.id);
       console.log('index!!!:::', landIndex);
       this.changeLand(landIndex, playerIndex);
+
+      if (owner) {
+        let ownerIndex = this.findPlayerIndexByPlayerName(owner.id);
+        let mdfOwnerMoney = this.playerInfoGroup.getChildren()[
+          ownerIndex
+        ] as Phaser.GameObjects.Text;
+        mdfOwnerMoney.setText(`¥${owner.getMoney()}`);
+      }
     });
 
     gameService.onMoveConUpgrade((player, land) => {
@@ -426,7 +434,7 @@ export class BoardScene extends Scene {
   }
 
   private drawHouse(landNum: number, type: number): void {
-    let landPos = this.boardPosList[landNum];
+    let landPos = this.boardPosList[landNum%16+1];
 
     if (this.houseMap.get(landNum)) {
       this.houseMap.get(landNum)!.destroy();

@@ -2,7 +2,6 @@ import EventEmitter from 'eventemitter3';
 import {
   Board,
   ConstructionLand,
-  ConstructionLandArrivalOperation,
   Game,
   ModelService,
   Player,
@@ -68,7 +67,13 @@ export class GameService {
     this.ee.on('game-cons-land-rent', cb);
   }
 
-  onMoveConBuy(cb: (player: Player, land: ConstructionLand) => void): void {
+  onMoveConBuy(
+    cb: (
+      player: Player,
+      land: ConstructionLand,
+      owner: Player | undefined,
+    ) => void,
+  ): void {
     this.ee.on('game-cons-land-buy', cb);
   }
 
@@ -153,7 +158,7 @@ export class GameService {
           this._onMoveOnConstructionLandAndRent(args[0], args[1]);
           break;
         case 'move-on-construction-land-and-buy':
-          this._onMoveOnConstructionLandAndBuy(args[0], args[1]);
+          this._onMoveOnConstructionLandAndBuy(args[0], args[1], args[2]);
           break;
         case 'move-on-construction-land-and-upgrade':
           this._onMoveOnConstructionLandAndUpgrade(args[0], args[1]);
@@ -208,6 +213,7 @@ export class GameService {
   private _onMoveOnConstructionLandAndBuy(
     playerTransfer: TransferModel<'player'>,
     landTransfer: TransferModel<'constructionLand'>,
+    ownerTransfer: TransferModel<'player'> | undefined,
   ): void {
     let data = this.modelService.updateModelFromTransfer(
       'player',
@@ -217,7 +223,16 @@ export class GameService {
       'constructionLand',
       landTransfer,
     );
-    this.ee.emit('game-cons-land-buy', data, data1);
+    let data2: Player | undefined;
+
+    if (ownerTransfer) {
+      data2 = this.modelService.updateModelFromTransfer(
+        'player',
+        ownerTransfer,
+      );
+    }
+
+    this.ee.emit('game-cons-land-buy', data, data1, data2);
   }
 
   private _onMoveOnConstructionLandAndUpgrade(
