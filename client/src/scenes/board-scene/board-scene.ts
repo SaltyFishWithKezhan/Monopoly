@@ -923,7 +923,11 @@ export class BoardScene extends Scene {
   }
 
   private checkLandAndPopupOptions(step: number, land: ConstructionLand): void {
-    let player = playerService.player!;
+    let player = playerService.player;
+
+    if (!player) {
+      throw new Error('Player not exists');
+    }
 
     if (land.getOwner() === player.id) {
       // Can upgrade
@@ -957,6 +961,10 @@ export class BoardScene extends Scene {
         delayTime,
         () => {
           this.closeStatus();
+
+          if (!player) {
+            throw new Error('Player not exists');
+          }
 
           if (land.getLevel() < 2 && land.getPrice() < player.getMoney()) {
             this.popupDecision(

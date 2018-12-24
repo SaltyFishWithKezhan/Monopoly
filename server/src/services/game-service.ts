@@ -107,19 +107,49 @@ export class GameService {
     });
 
     socket.on('game:serve-jail-time', (bail: boolean) => {
-      let room = socket.room!;
-      let gameId = room.getGame()!;
-      let game = this.modelService.getModelById('game', gameId)!;
-      let currentPlayerId = game.getCurrentPlayerId()!;
+      let room = socket.room;
 
-      if (currentPlayerId !== socket.player!.id) {
+      if (!room) {
+        throw new Error('Room not exists');
+      }
+
+      let gameId = room.getGame();
+
+      if (!gameId) {
+        throw new Error('GameId undefined');
+      }
+
+      let game = this.modelService.getModelById('game', gameId);
+
+      if (!game) {
+        throw new Error('Game not exists');
+      }
+
+      let currentPlayerId = game.getCurrentPlayerId();
+
+      if (!currentPlayerId) {
+        throw new Error('currentPlayerId undefined');
+      }
+
+      let player = socket.player;
+
+      if (!player) {
+        throw new Error('Player not exists');
+      }
+
+      if (currentPlayerId !== player.id) {
         return;
       }
 
       let currentPlayer = this.modelService.getModelById(
         'player',
         currentPlayerId,
-      )!;
+      );
+
+      if (!currentPlayer) {
+        throw new Error('currentPlayer not exists');
+      }
+
       let landInfo = currentPlayer.getLand();
       let land = this.modelService.getModelById(
         LandTypeToModelTypeKey(landInfo.type),
@@ -150,16 +180,46 @@ export class GameService {
     });
 
     socket.on('game:dice-and-decide', (diceValue: number, ...args: any[]) => {
-      let room = socket.room!;
-      let gameId = room.getGame()!;
-      let game = this.modelService.getModelById('game', gameId)!;
-      let boardId = game.getBoard()!;
+      let room = socket.room;
+
+      if (!room) {
+        throw new Error('Room not exists');
+      }
+
+      let gameId = room.getGame();
+
+      if (!gameId) {
+        throw new Error('GameId undefined');
+      }
+
+      let game = this.modelService.getModelById('game', gameId);
+
+      if (!game) {
+        throw new Error('Game not exists');
+      }
+
+      let boardId = game.getBoard();
+
+      if (!boardId) {
+        throw new Error('boardId undefined');
+      }
+
       let board = this.modelService.getModelById('board', boardId)!;
-      let currentPlayerId = game.getCurrentPlayerId()!;
+      let currentPlayerId = game.getCurrentPlayerId();
+
+      if (!currentPlayerId) {
+        throw new Error('currentPlayerId undefined');
+      }
+
       let currentPlayer = this.modelService.getModelById(
         'player',
         currentPlayerId,
-      )!;
+      );
+
+      if (!currentPlayer) {
+        throw new Error('currentPlayer not exists');
+      }
+
       let oldLandInfo = currentPlayer.getLand();
 
       if (currentPlayer.isInJail()) {
@@ -170,12 +230,20 @@ export class GameService {
         throw new Error(`BoardId ${boardId} not found!`);
       }
 
-      let landInfo = board.getNextLand(oldLandInfo, diceValue)!;
+      let landInfo = board.getNextLand(oldLandInfo, diceValue);
+
+      if (!landInfo) {
+        throw new Error("Next land's landInfo not exists");
+      }
 
       let landModel = this.modelService.getModelById(
         LandTypeToModelTypeKey(landInfo.type),
         landInfo.id,
-      )!;
+      );
+
+      if (!landModel) {
+        throw new Error("Next land's model not exists");
+      }
 
       currentPlayer.setLand(landModel.getLandInfo());
 
@@ -231,7 +299,11 @@ export class GameService {
 
         player.decreaseMoney(rentPrice);
 
-        let owner = this.modelService.getModelById('player', land.data.owner)!;
+        let owner = this.modelService.getModelById('player', land.data.owner);
+
+        if (!owner) {
+          throw new Error('owner player model not exists');
+        }
 
         owner.increaseMoney(rentPrice);
 
@@ -256,10 +328,12 @@ export class GameService {
 
           player.decreaseMoney(rentPrice);
 
-          landOwner = this.modelService.getModelById(
-            'player',
-            land.data.owner,
-          )!;
+          landOwner = this.modelService.getModelById('player', land.data.owner);
+
+          if (!landOwner) {
+            throw new Error('landOwner player model not exists');
+          }
+
           landOwner.increaseMoney(rentPrice);
         }
 
@@ -317,9 +391,23 @@ export class GameService {
   }
 
   private moveOnToNextPlayer(socket: SocketIO.Socket): void {
-    let room = socket.room!;
-    let gameId = room.getGame()!;
-    let game = this.modelService.getModelById('game', gameId)!;
+    let room = socket.room;
+
+    if (!room) {
+      throw new Error('Room not exists');
+    }
+
+    let gameId = room.getGame();
+
+    if (!gameId) {
+      throw new Error('gameId undefined');
+    }
+
+    let game = this.modelService.getModelById('game', gameId);
+
+    if (!game) {
+      throw new Error('game not exists');
+    }
 
     let playerIds = room.getPlayerIds();
 

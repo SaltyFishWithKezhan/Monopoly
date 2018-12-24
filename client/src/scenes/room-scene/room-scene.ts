@@ -2,7 +2,6 @@ import 'animate.css';
 
 import $ from 'jquery';
 import {Scene} from 'phaser';
-import {Player} from 'shared';
 
 import {gameService, playerService, roomService} from '../../service-entrances';
 import {
@@ -53,6 +52,12 @@ export class RoomScene extends Scene {
       return;
     }
 
+    let player = playerService.player;
+
+    if (!player) {
+      throw new Error('Player not exists');
+    }
+
     $('#game-playground').append(
       // right panel
       `<div
@@ -91,7 +96,7 @@ export class RoomScene extends Scene {
             <img src="/assets/lg-text-player.png"/>
         </div>
         <input id="room-player" type="text" disabled placeholder="${
-          playerService.player!.id
+          player.id
         }" style="margin-top: ${height(5.5)}px; height: ${height(
         6,
       )}px; line-height: ${height(8)}px; font-size: ${height(3)}px;" />
@@ -115,8 +120,14 @@ export class RoomScene extends Scene {
   }
 
   private onRoomCreate = (): void => {
+    let player = playerService.player;
+
+    if (!player) {
+      throw new Error('Player not exists');
+    }
+
     roomService
-      .createRoom(playerService.player!.id)
+      .createRoom(player.id)
       .then(() => {
         let textBox = $('#room-number');
         textBox.val(roomService.room!.id);
@@ -125,8 +136,14 @@ export class RoomScene extends Scene {
   };
 
   private onJoinRoom = (): void => {
+    let player = playerService.player;
+
+    if (!player) {
+      throw new Error('Player not exists');
+    }
+
     let roomName = $('#room-number').val() as string;
-    console.info(roomName, playerService.player!.id);
+    console.info(roomName, player.id);
     roomService.joinRoom(roomName, (_room, players) => {
       console.info('Now players:', players.map(player => player.id));
 
