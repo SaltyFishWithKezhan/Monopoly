@@ -1,7 +1,7 @@
 // tslint:disable
 
 import SocketIO from 'socket.io-client';
-import {runServer, stopServer} from './utils';
+import {runServer, stopServer, createConfig} from './utils';
 
 const PLAYER_NAME = 'Dizy';
 
@@ -10,6 +10,7 @@ jest.setTimeout(5000);
 let io = SocketIO('http://localhost:8090');
 
 beforeAll(done => {
+  createConfig();
   runServer().then(() => done());
 });
 
