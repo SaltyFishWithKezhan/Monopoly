@@ -149,10 +149,10 @@ export class BoardScene extends Scene {
   private i: number = 0;
   private houseMap = new Map<number, Phaser.GameObjects.Image>();
 
-  private board: LandInfo[] | undefined;
-  private playerNames: string[] | undefined; // name & id
-  private playerDetails: Player[] | undefined;
-  private currentPlayerId: number | undefined;
+  private board: LandInfo[] = [];
+  private playerNames: string[] = []; // name & id
+  private playerDetails: Player[] = [];
+  private currentPlayerId: number = 0;
 
   constructor() {
     super({key: 'BoardScene'});
@@ -162,14 +162,28 @@ export class BoardScene extends Scene {
     console.info(gameService.board);
     console.info(gameService.game);
     console.info(playerService.player);
-    this.playerNames = gameService.game!.data.players;
-    this.board = gameService.board!.data.lands;
+
+    let game = gameService.game;
+
+    if (!game) {
+      throw new Error('game not exists');
+    }
+
+    let board = gameService.board;
+
+    if (!board) {
+      throw new Error('board not exists');
+    }
+
+    this.playerNames = game.data.players;
+    this.board = board.data.lands;
     this.gameOptions.landCount = this.board.length;
     this.playerDetails = modelService.getModelsByIds(
       'player',
       this.playerNames,
     );
-    this.currentPlayerId = gameService.game!.data.currentPlayerIndex;
+
+    this.currentPlayerId = game.data.currentPlayerIndex;
   }
 
   preload(): void {
@@ -200,7 +214,13 @@ export class BoardScene extends Scene {
     this.createDice();
     this.onRollDice();
 
-    if (this.playerNames![this.currentPlayerId!] === playerService.player!.id) {
+    let player = playerService.player;
+
+    if (!player) {
+      throw new Error('player not exists');
+    }
+
+    if (this.playerNames[this.currentPlayerId] === player.id) {
       this.isCurrentPlayer();
     } else {
       this.notCurrentPlayer();
@@ -287,7 +307,11 @@ export class BoardScene extends Scene {
     });
 
     gameService.onMoveOnNextPlayer(game => {
-      let player = playerService.player!;
+      let player = playerService.player;
+
+      if (!player) {
+        throw new Error('player not exists');
+      }
 
       if (game.getCurrentPlayerId() === player.id) {
         if (!player.isInJail()) {
@@ -319,7 +343,11 @@ export class BoardScene extends Scene {
     });
 
     gameService.onDiceRolled((oldLandId, currentPlayer) => {
-      let player = playerService.player!;
+      let player = playerService.player;
+
+      if (!player) {
+        throw new Error('player not exists');
+      }
 
       if (player.id === currentPlayer.id) {
         return;
@@ -333,7 +361,13 @@ export class BoardScene extends Scene {
 
       let step = newLandIndex - oldLandIndex;
 
-      step = step < 0 ? gameService.board!.getLands().length + step : step;
+      let board = gameService.board;
+
+      if (!board) {
+        throw new Error('board not exists');
+      }
+
+      step = step < 0 ? board.getLands().length + step : step;
 
       let playerIndex = this.findPlayerIndexByPlayerName(currentPlayer.id);
 
@@ -353,8 +387,8 @@ export class BoardScene extends Scene {
 
   private createScene(): void {
     this.createBoard();
-    this.createPlayersInfo(this.playerNames!.length);
-    this.createPlayers(this.playerNames!.length);
+    this.createPlayersInfo(this.playerNames.length);
+    this.createPlayers(this.playerNames.length);
   }
 
   private createBoard(): void {
@@ -382,8 +416,8 @@ export class BoardScene extends Scene {
       }
     });
 
-    for (let index = 0; index < this.board!.length; index++) {
-      switch (this.board![index].type) {
+    for (let index = 0; index < this.board.length; index++) {
+      switch (this.board[index].type) {
         case 0:
           this.boardPosList[index].type = 'start';
           break;
@@ -432,8 +466,10 @@ export class BoardScene extends Scene {
   private drawHouse(landNum: number, type: number): void {
     let landPos = this.boardPosList[landNum];
 
-    if (this.houseMap.get(landNum)) {
-      this.houseMap.get(landNum)!.destroy();
+    let houseImage = this.houseMap.get(landNum);
+
+    if (houseImage) {
+      houseImage.destroy();
     }
 
     let offsetX = -0.02;
@@ -476,17 +512,17 @@ export class BoardScene extends Scene {
     for (let i = 0; i < playerNum; i++) {
       let infoLinePos = this.statInfoPos(paddingX, paddingY + 4, i);
       let playerLine = this.add.image(
-        infoLinePos!.x,
-        infoLinePos!.y,
+        infoLinePos.x,
+        infoLinePos.y,
         this.playerStyle[i].backgroundLine,
       );
       scaleGameObject(playerLine, 0.5);
       // console.info(infoLinePos);
       let infoTextPos = this.statInfoPos(paddingX - 1, paddingY + 10, i);
       let playerInfoText = this.add.text(
-        infoTextPos!.x,
-        infoTextPos!.y,
-        this.playerNames![i],
+        infoTextPos.x,
+        infoTextPos.y,
+        this.playerNames[i],
         {
           fontFamily: 'Arial Black',
           fontSize: 60,
@@ -502,9 +538,9 @@ export class BoardScene extends Scene {
 
       let infoMoneyPos = this.statInfoPos(paddingX - 1, paddingY - 1, i);
       let playerMoney = this.add.text(
-        infoMoneyPos!.x,
-        infoMoneyPos!.y,
-        `¥${this.playerDetails![i].data.money}`,
+        infoMoneyPos.x,
+        infoMoneyPos.y,
+        `¥${this.playerDetails[i].data.money}`,
         {
           fontFamily: 'Arial Black',
           fontSize: 60,
@@ -518,8 +554,8 @@ export class BoardScene extends Scene {
 
       let infoImgPos = this.statInfoPos(paddingX + 10, paddingY + 2, i);
       let playerImg = this.add.image(
-        infoImgPos!.x,
-        infoImgPos!.y,
+        infoImgPos.x,
+        infoImgPos.y,
         this.playerStyle[i].img,
       );
       scaleGameObject(playerImg, 1);
@@ -530,9 +566,10 @@ export class BoardScene extends Scene {
     paddingx: number,
     paddingy: number,
     index: number,
-  ): LandPos | undefined {
-    let ret: LandPos | undefined;
+  ): LandPos {
+    let ret: LandPos;
     switch (index) {
+      default:
       case 0:
         ret = {
           x: width(paddingx),
@@ -605,9 +642,13 @@ export class BoardScene extends Scene {
       // console.info(this.boardPosList[this.i]);
       let landIndex = this.i;
       // this.findLandIndexByModelId(this.player!.landId);
-      let playerIndex = this.findPlayerIndexByPlayerName(
-        playerService.player!.id,
-      );
+      let player = playerService.player;
+
+      if (!player) {
+        throw new Error('player not exists');
+      }
+
+      let playerIndex = this.findPlayerIndexByPlayerName(player.id);
       let endLand = this.playerJump(playerIndex, landIndex, faceValue);
       this.i = endLand;
       // console.log(endLand);
@@ -624,8 +665,8 @@ export class BoardScene extends Scene {
   };
 
   private findLandIndexByModelId = (modelId: string): number => {
-    for (let index = 0; index < this.board!.length; index++) {
-      if (this.board![index].id === modelId) {
+    for (let index = 0; index < this.board.length; index++) {
+      if (this.board[index].id === modelId) {
         return index;
       }
     }
@@ -634,8 +675,8 @@ export class BoardScene extends Scene {
   };
 
   private findPlayerIndexByPlayerName = (modelId: string): number => {
-    for (let index = 0; index < this.playerNames!.length; index++) {
-      if (this.playerNames![index] === modelId) {
+    for (let index = 0; index < this.playerNames.length; index++) {
+      if (this.playerNames[index] === modelId) {
         return index;
       }
     }
@@ -891,10 +932,14 @@ export class BoardScene extends Scene {
   private notCurrentPlayer(): void {
     $('#area').hide();
 
+    let game = gameService.game;
+
+    if (!game) {
+      throw new Error('game not exists');
+    }
+
     this.popupStatus(
-      `${
-        this.playerNames![gameService.game!.data.currentPlayerIndex]
-      }\n正在进行游戏,请稍等`,
+      `${this.playerNames[game.data.currentPlayerIndex]}\n正在进行游戏,请稍等`,
     );
 
     // console.log( `${
@@ -903,8 +948,8 @@ export class BoardScene extends Scene {
   }
 
   private landEvent(step: number, pos: number): void {
-    let landType = this.board![pos].type;
-    let landId = this.board![pos].id;
+    let landType = this.board[pos].type;
+    let landId = this.board[pos].id;
 
     switch (landType) {
       case LandType.construction:

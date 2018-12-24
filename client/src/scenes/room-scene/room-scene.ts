@@ -130,7 +130,14 @@ export class RoomScene extends Scene {
       .createRoom(player.id)
       .then(() => {
         let textBox = $('#room-number');
-        textBox.val(roomService.room!.id);
+
+        let room = roomService.room;
+
+        if (!room) {
+          throw new Error('room not exists');
+        }
+
+        textBox.val(room.id);
       })
       .catch(console.error);
   };
