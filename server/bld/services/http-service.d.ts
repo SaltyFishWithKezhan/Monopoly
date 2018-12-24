@@ -6,5 +6,6 @@ export declare class HTTPService {
     private httpServer;
     constructor(app: express.Express, httpServer: Server);
     listen(port?: number): void;
+    stop(): void;
     private initialize;
 }

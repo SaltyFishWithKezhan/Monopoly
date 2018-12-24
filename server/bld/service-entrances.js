@@ -14,6 +14,8 @@ exports.httpService = new services_1.HTTPService(app, httpServer);
 exports.socketService = new services_1.SocketService(io);
 exports.modelService = new shared_1.ModelService();
 exports.playerService = new services_1.PlayerService(exports.socketService, exports.modelService);
+exports.roomService = new services_1.RoomService(exports.socketService, exports.modelService);
+exports.gameService = new services_1.GameService(exports.socketService, exports.modelService);
 exports.servicesReady = Promise.all([]);
 function listen() {
     let port = process.env.PORT || config_1.Config.server.get('port');

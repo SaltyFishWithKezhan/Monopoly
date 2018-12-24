@@ -1,0 +1,342 @@
+{
+  "board": {
+    "files": [
+      {
+        "type": "image",
+        "key": "board-bg",
+        "url": "assets/lg-bg.jpg",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "green-block",
+        "url": "assets/green-block.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "red-block",
+        "url": "assets/red-block.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "yellow-block",
+        "url": "assets/yellow-block.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "blue-block",
+        "url": "assets/blue-block.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "neutral",
+        "url": "assets/neutral.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "start",
+        "url": "assets/start.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "parking",
+        "url": "assets/parking.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "jail",
+        "url": "assets/jail.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-1",
+        "url": "assets/building-1.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-2",
+        "url": "assets/building-2.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-3",
+        "url": "assets/building-3.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-4",
+        "url": "assets/building-4.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-5",
+        "url": "assets/building-5.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-6",
+        "url": "assets/building-6.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-7",
+        "url": "assets/building-7.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-8",
+        "url": "assets/building-8.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-9",
+        "url": "assets/building-9.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-10",
+        "url": "assets/building-10.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-11",
+        "url": "assets/building-11.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-12",
+        "url": "assets/building-12.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-13",
+        "url": "assets/building-13.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-14",
+        "url": "assets/building-21.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-15",
+        "url": "assets/building-22.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level2-16",
+        "url": "assets/building-23.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-1",
+        "url": "assets/building-14.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-2",
+        "url": "assets/building-15.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-3",
+        "url": "assets/building-16.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-4",
+        "url": "assets/building-17.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-5",
+        "url": "assets/building-18.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-6",
+        "url": "assets/building-19.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-7",
+        "url": "assets/building-20.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-8",
+        "url": "assets/building-24.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-9",
+        "url": "assets/building-25.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-10",
+        "url": "assets/building-26.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-11",
+        "url": "assets/building-27.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level-12",
+        "url": "assets/building-28.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-13",
+        "url": "assets/building-29.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-14",
+        "url": "assets/building-30.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-15",
+        "url": "assets/building-31.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "building-level1-16",
+        "url": "assets/building-32.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "player1",
+        "url": "assets/player1.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "player2",
+        "url": "assets/player2.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "player3",
+        "url": "assets/player3.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "player0",
+        "url": "assets/player4.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "yellow-bg",
+        "url": "assets/yellow-bg.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "blue-bg",
+        "url": "assets/blue-bg.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "green-bg",
+        "url": "assets/green-bg.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "red-bg",
+        "url": "assets/red-bg.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "decision-bg",
+        "url": "assets/decision-bg.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-yes",
+        "url": "assets/game-btn-yes.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-yes-hover",
+        "url": "assets/game-btn-yes-hover.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-yes-active",
+        "url": "assets/game-btn-yes-active.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-no",
+        "url": "assets/game-btn-no.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-no-hover",
+        "url": "assets/game-btn-no-hover.png",
+        "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "game-btn-no-active",
+        "url": "assets/game-btn-no-active.png",
+        "overwrite": false
+      }
+    ]
+  }
+}

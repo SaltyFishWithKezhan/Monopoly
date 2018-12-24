@@ -13,4 +13,5 @@ export declare class PlayerService {
     constructor(socketService: SocketService, modelService: ModelService);
     private initialize;
     private initializeSocket;
+    private cleanUpRoom;
 }
