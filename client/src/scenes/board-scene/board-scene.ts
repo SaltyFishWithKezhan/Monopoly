@@ -2,7 +2,7 @@ import 'animate.css';
 
 import $ from 'jquery';
 import {Scene} from 'phaser';
-import {ConstructionLand, LandInfo, LandType, Player, PlayerData} from 'shared';
+import {ConstructionLand, LandInfo, LandType, Player} from 'shared';
 
 import {
   gameService,
@@ -136,7 +136,6 @@ export class BoardScene extends Scene {
   ];
 
   private landGroup!: Phaser.GameObjects.Group;
-  private houseGroup!: Phaser.GameObjects.Group;
   private playerGroup!: Phaser.GameObjects.Group;
   private playerInfoGroup!: Phaser.GameObjects.Group;
   private decisionGroup!: Phaser.GameObjects.Group;
@@ -150,7 +149,6 @@ export class BoardScene extends Scene {
   private i: number = 0;
   private houseMap = new Map<number, Phaser.GameObjects.Image>();
 
-  private player: PlayerData | undefined;
   private board: LandInfo[] | undefined;
   private playerNames: string[] | undefined; // name & id
   private playerDetails: Player[] | undefined;
@@ -164,7 +162,6 @@ export class BoardScene extends Scene {
     console.info(gameService.board);
     console.info(gameService.game);
     console.info(playerService.player);
-    this.player = playerService.player!.data;
     this.playerNames = gameService.game!.data.players;
     this.board = gameService.board!.data.lands;
     this.gameOptions.landCount = this.board.length;
@@ -192,7 +189,6 @@ export class BoardScene extends Scene {
 
   create(): void {
     this.landGroup = this.add.group();
-    this.houseGroup = this.add.group();
     this.playerGroup = this.add.group();
     this.playerInfoGroup = this.add.group();
     this.decisionGroup = this.add.group();
@@ -235,7 +231,7 @@ export class BoardScene extends Scene {
       mdfPlayerMoney.setText(`¥${player.getMoney()}`);
     });
 
-    gameService.onServeJail(player => {});
+    gameService.onServeJail(_player => {});
 
     gameService.onMoveConRent((player, owner) => {
       let playerIndex = this.findPlayerIndexByPlayerName(player.id);
@@ -258,7 +254,7 @@ export class BoardScene extends Scene {
       ] as Phaser.GameObjects.Text;
       mdfPlayerMoney.setText(`¥${player.data.money}`);
       let landIndex = this.findLandIndexByModelId(land.id);
-      console.log('index!!!:::', landIndex);
+      // console.log('index!!!:::', landIndex);
       this.changeLand(landIndex, playerIndex);
 
       if (owner) {
@@ -375,7 +371,7 @@ export class BoardScene extends Scene {
       for (let i = 0; i < count; i++) {
         let landX = element.x + element.posX * offsetX * i;
         let landY = element.y + element.posY * offsetY * i;
-        let pos = element.pos + i;
+        // let pos = element.pos + i;
         let posJson = {
           x: landX / gameWidth,
           y: landY / gameHeight,
@@ -473,7 +469,7 @@ export class BoardScene extends Scene {
   }
 
   private createPlayersInfo(playerNum: number): void {
-    let concatStrNum = (str: string, num: number): string => str + num;
+    // let concatStrNum = (str: string, num: number): string => str + num;
     let paddingX = 10;
     let paddingY = 5;
 
@@ -614,7 +610,7 @@ export class BoardScene extends Scene {
       );
       let endLand = this.playerJump(playerIndex, landIndex, faceValue);
       this.i = endLand;
-      console.log(endLand);
+      // console.log(endLand);
 
       this.time.delayedCall(
         3000 + 800 * faceValue,
@@ -669,7 +665,7 @@ export class BoardScene extends Scene {
         y: this.boardPosList[nextPos].y * gameHeight,
       };
 
-      console.log(firstPos, nextPos);
+      // console.log(firstPos, nextPos);
 
       this.time.delayedCall(
         800 * (stepTurn - pos + 1),
@@ -691,10 +687,10 @@ export class BoardScene extends Scene {
     end: any,
     delay: boolean = true,
   ): void => {
-    console.log(start);
+    // console.log(start);
     let startPoint = new Phaser.Math.Vector2(start.x, start.y);
     let endPoint = new Phaser.Math.Vector2(end.x, end.y);
-    let stepX = end.x - start.x;
+    // let stepX = end.x - start.x;
     let stepY = end.y - start.y;
     console.info(start.x);
     let marker = this.playerGroup.getChildren()[
@@ -732,10 +728,10 @@ export class BoardScene extends Scene {
       callbackScope: this,
       delay: delay ? 2500 : undefined,
       onComplete: () => {},
-      onUpdate: (tween: Phaser.Tweens.TweenManager, target: any) => {
+      onUpdate: (_tween: Phaser.Tweens.TweenManager, target: any) => {
         let position = bezierCurve.getPoint(target.value);
         let prevPosition = bezierCurve.getPoint(target.previousValue);
-        let step = target.value - target.previousValue;
+        // let step = target.value - target.previousValue;
         marker.x += position.x - prevPosition.x;
         marker.y += position.y - prevPosition.y;
         target.previousValue = target.value;
@@ -814,7 +810,7 @@ export class BoardScene extends Scene {
     });
   }
 
-  private popupStatus(text:string):void{
+  private popupStatus(text: string): void {
     $('#area').hide();
 
     if (this.statusGroup.getLength() === 0) {
@@ -895,15 +891,15 @@ export class BoardScene extends Scene {
   private notCurrentPlayer(): void {
     $('#area').hide();
 
-      this.popupStatus(
-        `${
-          this.playerNames![gameService.game!.data.currentPlayerIndex]
-        }\n正在进行游戏,请稍等`,
-      );
-
-      console.log( `${
+    this.popupStatus(
+      `${
         this.playerNames![gameService.game!.data.currentPlayerIndex]
-      }\n正在进行游戏,请稍等`);
+      }\n正在进行游戏,请稍等`,
+    );
+
+    // console.log( `${
+    //   this.playerNames![gameService.game!.data.currentPlayerIndex]
+    // }\n正在进行游戏,请稍等`);
   }
 
   private landEvent(step: number, pos: number): void {
@@ -950,11 +946,12 @@ export class BoardScene extends Scene {
       let ownerId = land.getOwner();
       let delayTime = 0;
 
-      if(ownerId){
-        this.popupStatus(`您需要向${land.getOwner()}支付\n&${land.getRentPrice()}租金哦~`)
+      if (ownerId) {
+        this.popupStatus(
+          `您需要向${land.getOwner()}支付\n&${land.getRentPrice()}租金哦~`,
+        );
         delayTime = 2000;
       }
-
 
       this.time.delayedCall(
         delayTime,
@@ -977,6 +974,6 @@ export class BoardScene extends Scene {
         [],
         this,
       );
-
+    }
   }
 }
