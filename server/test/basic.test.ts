@@ -63,21 +63,25 @@ test('create room', () => {
 
 test('join room', () => {
   let promise = new Promise<any>(resolve => {
-    io.on('room:success', (action: string, roomTransfer: object) => {
-      resolve({action, roomTransfer});
-    });
+    io.on(
+      'room:player-join',
+      (roomTransfer: string, playerTransfers: object[]) => {
+        resolve({roomTransfer, playerTransfers});
+      },
+    );
 
     io.on('room:fail', (action: string, code: number) => {
       resolve({action, code});
     });
 
     io.emit('room:join', roomId);
+
+    console.log('roomId', roomId);
   });
 
-  return promise.then(({action, roomTransfer}) => {
-    expect(action).toBe('room:join');
+  return promise.then(({roomTransfer, playerTransfers}) => {
     expect(roomTransfer).toHaveProperty('id', roomId);
-    expect(roomTransfer['data']['players']).toContain(PLAYER_NAME);
+    expect(Array.isArray(playerTransfers)).toBeTruthy();
   });
 });
 
