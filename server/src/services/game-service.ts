@@ -5,15 +5,18 @@ import {
   Game,
   GoLand,
   // JailLand,
+  LUCKY_CARD_COST_POINT,
   LandType,
   LandTypeToModelTypeKey,
   ModelService,
   ParkingLand,
   Player,
   Room,
+  TransferModel,
   isConstructionLand,
   isGoLand,
   isJailLand,
+  isParkingLand,
   packModel,
   packModels,
 } from 'shared';
@@ -263,10 +266,32 @@ export class GameService {
         );
       } else if (isJailLand(landModel)) {
         this.playerMoveOnJailLand(socket, room, currentPlayer);
+      } else if (isParkingLand(landModel)) {
+        this.playerMoveOnParkingLand(socket, room, currentPlayer, args[0]);
       }
 
       this.moveOnToNextPlayer(socket);
     });
+
+    socket.on(
+      'game:use-lucky-card',
+      (playerTransfer: TransferModel<'player'>) => {
+        let room = socket.room;
+
+        if (!room) {
+          throw new Error('Room not exists');
+        }
+
+        let player = this.modelService.updateModelFromTransfer(
+          'player',
+          playerTransfer,
+        );
+
+        this.io
+          .in(room.getRoomURL())
+          .emit('game:player-use-lucky-card', packModel(player));
+      },
+    );
   }
 
   private playerMoveOnGoLand(
@@ -388,6 +413,27 @@ export class GameService {
     this.io
       .in(room.getRoomURL())
       .emit('game:game-step', 'move-on-jail-land', packModel(player));
+  }
+
+  private playerMoveOnParkingLand(
+    _socket: SocketIO.Socket,
+    room: Room,
+    player: Player,
+    buyLuckyCardCount: number | undefined,
+  ): void {
+    if (!buyLuckyCardCount) {
+      return;
+    }
+
+    if (player.getPoint() < buyLuckyCardCount * LUCKY_CARD_COST_POINT) {
+      return;
+    }
+
+    player.buyLuckyCard(buyLuckyCardCount);
+
+    this.io
+      .in(room.getRoomURL())
+      .emit('game:game-step', 'move-on-parking-land', packModel(player));
   }
 
   private moveOnToNextPlayer(socket: SocketIO.Socket): void {
