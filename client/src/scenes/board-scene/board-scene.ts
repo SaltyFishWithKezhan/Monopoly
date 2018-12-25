@@ -38,7 +38,8 @@ export class BoardScene extends Scene {
 
   // private boardData: any;
 
-  private myDice: any | undefined;
+  private myDice1: any | undefined;
+  private myDice2: any | undefined;
 
   private points = [
     // bottom:
@@ -611,7 +612,10 @@ export class BoardScene extends Scene {
       `<div id="area"
        style=" width: ${width(25)}px;
               height: ${height(20)}px;">
-        <div id="dice-area"></div>
+        <div id="dice-area">
+        <div id="dice1"></div>
+        <div id="dice2"></div>
+        </div>
         <div id="operation">
         <button id="roll-btn"
         style="margin: ${height(4)}px;
@@ -623,18 +627,20 @@ export class BoardScene extends Scene {
       `,
     );
 
-    this.myDice = dice(document.getElementById('dice-area'), width(10));
+    this.myDice1 = dice(document.getElementById('dice1'), width(5));
+    this.myDice2 = dice(document.getElementById('dice2'), width(5));
 
     // $('#stop-btn').on('click', () => {
-    //   myDice.stop();
-    // });
+    //   myDice.stop() ;   // });
   };
 
   private onRollDice = (): void => {
     $('#roll-btn').on('click', () => {
-      let faceValue = Math.ceil(Math.random() * 6);
-      this.myDice.roll(faceValue);
-      console.info(faceValue);
+      let faceValue1 = Math.ceil(Math.random() * 6);
+      let faceValue2 = Math.ceil(Math.random() * 6);
+      this.myDice1.roll(faceValue1);
+      this.myDice2.roll(faceValue2);
+      console.info(faceValue1, faceValue2);
       $('#roll-btn').attr('disabled', 'true');
 
       // $('#roll-btn').removeAttr('disable');
@@ -649,14 +655,18 @@ export class BoardScene extends Scene {
       }
 
       let playerIndex = this.findPlayerIndexByPlayerName(player.id);
-      let endLand = this.playerJump(playerIndex, landIndex, faceValue);
+      let endLand = this.playerJump(
+        playerIndex,
+        landIndex,
+        faceValue1 + faceValue2,
+      );
       this.i = endLand;
       // console.log(endLand);
 
       this.time.delayedCall(
-        3000 + 800 * faceValue,
+        3000 + 800 * (faceValue1 + faceValue2),
         () => {
-          this.landEvent(faceValue, endLand);
+          this.landEvent(faceValue1 + faceValue2, endLand);
         },
         [],
         this,
