@@ -1019,11 +1019,17 @@ export class BoardScene extends Scene {
                   gameService.diceAndDecide(step, 'buy');
                 } else if (land.getOwner()) {
                   gameService.diceAndDecide(step, 'rent');
+                } else {
+                  gameService.diceAndDecide(step, 'pass');
                 }
               },
             );
           } else {
-            gameService.diceAndDecide(step, 'rent');
+            if (land.getOwner()) {
+              gameService.diceAndDecide(step, 'rent');
+            } else {
+              gameService.diceAndDecide(step, 'pass');
+            }
           }
         },
         [],

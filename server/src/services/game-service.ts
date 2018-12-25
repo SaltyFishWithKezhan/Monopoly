@@ -4,7 +4,7 @@ import {
   ConstructionLandArrivalOperation,
   Game,
   GoLand,
-  // JailLand,
+  JailLand,
   LUCKY_CARD_COST_POINT,
   LandType,
   LandTypeToModelTypeKey,
@@ -248,6 +248,13 @@ export class GameService {
         throw new Error("Next land's model not exists");
       }
 
+      let oldLandIndex = board.indexOfLand(oldLandInfo);
+      let newLandIndex = board.indexOfLand(landInfo);
+
+      if (newLandIndex < oldLandIndex) {
+        currentPlayer.increaseMoney(30);
+      }
+
       currentPlayer.setLand(landModel.getLandInfo());
 
       this.io
@@ -298,9 +305,11 @@ export class GameService {
     _socket: SocketIO.Socket,
     room: Room,
     player: Player,
-    land: GoLand,
+    _land: GoLand,
   ): void {
-    player.increaseMoney(land.data.salary);
+    let points = [20, 30, 50];
+
+    player.increasePoint(points[Math.floor(Math.random() * points.length)]);
 
     this.io
       .in(room.getRoomURL())
@@ -499,7 +508,7 @@ function createNormalBoardLands(
 
   board.addLand(goLand.getLandInfo());
 
-  createConstructionLands(4);
+  createConstructionLands(3);
 
   let parkingLand1 = new ParkingLand();
 
@@ -507,21 +516,15 @@ function createNormalBoardLands(
 
   board.addLand(parkingLand1.getLandInfo());
 
-  createConstructionLands(4);
+  createConstructionLands(3);
 
-  // let jailLand = new JailLand();
+  let jailLand = new JailLand();
 
-  // modelService.addModel('jailLand', jailLand);
+  modelService.addModel('jailLand', jailLand);
 
-  // board.addLand(jailLand.getLandInfo());
+  board.addLand(jailLand.getLandInfo());
 
-  let parkingLand2 = new ParkingLand();
-
-  modelService.addModel('parkingLand', parkingLand2);
-
-  board.addLand(parkingLand2.getLandInfo());
-
-  createConstructionLands(4);
+  createConstructionLands(3);
 
   let parkingLand3 = new ParkingLand();
 
@@ -529,7 +532,7 @@ function createNormalBoardLands(
 
   board.addLand(parkingLand3.getLandInfo());
 
-  createConstructionLands(4);
+  createConstructionLands(3);
 
   function createConstructionLands(count: number): void {
     for (let i = 0; i < count; i++) {
