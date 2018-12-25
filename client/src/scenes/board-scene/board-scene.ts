@@ -1022,6 +1022,8 @@ export class BoardScene extends Scene {
                 }
               },
             );
+          } else {
+            gameService.diceAndDecide(step, 'rent');
           }
         },
         [],
