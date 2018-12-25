@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("../core");
 const land_1 = require("./land");
+exports.LUCKY_CARD_COST_POINT = 100;
 class Player extends core_1.Model {
     constructor() {
         super(...arguments);
@@ -10,6 +11,8 @@ class Player extends core_1.Model {
             landType: land_1.LandType.go,
             landId: '',
             jailTime: 0,
+            luckyCardCount: 0,
+            point: 0,
         };
     }
     setLand({ id, type }) {
@@ -31,6 +34,31 @@ class Player extends core_1.Model {
     }
     isBroke() {
         return this.data.money <= 0;
+    }
+    getPoint() {
+        return this.data.point;
+    }
+    increasePoint(amount) {
+        this.data.point += amount;
+    }
+    decreasePoint(amount) {
+        this.data.point -= amount;
+    }
+    buyLuckyCard(num) {
+        let cost = num * exports.LUCKY_CARD_COST_POINT;
+        if (this.getPoint() < cost) {
+            return;
+        }
+        this.decreasePoint(cost);
+    }
+    getLuckyCardCount() {
+        return this.data.luckyCardCount;
+    }
+    hasLuckyCard() {
+        return this.data.luckyCardCount > 0;
+    }
+    useLuckyCard() {
+        this.data.luckyCardCount--;
     }
     putIntoJail() {
         this.data.jailTime = 1;

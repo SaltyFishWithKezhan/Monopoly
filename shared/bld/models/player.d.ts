@@ -1,10 +1,13 @@
 import { Model } from '../core';
 import { LandInfo, LandType } from './land';
+export declare const LUCKY_CARD_COST_POINT = 100;
 export interface PlayerData {
     money: number;
     landType: LandType;
     landId: string;
     jailTime: number;
+    luckyCardCount: number;
+    point: 0;
 }
 export declare class Player extends Model {
     data: PlayerData;
@@ -14,6 +17,13 @@ export declare class Player extends Model {
     decreaseMoney(amount: number): void;
     getMoney(): number;
     isBroke(): boolean;
+    getPoint(): number;
+    increasePoint(amount: number): void;
+    decreasePoint(amount: number): void;
+    buyLuckyCard(num: number): void;
+    getLuckyCardCount(): number;
+    hasLuckyCard(): boolean;
+    useLuckyCard(): void;
     putIntoJail(): void;
     getJailTime(): number;
     serveJailTime(): number;

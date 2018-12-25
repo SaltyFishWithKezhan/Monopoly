@@ -144,6 +144,11 @@ class GameService {
             if (!landModel) {
                 throw new Error("Next land's model not exists");
             }
+            let oldLandIndex = board.indexOfLand(oldLandInfo);
+            let newLandIndex = board.indexOfLand(landInfo);
+            if (newLandIndex < oldLandIndex) {
+                currentPlayer.increaseMoney(30);
+            }
             currentPlayer.setLand(landModel.getLandInfo());
             this.io
                 .in(room.getRoomURL())
@@ -157,11 +162,25 @@ class GameService {
             else if (shared_1.isJailLand(landModel)) {
                 this.playerMoveOnJailLand(socket, room, currentPlayer);
             }
+            else if (shared_1.isParkingLand(landModel)) {
+                this.playerMoveOnParkingLand(socket, room, currentPlayer, args[0]);
+            }
             this.moveOnToNextPlayer(socket);
         });
+        socket.on('game:use-lucky-card', (playerTransfer) => {
+            let room = socket.room;
+            if (!room) {
+                throw new Error('Room not exists');
+            }
+            let player = this.modelService.updateModelFromTransfer('player', playerTransfer);
+            this.io
+                .in(room.getRoomURL())
+                .emit('game:player-use-lucky-card', shared_1.packModel(player));
+        });
     }
-    playerMoveOnGoLand(_socket, room, player, land) {
-        player.increaseMoney(land.data.salary);
+    playerMoveOnGoLand(_socket, room, player, _land) {
+        let points = [20, 30, 50];
+        player.increasePoint(points[Math.floor(Math.random() * points.length)]);
         this.io
             .in(room.getRoomURL())
             .emit('game:game-step', 'move-on-go-land', shared_1.packModel(player));
@@ -226,6 +245,18 @@ class GameService {
             .in(room.getRoomURL())
             .emit('game:game-step', 'move-on-jail-land', shared_1.packModel(player));
     }
+    playerMoveOnParkingLand(_socket, room, player, buyLuckyCardCount) {
+        if (!buyLuckyCardCount) {
+            return;
+        }
+        if (player.getPoint() < buyLuckyCardCount * shared_1.LUCKY_CARD_COST_POINT) {
+            return;
+        }
+        player.buyLuckyCard(buyLuckyCardCount);
+        this.io
+            .in(room.getRoomURL())
+            .emit('game:game-step', 'move-on-parking-land', shared_1.packModel(player));
+    }
     moveOnToNextPlayer(socket) {
         let room = socket.room;
         if (!room) {
@@ -270,22 +301,19 @@ function createNormalBoardLands(modelService, board) {
     let goLand = new shared_1.GoLand();
     modelService.addModel('goLand', goLand);
     board.addLand(goLand.getLandInfo());
-    createConstructionLands(4);
+    createConstructionLands(3);
     let parkingLand1 = new shared_1.ParkingLand();
     modelService.addModel('parkingLand', parkingLand1);
     board.addLand(parkingLand1.getLandInfo());
-    createConstructionLands(4);
-    // let jailLand = new JailLand();
-    // modelService.addModel('jailLand', jailLand);
-    // board.addLand(jailLand.getLandInfo());
-    let parkingLand2 = new shared_1.ParkingLand();
-    modelService.addModel('parkingLand', parkingLand2);
-    board.addLand(parkingLand2.getLandInfo());
-    createConstructionLands(4);
+    createConstructionLands(3);
+    let jailLand = new shared_1.JailLand();
+    modelService.addModel('jailLand', jailLand);
+    board.addLand(jailLand.getLandInfo());
+    createConstructionLands(3);
     let parkingLand3 = new shared_1.ParkingLand();
     modelService.addModel('parkingLand', parkingLand3);
     board.addLand(parkingLand3.getLandInfo());
-    createConstructionLands(4);
+    createConstructionLands(3);
     function createConstructionLands(count) {
         for (let i = 0; i < count; i++) {
             let land = new shared_1.ConstructionLand();
