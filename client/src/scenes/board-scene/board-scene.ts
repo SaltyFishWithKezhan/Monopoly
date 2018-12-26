@@ -244,6 +244,10 @@ export class BoardScene extends Scene {
       mdfPlayerMoney.setText(`¥${player.data.money}`);
     });
 
+    // gameService.onMoveOnJailLand(player => {
+    //   this.popupStatus(`您已经进入监狱,\n请停一回合`);
+    // });
+
     gameService.onBailJail(player => {
       let index = this.findPlayerIndexByPlayerName(player.id);
       let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
@@ -252,7 +256,7 @@ export class BoardScene extends Scene {
       mdfPlayerMoney.setText(`¥${player.getMoney()}`);
     });
 
-    gameService.onServeJail(_player => {});
+    // gameService.onServeJail(_player => {});
 
     gameService.onMoveConRent((player, owner) => {
       let playerIndex = this.findPlayerIndexByPlayerName(player.id);
@@ -308,6 +312,8 @@ export class BoardScene extends Scene {
     });
 
     gameService.onMoveOnNextPlayer(game => {
+      console.info('onMoveOnNextPlayer', playerService.player!.getLand());
+
       let player = playerService.player;
 
       if (!player) {
@@ -315,6 +321,8 @@ export class BoardScene extends Scene {
       }
 
       if (game.getCurrentPlayerId() === player.id) {
+        console.info('nextplayer', player);
+
         if (!player.isInJail()) {
           this.isCurrentPlayer();
           return;
@@ -331,10 +339,17 @@ export class BoardScene extends Scene {
         if (jailLand.getBailPrice() >= player.getMoney()) {
           gameService.serveJailTime(false);
         } else {
+          this.closeStatus();
           this.popupDecision(
-            `您当前在监狱中，是否花¥${jailLand.getBailPrice()}保释？`,
+            `您当前在监狱中，\n是否花¥${jailLand.getBailPrice()}保释？`,
             yes => {
               gameService.serveJailTime(yes);
+
+              if (yes) {
+                console.info('bail from jail');
+                this.isCurrentPlayer();
+              } else {
+              }
             },
           );
         }
@@ -638,6 +653,8 @@ export class BoardScene extends Scene {
     $('#roll-btn').on('click', () => {
       let faceValue1 = Math.ceil(Math.random() * 6);
       let faceValue2 = Math.ceil(Math.random() * 6);
+      faceValue1 = 4;
+      faceValue2 = 4;
       this.myDice1.roll(faceValue1);
       this.myDice2.roll(faceValue2);
       console.info(faceValue1, faceValue2);
@@ -922,6 +939,7 @@ export class BoardScene extends Scene {
   }
 
   private closeStatus(): void {
+    console.info('closeStatus');
     this.statusGroup.children.iterate(child => {
       child.setVisible(false);
     }, 0);
@@ -970,6 +988,18 @@ export class BoardScene extends Scene {
         }
 
         this.checkLandAndPopupOptions(step, land);
+        break;
+
+      case LandType.jail:
+        this.popupStatus(`您已经进入监狱,\n请停一回合`);
+        this.time.delayedCall(
+          1000,
+          () => {
+            gameService.diceAndDecide(step);
+          },
+          [],
+          this,
+        );
         break;
       default:
         gameService.diceAndDecide(step);

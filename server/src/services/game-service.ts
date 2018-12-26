@@ -172,6 +172,7 @@ export class GameService {
         this.io
           .in(room.getRoomURL())
           .emit('game:game-step', 'bail-from-jail', packModel(currentPlayer));
+        return; // 保释则不会moveOnToNextPlayer
       } else {
         currentPlayer.serveJailTime();
         this.io
