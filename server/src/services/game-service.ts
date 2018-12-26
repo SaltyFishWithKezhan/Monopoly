@@ -490,11 +490,10 @@ export class GameService {
     if (!gameOver) {
       game.moveOnToNextPlayer();
 
-      if (!this.randomEvents(room, game)) {
-        this.io
-          .in(room.getRoomURL())
-          .emit('game:game-step', 'move-on-next-player', packModel(game));
-      }
+      this.randomEvents(room, game);
+      this.io
+        .in(room.getRoomURL())
+        .emit('game:game-step', 'move-on-next-player', packModel(game));
     } else {
       this.io.in(room.getRoomURL()).emit('game:game-over', winnerId);
     }
