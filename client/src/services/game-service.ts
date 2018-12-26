@@ -47,6 +47,10 @@ export class GameService {
     this.ee.on('dice-rolled', cb);
   }
 
+  // onMoveOnJailLand(cb: (player: Player) => void): void {
+  //   this.ee.on('game-on-jail-land', cb);
+  // }
+
   onMoveOnGoLand(cb: (player: Player) => void): void {
     this.ee.on('game-on-go-land', cb);
   }
@@ -55,12 +59,12 @@ export class GameService {
     this.ee.on('game-next-player', cb);
   }
 
-  onServeJail(cb: (player: Player) => void): void {
-    this.ee.on('game-bail-jail', cb);
-  }
+  // onServeJail(cb: (player: Player) => void): void {
+  //   this.ee.on('game-server-jail', cb);
+  // }
 
   onBailJail(cb: (player: Player) => void): void {
-    this.ee.on('game-serve-jail', cb);
+    this.ee.on('game-bail-jail', cb);
   }
 
   onMoveConRent(cb: (player: Player, owner: Player) => void): void {
@@ -155,6 +159,9 @@ export class GameService {
         case 'serve-jail-time':
           this._onServeJailTime(args[0]);
           break;
+        case 'move-on-jail-land':
+          this._onMoveOnJailLand(args[0]);
+          break;
         case 'move-on-go-land':
           this._onMoveOnGoLand(args[0]);
           break;
@@ -194,6 +201,11 @@ export class GameService {
       playerTransfer,
     );
     this.ee.emit('game-serve-jail', data);
+  }
+
+  private _onMoveOnJailLand(playerTransfer: TransferModel<'player'>): void {
+    this.modelService.updateModelFromTransfer('player', playerTransfer);
+    // this.ee.emit('game-on-jail-land', data);
   }
 
   private _onMoveOnGoLand(playerTransfer: TransferModel<'player'>): void {

@@ -38,7 +38,8 @@ export class BoardScene extends Scene {
 
   // private boardData: any;
 
-  private myDice: any | undefined;
+  private myDice1: any | undefined;
+  private myDice2: any | undefined;
 
   private points = [
     // bottom:
@@ -243,6 +244,10 @@ export class BoardScene extends Scene {
       mdfPlayerMoney.setText(`¥${player.data.money}`);
     });
 
+    // gameService.onMoveOnJailLand(player => {
+    //   this.popupStatus(`您已经进入监狱,\n请停一回合`);
+    // });
+
     gameService.onBailJail(player => {
       let index = this.findPlayerIndexByPlayerName(player.id);
       let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
@@ -251,7 +256,7 @@ export class BoardScene extends Scene {
       mdfPlayerMoney.setText(`¥${player.getMoney()}`);
     });
 
-    gameService.onServeJail(_player => {});
+    // gameService.onServeJail(_player => {});
 
     gameService.onMoveConRent((player, owner) => {
       let playerIndex = this.findPlayerIndexByPlayerName(player.id);
@@ -307,6 +312,8 @@ export class BoardScene extends Scene {
     });
 
     gameService.onMoveOnNextPlayer(game => {
+      console.info('onMoveOnNextPlayer', playerService.player!.getLand());
+
       let player = playerService.player;
 
       if (!player) {
@@ -314,6 +321,8 @@ export class BoardScene extends Scene {
       }
 
       if (game.getCurrentPlayerId() === player.id) {
+        console.info('nextplayer', player);
+
         if (!player.isInJail()) {
           this.isCurrentPlayer();
           return;
@@ -330,10 +339,17 @@ export class BoardScene extends Scene {
         if (jailLand.getBailPrice() >= player.getMoney()) {
           gameService.serveJailTime(false);
         } else {
+          this.closeStatus();
           this.popupDecision(
-            `您当前在监狱中，是否花¥${jailLand.getBailPrice()}保释？`,
+            `您当前在监狱中，\n是否花¥${jailLand.getBailPrice()}保释？`,
             yes => {
               gameService.serveJailTime(yes);
+
+              if (yes) {
+                console.info('bail from jail');
+                this.isCurrentPlayer();
+              } else {
+              }
             },
           );
         }
@@ -611,7 +627,10 @@ export class BoardScene extends Scene {
       `<div id="area"
        style=" width: ${width(25)}px;
               height: ${height(20)}px;">
-        <div id="dice-area"></div>
+        <div id="dice-area">
+        <div id="dice1"></div>
+        <div id="dice2"></div>
+        </div>
         <div id="operation">
         <button id="roll-btn"
         style="margin: ${height(4)}px;
@@ -623,18 +642,22 @@ export class BoardScene extends Scene {
       `,
     );
 
-    this.myDice = dice(document.getElementById('dice-area'), width(10));
+    this.myDice1 = dice(document.getElementById('dice1'), width(5));
+    this.myDice2 = dice(document.getElementById('dice2'), width(5));
 
     // $('#stop-btn').on('click', () => {
-    //   myDice.stop();
-    // });
+    //   myDice.stop() ;   // });
   };
 
   private onRollDice = (): void => {
     $('#roll-btn').on('click', () => {
-      let faceValue = Math.ceil(Math.random() * 6);
-      this.myDice.roll(faceValue);
-      console.info(faceValue);
+      let faceValue1 = Math.ceil(Math.random() * 6);
+      let faceValue2 = Math.ceil(Math.random() * 6);
+      faceValue1 = 4;
+      faceValue2 = 4;
+      this.myDice1.roll(faceValue1);
+      this.myDice2.roll(faceValue2);
+      console.info(faceValue1, faceValue2);
       $('#roll-btn').attr('disabled', 'true');
 
       // $('#roll-btn').removeAttr('disable');
@@ -649,14 +672,18 @@ export class BoardScene extends Scene {
       }
 
       let playerIndex = this.findPlayerIndexByPlayerName(player.id);
-      let endLand = this.playerJump(playerIndex, landIndex, faceValue);
+      let endLand = this.playerJump(
+        playerIndex,
+        landIndex,
+        faceValue1 + faceValue2,
+      );
       this.i = endLand;
       // console.log(endLand);
 
       this.time.delayedCall(
-        3000 + 800 * faceValue,
+        3000 + 800 * (faceValue1 + faceValue2),
         () => {
-          this.landEvent(faceValue, endLand);
+          this.landEvent(faceValue1 + faceValue2, endLand);
         },
         [],
         this,
@@ -912,6 +939,7 @@ export class BoardScene extends Scene {
   }
 
   private closeStatus(): void {
+    console.info('closeStatus');
     this.statusGroup.children.iterate(child => {
       child.setVisible(false);
     }, 0);
@@ -960,6 +988,18 @@ export class BoardScene extends Scene {
         }
 
         this.checkLandAndPopupOptions(step, land);
+        break;
+
+      case LandType.jail:
+        this.popupStatus(`您已经进入监狱,\n请停一回合`);
+        this.time.delayedCall(
+          1000,
+          () => {
+            gameService.diceAndDecide(step);
+          },
+          [],
+          this,
+        );
         break;
       default:
         gameService.diceAndDecide(step);
