@@ -489,12 +489,97 @@ export class GameService {
     if (!gameOver) {
       game.moveOnToNextPlayer();
 
-      this.io
-        .in(room.getRoomURL())
-        .emit('game:game-step', 'move-on-next-player', packModel(game));
+      if (!this.randomEvents(room, game)) {
+        this.io
+          .in(room.getRoomURL())
+          .emit('game:game-step', 'move-on-next-player', packModel(game));
+      }
     } else {
       this.io.in(room.getRoomURL()).emit('game:game-over', winnerId);
     }
+  }
+
+  private randomEvents(room: Room, game: Game): boolean {
+    let chance = Math.random();
+
+    if (chance > 0.1) {
+      return false;
+    }
+
+    let chances = ['prison', 'bonus', 'tax'];
+
+    let event = chances[Math.floor(Math.random() * chances.length)];
+
+    switch (event) {
+      case 'prison':
+        let playerId = game.getCurrentPlayerId();
+
+        if (!playerId) {
+          throw new Error(`PlayerId ${playerId} not exists`);
+        }
+
+        let player = this.modelService.getModelById('player', playerId);
+
+        if (!player) {
+          throw new Error(`Player ${player} not exists`);
+        }
+
+        let boardId = game.getBoard();
+
+        if (!boardId) {
+          throw new Error(`BoardId ${boardId} not exists`);
+        }
+
+        let board = this.modelService.getModelById('board', boardId);
+
+        if (!board) {
+          throw new Error(`Board ${boardId} not exists`);
+        }
+
+        let jailLandInfo = board.findAJailLand();
+
+        if (!jailLandInfo) {
+          throw new Error(`There is no jail land`);
+        }
+
+        player.setLand(jailLandInfo);
+        player.putIntoJail();
+
+        this.io
+          .in(room.getRoomURL())
+          .emit('game:random-event-put-into-jail', packModel(player));
+        break;
+      case 'bonus':
+        let {players: playerIds} = game.data;
+
+        let players = this.modelService.getModelsByIds('player', playerIds);
+
+        for (let player of players) {
+          player.increaseMoney(player.getMoney() * 0.1);
+        }
+
+        this.io
+          .in(room.getRoomURL())
+          .emit('game:random-event-bonus', packModels(players));
+
+        break;
+      case 'tax':
+        let {players: playerIds2} = game.data;
+
+        let players2 = this.modelService.getModelsByIds('player', playerIds2);
+
+        for (let player of players2) {
+          player.decreaseMoney(player.getMoney() * 0.1);
+        }
+
+        this.io
+          .in(room.getRoomURL())
+          .emit('game:random-event-tax', packModels(players2));
+
+        break;
+    }
+
+    return true;
   }
 }
 

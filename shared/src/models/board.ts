@@ -59,6 +59,20 @@ export class Board extends Model {
     return lands[index];
   }
 
+  getLandsByType(landType: LandType): LandInfo[] {
+    let result: LandInfo[] = [];
+
+    let {lands} = this.data;
+
+    for (let land of lands) {
+      if (land.type === landType) {
+        result.push(land);
+      }
+    }
+
+    return result;
+  }
+
   getLandIdsByType(landType: LandType): string[] {
     let result: string[] = [];
 
@@ -79,5 +93,15 @@ export class Board extends Model {
     }
 
     return this.getLand(index + step);
+  }
+
+  findAJailLand(): LandInfo | undefined {
+    let jailLands = this.getLandsByType(LandType.jail);
+
+    if (!jailLands.length) {
+      return undefined;
+    }
+
+    return jailLands[Math.floor(Math.random() * jailLands.length)];
   }
 }
