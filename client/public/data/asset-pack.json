@@ -336,6 +336,12 @@
         "key": "game-btn-no-active",
         "url": "assets/game-btn-no-active.png",
         "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "lamp",
+        "url": "assets/lamp.png",
+        "overwrite": false
       }
     ]
   }

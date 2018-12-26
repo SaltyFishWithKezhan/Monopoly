@@ -169,6 +169,7 @@ export class RoomScene extends Scene {
       }
     });
 
+
     gameService.onGameStart(() => {
       this.scene.switch('BoardScene');
     });

@@ -9,6 +9,7 @@ import {
   modelService,
   playerService,
 } from '../../service-entrances';
+import {PlayerService} from '../../services';
 import {
   gameHeight,
   gameWidth,
@@ -465,6 +466,13 @@ export class BoardScene extends Scene {
   }
 
   private drawLand(x: number, y: number, image: string): void {
+    if (image === 'parking') {
+      let lamp = this.add.image(x, y, 'lamp');
+      scaleGameObject(lamp, 0.4);
+      lamp.setDepth(1);
+      lamp.setOrigin(0.5, 1);
+    }
+
     let land = this.add.image(x, y, image);
     scaleGameObject(land, 24 / this.gameOptions.landCount);
     this.landGroup.add(land);
@@ -541,7 +549,7 @@ export class BoardScene extends Scene {
         this.playerNames[i],
         {
           fontFamily: 'Arial Black',
-          fontSize: 60,
+          fontSize: 50,
           color: this.playerStyle[i].color,
         },
       );
@@ -574,7 +582,12 @@ export class BoardScene extends Scene {
         infoImgPos.y,
         this.playerStyle[i].img,
       );
-      scaleGameObject(playerImg, 1);
+
+      if (playerService.player!.id === this.playerNames[i]) {
+        scaleGameObject(playerImg, 1.6);
+      } else {
+        scaleGameObject(playerImg, 1);
+      }
     }
   }
 
@@ -653,8 +666,8 @@ export class BoardScene extends Scene {
     $('#roll-btn').on('click', () => {
       let faceValue1 = Math.ceil(Math.random() * 6);
       let faceValue2 = Math.ceil(Math.random() * 6);
-      faceValue1 = 4;
-      faceValue2 = 4;
+      // faceValue1 = 4; // for test
+      // faceValue2 = 4;
       this.myDice1.roll(faceValue1);
       this.myDice2.roll(faceValue2);
       console.info(faceValue1, faceValue2);
@@ -993,7 +1006,7 @@ export class BoardScene extends Scene {
       case LandType.jail:
         this.popupStatus(`您已经进入监狱,\n请停一回合`);
         this.time.delayedCall(
-          1000,
+          1500,
           () => {
             gameService.diceAndDecide(step);
           },
@@ -1053,7 +1066,7 @@ export class BoardScene extends Scene {
 
           if (land.getLevel() < 2 && land.getPrice() < player.getMoney()) {
             this.popupDecision(
-              `您可以花¥${land.getPrice()}来购买该房屋，\n是否购买？`,
+              `您可以花¥${land.getPrice()}来\n购买该房屋，是否购买？`,
               yes => {
                 if (yes) {
                   gameService.diceAndDecide(step, 'buy');

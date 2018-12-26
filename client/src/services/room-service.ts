@@ -45,7 +45,6 @@ export class RoomService extends PromisePool {
     this.io.on('room:fail', (event: string, _code: number, message: string) => {
       let error = new Error(message);
       console.error(error);
-      this.reject(event, error);
     });
 
     this.io.on('room:player-join', this._onRoomJoin);
