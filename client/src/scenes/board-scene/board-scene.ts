@@ -237,12 +237,22 @@ export class BoardScene extends Scene {
     );
 
     // register call backs
-    gameService.onMoveOnGoLand(player => {
+    gameService.onMoveOnGoLand((player, point) => {
       let index = this.findPlayerIndexByPlayerName(player.id);
       let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
         index
       ] as Phaser.GameObjects.Text;
       mdfPlayerMoney.setText(`¥${player.data.money}`);
+
+      console.info(point);
+
+      if (gameService.game!.getCurrentPlayerId() === player.id) {
+        this.popupStatus(
+          `恭喜点数增加${point}!\n您当前的点数为${player.data.point}`,
+        );
+      } else {
+        this.popupStatus(`${player.id}点数增加${point}!`);
+      }
     });
 
     // gameService.onMoveOnJailLand(player => {
@@ -323,6 +333,8 @@ export class BoardScene extends Scene {
 
       if (game.getCurrentPlayerId() === player.id) {
         console.info('nextplayer', player);
+
+        // 在当前玩家能走的时候才能使用好运卡
 
         if (!player.isInJail()) {
           this.isCurrentPlayer();
@@ -666,8 +678,8 @@ export class BoardScene extends Scene {
     $('#roll-btn').on('click', () => {
       let faceValue1 = Math.ceil(Math.random() * 6);
       let faceValue2 = Math.ceil(Math.random() * 6);
-      // faceValue1 = 4; // for test
-      // faceValue2 = 4;
+      faceValue1 = 3; // for test
+      faceValue2 = 1;
       this.myDice1.roll(faceValue1);
       this.myDice2.roll(faceValue2);
       console.info(faceValue1, faceValue2);
@@ -848,6 +860,7 @@ export class BoardScene extends Scene {
       'click',
       () => {
         this.closeDecision();
+        this.closeStatus();
         cb(true);
       },
       this,
@@ -965,9 +978,26 @@ export class BoardScene extends Scene {
   }
 
   private isCurrentPlayer(): void {
-    this.closeStatus();
-    $('#area').show();
-    $('#roll-btn').removeAttr('disabled');
+    this.time.delayedCall(
+      1000,
+      () => {
+        if (playerService.player!.data.luckyCardCount > 0) {
+          this.popupDecision(`请问您是否要使用好运卡?`, yes => {
+            if (yes) {
+              // 用户选择使用好运卡
+
+              return;
+            }
+          });
+        }
+
+        this.closeStatus();
+        $('#area').show();
+        $('#roll-btn').removeAttr('disabled');
+      },
+      [],
+      this,
+    );
   }
 
   private notCurrentPlayer(): void {
@@ -979,8 +1009,17 @@ export class BoardScene extends Scene {
       throw new Error('game not exists');
     }
 
-    this.popupStatus(
-      `${this.playerNames[game.data.currentPlayerIndex]}\n正在进行游戏,请稍等`,
+    this.time.delayedCall(
+      1500,
+      () => {
+        this.popupStatus(
+          `${
+            this.playerNames[game!.data.currentPlayerIndex]
+          }\n正在进行游戏,请稍等`,
+        );
+      },
+      [],
+      this,
     );
 
     // console.log( `${
@@ -1002,9 +1041,35 @@ export class BoardScene extends Scene {
 
         this.checkLandAndPopupOptions(step, land);
         break;
-
       case LandType.jail:
         this.popupStatus(`您已经进入监狱,\n请停一回合`);
+        this.time.delayedCall(
+          1500,
+          () => {
+            gameService.diceAndDecide(step);
+          },
+          [],
+          this,
+        );
+        break;
+      case LandType.parking:
+        let playerPoint = playerService.player!.data.point;
+
+        if (playerPoint >= 100) {
+          this.popupDecision(
+            `您当前的点数为${playerPoint},\n您是否要购买一张好运卡?`,
+            yes => {
+              if (yes) {
+                gameService.diceAndDecide(step, 1);
+              } else {
+                console.info('不购买好运卡');
+              }
+            },
+          );
+        } else {
+          this.popupStatus(`您当前的点数为${playerPoint},\n欢迎下次再来!`);
+        }
+
         this.time.delayedCall(
           1500,
           () => {
@@ -1050,7 +1115,7 @@ export class BoardScene extends Scene {
 
       if (ownerId) {
         this.popupStatus(
-          `您需要向${land.getOwner()}支付\n&${land.getRentPrice()}租金哦~`,
+          `您需要向${land.getOwner()}支付\n¥${land.getRentPrice()}租金哦~`,
         );
         delayTime = 2000;
       }

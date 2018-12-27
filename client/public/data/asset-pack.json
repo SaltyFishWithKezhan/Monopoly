@@ -342,6 +342,12 @@
         "key": "lamp",
         "url": "assets/lamp.png",
         "overwrite": false
+      },
+      {
+        "type": "image",
+        "key": "lucky-button",
+        "url": "assets/luckybutton.png",
+        "overwrite": false
       }
     ]
   }

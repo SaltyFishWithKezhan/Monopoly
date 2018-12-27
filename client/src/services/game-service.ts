@@ -51,7 +51,7 @@ export class GameService {
   //   this.ee.on('game-on-jail-land', cb);
   // }
 
-  onMoveOnGoLand(cb: (player: Player) => void): void {
+  onMoveOnGoLand(cb: (player: Player, point: number) => void): void {
     this.ee.on('game-on-go-land', cb);
   }
 
@@ -209,11 +209,22 @@ export class GameService {
   }
 
   private _onMoveOnGoLand(playerTransfer: TransferModel<'player'>): void {
+    let oldPlayer = this.modelService.getModelById(
+      'player',
+      playerTransfer.id,
+    )!;
+
+    let oldPoint = oldPlayer.getPoint();
+
     let data = this.modelService.updateModelFromTransfer(
       'player',
       playerTransfer,
     );
-    this.ee.emit('game-on-go-land', data);
+
+    let point = data.data.point - oldPoint;
+    console.info(point);
+
+    this.ee.emit('game-on-go-land', data, point);
   }
 
   private _onMoveOnConstructionLandAndRent(
