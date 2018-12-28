@@ -1055,12 +1055,14 @@ export class BoardScene extends Scene {
       case LandType.parking:
         let playerPoint = playerService.player!.data.point;
 
-        if (playerPoint >= 100) {
+        if (playerPoint >= 10) {
           this.popupDecision(
             `您当前的点数为${playerPoint},\n您是否要购买一张好运卡?`,
             yes => {
               if (yes) {
+                console.info('before', playerService.player!.data.landType);
                 gameService.diceAndDecide(step, 1);
+                console.info('after', playerService.player!.data.landType);
               } else {
                 console.info('不购买好运卡');
               }
@@ -1068,16 +1070,16 @@ export class BoardScene extends Scene {
           );
         } else {
           this.popupStatus(`您当前的点数为${playerPoint},\n欢迎下次再来!`);
+          this.time.delayedCall(
+            1500,
+            () => {
+              gameService.diceAndDecide(step);
+            },
+            [],
+            this,
+          );
         }
 
-        this.time.delayedCall(
-          1500,
-          () => {
-            gameService.diceAndDecide(step);
-          },
-          [],
-          this,
-        );
         break;
       default:
         gameService.diceAndDecide(step);
