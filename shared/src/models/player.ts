@@ -70,6 +70,7 @@ export class Player extends Model {
     }
 
     this.decreasePoint(cost);
+    this.data.luckyCardCount++;
   }
 
   getLuckyCardCount(): number {
