@@ -3,7 +3,8 @@ import {Model} from '../core';
 import {LandInfo, LandType} from './land';
 
 export const LUCKY_CARD_COST_POINT = 10;
- // or test
+
+// or test
 
 export interface PlayerData {
   money: number;

@@ -435,6 +435,8 @@ export class GameService {
       return;
     }
 
+    console.info(player.getPoint(), buyLuckyCardCount, LUCKY_CARD_COST_POINT);
+
     if (player.getPoint() < buyLuckyCardCount * LUCKY_CARD_COST_POINT) {
       return;
     }

@@ -322,6 +322,11 @@ export class BoardScene extends Scene {
       }
     });
 
+    gameService.onMoveOnParkingLand(player => {
+      let playerPoint = player.data.point;
+      console.info('luckyCardCount', player.data.luckyCardCount);
+    });
+
     gameService.onMoveOnNextPlayer(game => {
       console.info('onMoveOnNextPlayer', playerService.player!.getLand());
 
@@ -1060,11 +1065,11 @@ export class BoardScene extends Scene {
             `您当前的点数为${playerPoint},\n您是否要购买一张好运卡?`,
             yes => {
               if (yes) {
-                console.info('before', playerService.player!.data.landType);
+                console.info('购买好运卡');
                 gameService.diceAndDecide(step, 1);
-                console.info('after', playerService.player!.data.landType);
               } else {
                 console.info('不购买好运卡');
+                gameService.diceAndDecide(step, 0);
               }
             },
           );
