@@ -722,7 +722,9 @@ export class BoardScene extends Scene {
       // $('#roll-btn').removeAttr('disable');
       // this.i = (this.i + 1) % ((this.gameOptions.landCount - 1) * 4);
       // console.info(this.boardPosList[this.i]);
-      let landIndex = this.i;
+      let landIndex = this.findLandIndexByModelId(
+        playerService.player!.data.landId,
+      ); // this.i;
       // this.findLandIndexByModelId(this.player!.landId);
       let player = playerService.player;
 
@@ -736,7 +738,7 @@ export class BoardScene extends Scene {
         landIndex,
         faceValue1 + faceValue2,
       );
-      this.i = endLand;
+      // this.i = endLand;
       // console.log(endLand);
 
       this.time.delayedCall(
@@ -1012,19 +1014,48 @@ export class BoardScene extends Scene {
   }
 
   private isCurrentPlayer(): void {
+
     this.time.delayedCall(
       1000,
       () => {
-        if (playerService.player!.data.luckyCardCount >= 0) {
-          this.popupDecision(`请问您是否要使用好运卡?`, yes => {
-            if (yes) {
-              // 用户选择使用好运卡
-            }
 
-            this.closeStatus();
-            $('#area').show();
-            $('#roll-btn').removeAttr('disabled');
+        this.closeStatus();
+
+        if (playerService.player!.data.luckyCardCount > 0) {
+          this.popupDecision(`请问您是否要使用好运卡?!`, yes => {
+            console.info(yes);
+
+            if (yes) {
+              gameService.useLuckyCard();
+              // 用户选择使用好运卡
+              this.popupLuckyButton(value => {
+                console.info('popupLuckyButton return ', value);
+
+                let endLand = this.playerJump(
+                  this.findPlayerIndexByPlayerName(playerService.player!.id),
+                  this.findLandIndexByModelId(
+                    playerService.player!.data.landId,
+                  ),
+                  value,
+                );
+
+                this.time.delayedCall(
+                  3000 + 800 * value,
+                  () => {
+                    this.landEvent(value, endLand);
+                  },
+                  [],
+                  this,
+                );
+              });
+            } else {
+              $('#area').show();
+              $('#roll-btn').removeAttr('disabled');
+            }
           });
+        } else {
+          $('#area').show();
+          $('#roll-btn').removeAttr('disabled');
         }
       },
       [],
@@ -1190,7 +1221,8 @@ export class BoardScene extends Scene {
     }
   }
 
-  private popupLuckyButton(): void {
+  private popupLuckyButton(cb: (value: number) => void): void {
+    $('#area').hide();
     this.closeStatus();
     this.closeDecision();
 
@@ -1199,6 +1231,37 @@ export class BoardScene extends Scene {
     } else {
       this.showLuckyButton();
     }
+
+    console.info('popupLuckyButton');
+
+    for (let i = 0; i < this.luckyButtonGroup.getLength(); i++) {
+      console.info(i);
+      let child = this.luckyButtonGroup.getChildren()[i];
+      child.setInteractive();
+      child.on(
+        'click',
+        () => {
+          this.closeLuckyButton();
+          this.closeStatus();
+          cb(Math.floor(i / 2 + 1));
+        },
+        this,
+      );
+    }
+
+    // this.luckyButtonGroup.children.iterate(child => {
+    //   let text = child as Phaser.GameObjects.Text;
+    //   child.on(
+    //     'click',
+    //     () => {
+    //       console.info(text.get);
+    //       this.closeLuckyButton();
+    //       this.closeStatus();
+    //       cb(true);
+    //     },
+    //     this,
+    //   );
+    // }, 0);
   }
 
   private createLuckyButton(): void {
@@ -1219,8 +1282,8 @@ export class BoardScene extends Scene {
       );
       scaleGameObject(luckyButton);
       scaleGameObject(luckyText);
-      luckyButton.setDepth(20);
-      luckyText.setDepth(25);
+      luckyButton.setDepth(30);
+      luckyText.setDepth(35);
       luckyText.setOrigin(0.5, 0.5);
 
       this.luckyButtonGroup.add(luckyButton);
@@ -1229,13 +1292,13 @@ export class BoardScene extends Scene {
   }
 
   private showLuckyButton(): void {
-    this.statusGroup.children.iterate(child => {
+    this.luckyButtonGroup.children.iterate(child => {
       child.setVisible(true);
     }, 0);
   }
 
   private closeLuckyButton(): void {
-    this.statusGroup.children.iterate(child => {
+    this.luckyButtonGroup.children.iterate(child => {
       child.setVisible(false);
     }, 0);
   }
