@@ -170,6 +170,13 @@ export class GameService {
       this.ee.emit('dice-rolled', oldLandId, player);
     });
 
+    this.io.on(
+      'game:player-use-lucky-card',
+      (playerTrans: TransferModel<'player'>) => {
+        this.modelService.updateModelFromTransfer('player', playerTrans);
+      },
+    );
+
     this.io.on('game:game-step', (event: string, ...args: any[]) => {
       switch (event) {
         case 'bail-from-jail':
