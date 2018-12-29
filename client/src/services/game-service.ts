@@ -49,6 +49,8 @@ export class GameService {
       throw new Error('Player not exists');
     }
 
+    player.useLuckyCard();
+
     this.io.emit('game:use-lucky-card', packModel(player));
   }
 
