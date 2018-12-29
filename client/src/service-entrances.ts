@@ -18,6 +18,10 @@ export const playerService = new PlayerService(socketService, modelService);
 
 export const roomService = new RoomService(socketService, modelService);
 
-export const gameService = new GameService(socketService, modelService);
+export const gameService = new GameService(
+  socketService,
+  modelService,
+  playerService,
+);
 
 export const servicesReady = Promise.all([]);

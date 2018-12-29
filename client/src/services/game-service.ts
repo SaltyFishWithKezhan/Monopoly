@@ -6,8 +6,10 @@ import {
   ModelService,
   Player,
   TransferModel,
+  packModel,
 } from 'shared';
 
+import {PlayerService} from './player-service';
 import {SocketService} from './socket-service';
 
 export class GameService {
@@ -22,6 +24,7 @@ export class GameService {
   constructor(
     private socketService: SocketService,
     private modelService: ModelService,
+    private playerService: PlayerService,
   ) {
     this.ee = new EventEmitter();
     this.initialize();
@@ -37,6 +40,16 @@ export class GameService {
 
   diceAndDecide(diceValue: number, ...args: any[]): void {
     this.io.emit('game:dice-and-decide', diceValue, ...args);
+  }
+
+  useLuckyCard(): void {
+    let player = this.playerService.player;
+
+    if (!player) {
+      throw new Error('Player not exists');
+    }
+
+    this.io.emit('game:use-lucky-card', packModel(player));
   }
 
   onGameStart(cb: (game: Game, board: Game) => void): void {
