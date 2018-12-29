@@ -96,6 +96,33 @@ export class BoardScene extends Scene {
     },
   ];
 
+  private luckyButtonPos = [
+    {
+      x: width(45),
+      y: height(50),
+    },
+    {
+      x: width(50),
+      y: height(50),
+    },
+    {
+      x: width(55),
+      y: height(50),
+    },
+    {
+      x: width(45),
+      y: height(55),
+    },
+    {
+      x: width(50),
+      y: height(55),
+    },
+    {
+      x: width(55),
+      y: height(55),
+    },
+  ];
+
   private paddingX: number = 10;
   private paddingY: number = 10;
   private playerStyle = [
@@ -142,6 +169,7 @@ export class BoardScene extends Scene {
   private playerInfoGroup!: Phaser.GameObjects.Group;
   private decisionGroup!: Phaser.GameObjects.Group;
   private statusGroup!: Phaser.GameObjects.Group;
+  private luckyButtonGroup!: Phaser.GameObjects.Group;
 
   private bezierGraphics!: Phaser.GameObjects.Graphics;
   // private player!:Phaser.GameObjects.Image;
@@ -209,6 +237,7 @@ export class BoardScene extends Scene {
     this.playerInfoGroup = this.add.group();
     this.decisionGroup = this.add.group();
     this.statusGroup = this.add.group();
+    this.luckyButtonGroup = this.add.group();
     this.bezierGraphics = this.add.graphics();
 
     this.createScene();
@@ -320,6 +349,11 @@ export class BoardScene extends Scene {
           this.drawHouse(landIndex, land.data.level);
           break;
       }
+    });
+
+    gameService.onMoveOnParkingLand(player => {
+      let playerPoint = player.data.point;
+      console.info('luckyCardCount', player.data.luckyCardCount);
     });
 
     gameService.onMoveOnNextPlayer(game => {
@@ -981,19 +1015,17 @@ export class BoardScene extends Scene {
     this.time.delayedCall(
       1000,
       () => {
-        if (playerService.player!.data.luckyCardCount > 0) {
+        if (playerService.player!.data.luckyCardCount >= 0) {
           this.popupDecision(`请问您是否要使用好运卡?`, yes => {
             if (yes) {
               // 用户选择使用好运卡
-
-              return;
             }
+
+            this.closeStatus();
+            $('#area').show();
+            $('#roll-btn').removeAttr('disabled');
           });
         }
-
-        this.closeStatus();
-        $('#area').show();
-        $('#roll-btn').removeAttr('disabled');
       },
       [],
       this,
@@ -1060,11 +1092,11 @@ export class BoardScene extends Scene {
             `您当前的点数为${playerPoint},\n您是否要购买一张好运卡?`,
             yes => {
               if (yes) {
-                console.info('before', playerService.player!.data.landType);
+                console.info('购买好运卡');
                 gameService.diceAndDecide(step, 1);
-                console.info('after', playerService.player!.data.landType);
               } else {
                 console.info('不购买好运卡');
+                gameService.diceAndDecide(step, 0);
               }
             },
           );
@@ -1156,5 +1188,55 @@ export class BoardScene extends Scene {
         this,
       );
     }
+  }
+
+  private popupLuckyButton(): void {
+    this.closeStatus();
+    this.closeDecision();
+
+    if (this.luckyButtonGroup.getLength() === 0) {
+      this.createLuckyButton();
+    } else {
+      this.showLuckyButton();
+    }
+  }
+
+  private createLuckyButton(): void {
+    for (let i = 1; i <= 6; i++) {
+      let luckyButton = this.add.image(
+        this.luckyButtonPos[i - 1].x,
+        this.luckyButtonPos[i - 1].y,
+        'lucky-button',
+      );
+      let luckyText = this.add.text(
+        this.luckyButtonPos[i - 1].x,
+        this.luckyButtonPos[i - 1].y,
+        i.toString(),
+        {
+          fontFamily: 'Arial Black',
+          fontSize: 30,
+        },
+      );
+      scaleGameObject(luckyButton);
+      scaleGameObject(luckyText);
+      luckyButton.setDepth(20);
+      luckyText.setDepth(25);
+      luckyText.setOrigin(0.5, 0.5);
+
+      this.luckyButtonGroup.add(luckyButton);
+      this.luckyButtonGroup.add(luckyText);
+    }
+  }
+
+  private showLuckyButton(): void {
+    this.statusGroup.children.iterate(child => {
+      child.setVisible(true);
+    }, 0);
+  }
+
+  private closeLuckyButton(): void {
+    this.statusGroup.children.iterate(child => {
+      child.setVisible(false);
+    }, 0);
   }
 }

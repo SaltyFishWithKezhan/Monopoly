@@ -68,6 +68,10 @@ export class GameService {
     this.ee.on('game-on-go-land', cb);
   }
 
+  onMoveOnParkingLand(cb: (player: Player) => void): void {
+    this.ee.on('game-parking-land', cb);
+  }
+
   onMoveOnNextPlayer(cb: (game: Game) => void): void {
     this.ee.on('game-next-player', cb);
   }
@@ -187,6 +191,9 @@ export class GameService {
         case 'move-on-construction-land-and-upgrade':
           this._onMoveOnConstructionLandAndUpgrade(args[0], args[1]);
           break;
+        case 'move-on-parking-land':
+          this._onMoveOnParkingLand(args[0]);
+          break;
         case 'move-on-next-player':
           this._onMoveOnNextPlayer(args[0]);
           break;
@@ -294,6 +301,17 @@ export class GameService {
       landTransfer,
     );
     this.ee.emit('game-cons-land-upgrade', data, data1);
+  }
+
+  private _onMoveOnParkingLand(
+    playerTransfer: TransferModel<'parkingLand'>,
+  ): void {
+    let data = this.modelService.updateModelFromTransfer(
+      'player',
+      playerTransfer,
+    );
+
+    this.ee.emit('game-parking-land', data);
   }
 
   private _onMoveOnNextPlayer(gameTransfer: TransferModel<'game'>): void {
