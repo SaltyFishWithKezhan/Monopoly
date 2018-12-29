@@ -504,9 +504,9 @@ export class GameService {
   private randomEvents(room: Room, game: Game): boolean {
     let chance = Math.random();
 
-    if (chance > 0.1) {
-      return false;
-    }
+    // if (chance > 0.1) {
+    //   return false;
+    // }
 
     let chances = ['prison', 'bonus', 'tax'];
 

@@ -356,6 +356,42 @@ export class BoardScene extends Scene {
       console.info('luckyCardCount', player.data.luckyCardCount);
     });
 
+    gameService.onRandomEventPutIntoJail(player => {
+      console.info('RandomEventPutIntoJail', player.data);
+
+      this.popupStatus(`随机事件!\n${player.id}进监狱!`);
+
+      let playerIndex = this.findPlayerIndexByPlayerName(player.id);
+      let landId = this.findLandIndexByModelId(player.data.landId);
+      this.playerPutIntoJail(playerIndex, landId);
+    });
+
+    gameService.onRandomEventBonus(players => {
+      console.info('onRandomEventBonus', players);
+
+      this.popupStatus(`随机事件!\n全民福利!`);
+
+      for (let i = 0; i < this.playerInfoGroup.getLength(); i++) {
+        let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
+          i
+        ] as Phaser.GameObjects.Text;
+        mdfPlayerMoney.setText(`¥${Math.floor(players[i].data.money)}`);
+      }
+    });
+
+    gameService.onRandomEventTax(players => {
+      console.info('onRandomEventTax', players);
+
+      this.popupStatus(`随机事件!\n全民收税!`);
+
+      for (let i = 0; i < this.playerInfoGroup.getLength(); i++) {
+        let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
+          i
+        ] as Phaser.GameObjects.Text;
+        mdfPlayerMoney.setText(`¥${Math.floor(players[i].data.money)}`);
+      }
+    });
+
     gameService.onMoveOnNextPlayer(game => {
       console.info('onMoveOnNextPlayer', playerService.player!.getLand());
 
@@ -379,27 +415,35 @@ export class BoardScene extends Scene {
 
         let jailLand = modelService.getModelById('jailLand', landInfo.id);
 
-        if (!jailLand) {
-          throw new Error(`JailLand ${landInfo.id} does not exist`);
-        }
+        // 随机事件被扔进监狱后防止status立刻消失
+        this.time.delayedCall(
+          1500,
+          () => {
+            if (!jailLand) {
+              throw new Error(`JailLand ${landInfo.id} does not exist`);
+            }
 
-        if (jailLand.getBailPrice() >= player.getMoney()) {
-          gameService.serveJailTime(false);
-        } else {
-          this.closeStatus();
-          this.popupDecision(
-            `您当前在监狱中，\n是否花¥${jailLand.getBailPrice()}保释？`,
-            yes => {
-              gameService.serveJailTime(yes);
+            if (jailLand.getBailPrice() >= player!.getMoney()) {
+              gameService.serveJailTime(false);
+            } else {
+              this.closeStatus();
+              this.popupDecision(
+                `您当前在监狱中，\n是否花¥${jailLand.getBailPrice()}保释？`,
+                yes => {
+                  gameService.serveJailTime(yes);
 
-              if (yes) {
-                console.info('bail from jail');
-                this.isCurrentPlayer();
-              } else {
-              }
-            },
-          );
-        }
+                  if (yes) {
+                    console.info('bail from jail');
+                    this.isCurrentPlayer();
+                  } else {
+                  }
+                },
+              );
+            }
+          },
+          [],
+          this,
+        );
       } else {
         this.notCurrentPlayer();
       }
@@ -810,6 +854,16 @@ export class BoardScene extends Scene {
     return nextPos;
   };
 
+  private playerPutIntoJail = (playerIndex: number, landId: number): void => {
+    let player = this.playerGroup.getChildren()[
+      playerIndex
+    ] as Phaser.GameObjects.Image;
+    let land = this.landGroup.getChildren()[landId] as Phaser.GameObjects.Image;
+    let x = land.x + this.playerOffset[playerIndex].offsetX * gameWidth;
+    let y = land.y + this.playerOffset[playerIndex].offsetY * gameHeight;
+    player.setPosition(x, y);
+  };
+
   private movePlayer = (
     playerIndex: number,
     start: any,
@@ -1014,11 +1068,9 @@ export class BoardScene extends Scene {
   }
 
   private isCurrentPlayer(): void {
-
     this.time.delayedCall(
       1000,
       () => {
-
         this.closeStatus();
 
         if (playerService.player!.data.luckyCardCount > 0) {
