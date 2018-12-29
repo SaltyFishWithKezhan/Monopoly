@@ -1014,11 +1014,13 @@ export class BoardScene extends Scene {
   }
 
   private isCurrentPlayer(): void {
-    this.closeStatus();
 
     this.time.delayedCall(
       1000,
       () => {
+
+        this.closeStatus();
+
         if (playerService.player!.data.luckyCardCount > 0) {
           this.popupDecision(`请问您是否要使用好运卡?!`, yes => {
             console.info(yes);
