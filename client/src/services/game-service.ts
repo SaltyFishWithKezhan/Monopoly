@@ -104,6 +104,18 @@ export class GameService {
     this.ee.on('game-cons-land-upgrade', cb);
   }
 
+  onRandomEventPutIntoJail(cb: (player: Player) => void): void {
+    this.ee.on('game-random-put-into-jail', cb);
+  }
+
+  onRandomEventBonus(cb: (players: Player[]) => void): void {
+    this.ee.on('game-random-bonus', cb);
+  }
+
+  onRandomEventTax(cb: (players: Player[]) => void): void {
+    this.ee.on('game-random-tax', cb);
+  }
+
   onGameOver(cb: (player: Player) => void): void {
     this.ee.on('game-over', cb);
   }
@@ -174,6 +186,42 @@ export class GameService {
       'game:player-use-lucky-card',
       (playerTrans: TransferModel<'player'>) => {
         this.modelService.updateModelFromTransfer('player', playerTrans);
+      },
+    );
+
+    this.io.on(
+      'game:random-event-put-into-jail',
+      (playerTransfer: TransferModel<'player'>) => {
+        let player = this.modelService.updateModelFromTransfer(
+          'player',
+          playerTransfer,
+        );
+
+        this.ee.emit('game-random-put-into-jail', player);
+      },
+    );
+
+    this.io.on(
+      'game:random-event-bonus',
+      (playerTransfers: TransferModel<'player'>[]) => {
+        let players = this.modelService.updateModelFromTransfers(
+          'player',
+          playerTransfers,
+        );
+
+        this.ee.emit('game-random-bonus', players);
+      },
+    );
+
+    this.io.on(
+      'game:random-event-tax',
+      (playerTransfers: TransferModel<'player'>[]) => {
+        let players = this.modelService.updateModelFromTransfers(
+          'player',
+          playerTransfers,
+        );
+
+        this.ee.emit('game-random-tax', players);
       },
     );
 
