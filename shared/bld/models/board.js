@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("../core");
+const land_1 = require("./land");
 class Board extends core_1.Model {
     constructor() {
         super(...arguments);
@@ -44,6 +45,16 @@ class Board extends core_1.Model {
         }
         return lands[index];
     }
+    getLandsByType(landType) {
+        let result = [];
+        let { lands } = this.data;
+        for (let land of lands) {
+            if (land.type === landType) {
+                result.push(land);
+            }
+        }
+        return result;
+    }
     getLandIdsByType(landType) {
         let result = [];
         for (let { type, id } of this.data.lands) {
@@ -59,6 +70,13 @@ class Board extends core_1.Model {
             return undefined;
         }
         return this.getLand(index + step);
+    }
+    findAJailLand() {
+        let jailLands = this.getLandsByType(land_1.LandType.jail);
+        if (!jailLands.length) {
+            return undefined;
+        }
+        return jailLands[Math.floor(Math.random() * jailLands.length)];
     }
 }
 exports.Board = Board;

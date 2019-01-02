@@ -9,6 +9,8 @@ export declare class Board extends Model {
     addLand({ type, id }: LandInfo): boolean;
     getLands(): LandInfo[];
     getLand(index: number): LandInfo | undefined;
+    getLandsByType(landType: LandType): LandInfo[];
     getLandIdsByType(landType: LandType): string[];
     getNextLand(info: LandInfo, step?: number): LandInfo | undefined;
+    findAJailLand(): LandInfo | undefined;
 }

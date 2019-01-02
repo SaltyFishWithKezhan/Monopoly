@@ -94,6 +94,7 @@ class GameService {
                 this.io
                     .in(room.getRoomURL())
                     .emit('game:game-step', 'bail-from-jail', shared_1.packModel(currentPlayer));
+                return; // 保释则不会moveOnToNextPlayer
             }
             else {
                 currentPlayer.serveJailTime();
@@ -249,6 +250,7 @@ class GameService {
         if (!buyLuckyCardCount) {
             return;
         }
+        console.info(player.getPoint(), buyLuckyCardCount, shared_1.LUCKY_CARD_COST_POINT);
         if (player.getPoint() < buyLuckyCardCount * shared_1.LUCKY_CARD_COST_POINT) {
             return;
         }
@@ -287,6 +289,7 @@ class GameService {
         }
         if (!gameOver) {
             game.moveOnToNextPlayer();
+            this.randomEvents(room, game);
             this.io
                 .in(room.getRoomURL())
                 .emit('game:game-step', 'move-on-next-player', shared_1.packModel(game));
@@ -294,6 +297,64 @@ class GameService {
         else {
             this.io.in(room.getRoomURL()).emit('game:game-over', winnerId);
         }
+    }
+    randomEvents(room, game) {
+        let chance = Math.random();
+        if (chance > 0.1) {
+            return false;
+        }
+        let chances = ['prison', 'bonus', 'tax'];
+        let event = chances[Math.floor(Math.random() * chances.length)];
+        switch (event) {
+            case 'prison':
+                let playerId = game.getCurrentPlayerId();
+                if (!playerId) {
+                    throw new Error(`PlayerId ${playerId} not exists`);
+                }
+                let player = this.modelService.getModelById('player', playerId);
+                if (!player) {
+                    throw new Error(`Player ${player} not exists`);
+                }
+                let boardId = game.getBoard();
+                if (!boardId) {
+                    throw new Error(`BoardId ${boardId} not exists`);
+                }
+                let board = this.modelService.getModelById('board', boardId);
+                if (!board) {
+                    throw new Error(`Board ${boardId} not exists`);
+                }
+                let jailLandInfo = board.findAJailLand();
+                if (!jailLandInfo) {
+                    throw new Error(`There is no jail land`);
+                }
+                player.setLand(jailLandInfo);
+                player.putIntoJail();
+                this.io
+                    .in(room.getRoomURL())
+                    .emit('game:random-event-put-into-jail', shared_1.packModel(player));
+                break;
+            case 'bonus':
+                let { players: playerIds } = game.data;
+                let players = this.modelService.getModelsByIds('player', playerIds);
+                for (let player of players) {
+                    player.increaseMoney(player.getMoney() * 0.1);
+                }
+                this.io
+                    .in(room.getRoomURL())
+                    .emit('game:random-event-bonus', shared_1.packModels(players));
+                break;
+            case 'tax':
+                let { players: playerIds2 } = game.data;
+                let players2 = this.modelService.getModelsByIds('player', playerIds2);
+                for (let player of players2) {
+                    player.decreaseMoney(player.getMoney() * 0.1);
+                }
+                this.io
+                    .in(room.getRoomURL())
+                    .emit('game:random-event-tax', shared_1.packModels(players2));
+                break;
+        }
+        return true;
     }
 }
 exports.GameService = GameService;

@@ -12,4 +12,5 @@ export declare class GameService {
     private playerMoveOnJailLand;
     private playerMoveOnParkingLand;
     private moveOnToNextPlayer;
+    private randomEvents;
 }

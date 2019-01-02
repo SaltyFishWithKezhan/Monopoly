@@ -50,6 +50,7 @@ class Player extends core_1.Model {
             return;
         }
         this.decreasePoint(cost);
+        this.data.luckyCardCount++;
     }
     getLuckyCardCount() {
         return this.data.luckyCardCount;
