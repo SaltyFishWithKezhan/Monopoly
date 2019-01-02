@@ -9,7 +9,6 @@ import {
   modelService,
   playerService,
 } from '../../service-entrances';
-import {PlayerService} from '../../services';
 import {
   gameHeight,
   gameWidth,
@@ -275,7 +274,11 @@ export class BoardScene extends Scene {
 
       console.info(point);
 
-      if (gameService.game!.getCurrentPlayerId() === player.id) {
+      if (!gameService.game) {
+        throw new Error('game not exists');
+      }
+
+      if (gameService.game.getCurrentPlayerId() === player.id) {
         this.popupStatus(
           `恭喜点数增加${point}!\n您当前的点数为${player.data.point}`,
         );
@@ -393,13 +396,13 @@ export class BoardScene extends Scene {
     });
 
     gameService.onMoveOnNextPlayer(game => {
-      console.info('onMoveOnNextPlayer', playerService.player!.getLand());
-
       let player = playerService.player;
 
       if (!player) {
         throw new Error('player not exists');
       }
+
+      console.info('onMoveOnNextPlayer', player.getLand());
 
       if (game.getCurrentPlayerId() === player.id) {
         console.info('nextplayer', player);
@@ -423,7 +426,11 @@ export class BoardScene extends Scene {
               throw new Error(`JailLand ${landInfo.id} does not exist`);
             }
 
-            if (jailLand.getBailPrice() >= player!.getMoney()) {
+            if (!player) {
+              throw new Error('player not exists');
+            }
+
+            if (jailLand.getBailPrice() >= player.getMoney()) {
               gameService.serveJailTime(false);
             } else {
               this.closeStatus();
@@ -673,7 +680,13 @@ export class BoardScene extends Scene {
         this.playerStyle[i].img,
       );
 
-      if (playerService.player!.id === this.playerNames[i]) {
+      let player = playerService.player;
+
+      if (!player) {
+        throw new Error('player not exists');
+      }
+
+      if (player.id === this.playerNames[i]) {
         scaleGameObject(playerImg, 1.6);
       } else {
         scaleGameObject(playerImg, 1);
@@ -763,18 +776,17 @@ export class BoardScene extends Scene {
       console.info(faceValue1, faceValue2);
       $('#roll-btn').attr('disabled', 'true');
 
-      // $('#roll-btn').removeAttr('disable');
-      // this.i = (this.i + 1) % ((this.gameOptions.landCount - 1) * 4);
-      // console.info(this.boardPosList[this.i]);
-      let landIndex = this.findLandIndexByModelId(
-        playerService.player!.data.landId,
-      ); // this.i;
-      // this.findLandIndexByModelId(this.player!.landId);
       let player = playerService.player;
 
       if (!player) {
         throw new Error('player not exists');
       }
+
+      // $('#roll-btn').removeAttr('disable');
+      // this.i = (this.i + 1) % ((this.gameOptions.landCount - 1) * 4);
+      // console.info(this.boardPosList[this.i]);
+      let landIndex = this.findLandIndexByModelId(player.data.landId); // this.i;
+      // this.findLandIndexByModelId(this.player!.landId);
 
       let playerIndex = this.findPlayerIndexByPlayerName(player.id);
       let endLand = this.playerJump(
@@ -1073,7 +1085,13 @@ export class BoardScene extends Scene {
       () => {
         this.closeStatus();
 
-        if (playerService.player!.data.luckyCardCount > 0) {
+        let player = playerService.player;
+
+        if (!player) {
+          throw new Error('player not exists');
+        }
+
+        if (player.data.luckyCardCount > 0) {
           this.popupDecision(`请问您是否要使用好运卡?!`, yes => {
             console.info(yes);
 
@@ -1083,11 +1101,13 @@ export class BoardScene extends Scene {
               this.popupLuckyButton(value => {
                 console.info('popupLuckyButton return ', value);
 
+                if (!player) {
+                  throw new Error('player not exists');
+                }
+
                 let endLand = this.playerJump(
-                  this.findPlayerIndexByPlayerName(playerService.player!.id),
-                  this.findLandIndexByModelId(
-                    playerService.player!.data.landId,
-                  ),
+                  this.findPlayerIndexByPlayerName(player.id),
+                  this.findLandIndexByModelId(player.data.landId),
                   value,
                 );
 
@@ -1118,18 +1138,18 @@ export class BoardScene extends Scene {
   private notCurrentPlayer(): void {
     $('#area').hide();
 
-    let game = gameService.game;
-
-    if (!game) {
-      throw new Error('game not exists');
-    }
-
     this.time.delayedCall(
       1500,
       () => {
+        let game = gameService.game;
+
+        if (!game) {
+          throw new Error('game not exists');
+        }
+
         this.popupStatus(
           `${
-            this.playerNames[game!.data.currentPlayerIndex]
+            this.playerNames[game.data.currentPlayerIndex]
           }\n正在进行游戏,请稍等`,
         );
       },
@@ -1168,7 +1188,13 @@ export class BoardScene extends Scene {
         );
         break;
       case LandType.parking:
-        let playerPoint = playerService.player!.data.point;
+        let player = playerService.player;
+
+        if (!player) {
+          throw new Error('player not exists');
+        }
+
+        let playerPoint = player.data.point;
 
         if (playerPoint >= 10) {
           this.popupDecision(
