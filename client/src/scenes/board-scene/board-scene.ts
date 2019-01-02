@@ -170,6 +170,7 @@ export class BoardScene extends Scene {
   private decisionGroup!: Phaser.GameObjects.Group;
   private statusGroup!: Phaser.GameObjects.Group;
   private luckyButtonGroup!: Phaser.GameObjects.Group;
+  private randomEventGroup!: Phaser.GameObjects.Group;
 
   private bezierGraphics!: Phaser.GameObjects.Graphics;
   // private player!:Phaser.GameObjects.Image;
@@ -238,6 +239,8 @@ export class BoardScene extends Scene {
     this.decisionGroup = this.add.group();
     this.statusGroup = this.add.group();
     this.luckyButtonGroup = this.add.group();
+    this.randomEventGroup = this.add.group();
+
     this.bezierGraphics = this.add.graphics();
 
     this.createScene();
@@ -271,7 +274,7 @@ export class BoardScene extends Scene {
       let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
         index
       ] as Phaser.GameObjects.Text;
-      mdfPlayerMoney.setText(`¥${player.data.money}`);
+      mdfPlayerMoney.setText(`¥${Math.floor(player.data.money)}`);
 
       console.info(point);
 
@@ -293,7 +296,7 @@ export class BoardScene extends Scene {
       let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
         index
       ] as Phaser.GameObjects.Text;
-      mdfPlayerMoney.setText(`¥${player.getMoney()}`);
+      mdfPlayerMoney.setText(`¥${Math.floor(player.getMoney())}`);
     });
 
     // gameService.onServeJail(_player => {});
@@ -303,13 +306,13 @@ export class BoardScene extends Scene {
       let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
         playerIndex
       ] as Phaser.GameObjects.Text;
-      mdfPlayerMoney.setText(`¥${player.getMoney()}`);
+      mdfPlayerMoney.setText(`¥${Math.floor(player.getMoney())}`);
 
       let ownerIndex = this.findPlayerIndexByPlayerName(owner.id);
       let mdfOwnerMoney = this.playerInfoGroup.getChildren()[
         ownerIndex
       ] as Phaser.GameObjects.Text;
-      mdfOwnerMoney.setText(`¥${owner.getMoney()}`);
+      mdfOwnerMoney.setText(`¥${Math.floor(owner.getMoney())}`);
     });
 
     gameService.onMoveConBuy((player, land, owner) => {
@@ -317,7 +320,7 @@ export class BoardScene extends Scene {
       let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
         playerIndex
       ] as Phaser.GameObjects.Text;
-      mdfPlayerMoney.setText(`¥${player.data.money}`);
+      mdfPlayerMoney.setText(`¥${Math.floor(player.data.money)}`);
       let landIndex = this.findLandIndexByModelId(land.id);
       // console.log('index!!!:::', landIndex);
       this.changeLand(landIndex, playerIndex);
@@ -327,7 +330,7 @@ export class BoardScene extends Scene {
         let mdfOwnerMoney = this.playerInfoGroup.getChildren()[
           ownerIndex
         ] as Phaser.GameObjects.Text;
-        mdfOwnerMoney.setText(`¥${owner.getMoney()}`);
+        mdfOwnerMoney.setText(`¥${Math.floor(owner.getMoney())}`);
       }
     });
 
@@ -336,7 +339,7 @@ export class BoardScene extends Scene {
       let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
         playerIndex
       ] as Phaser.GameObjects.Text;
-      mdfPlayerMoney.setText(`¥${player.data.money}`);
+      mdfPlayerMoney.setText(`¥${Math.floor(player.data.money)}`);
       let landIndex = this.findLandIndexByModelId(land.id);
       this.changeLand(landIndex, playerIndex);
       switch (land.data.level) {
@@ -359,7 +362,7 @@ export class BoardScene extends Scene {
     gameService.onRandomEventPutIntoJail(player => {
       console.info('RandomEventPutIntoJail', player.data);
 
-      this.popupStatus(`随机事件!\n${player.id}进监狱!`);
+      this.popupRandomEvent(`随机事件!\n${player.id}进监狱!`);
 
       let playerIndex = this.findPlayerIndexByPlayerName(player.id);
       let landId = this.findLandIndexByModelId(player.data.landId);
@@ -369,7 +372,7 @@ export class BoardScene extends Scene {
     gameService.onRandomEventBonus(players => {
       console.info('onRandomEventBonus', players);
 
-      this.popupStatus(`随机事件!\n全民福利!`);
+      this.popupRandomEvent(`随机事件!\n全民福利!`);
 
       for (let i = 0; i < this.playerInfoGroup.getLength(); i++) {
         let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
@@ -382,7 +385,7 @@ export class BoardScene extends Scene {
     gameService.onRandomEventTax(players => {
       console.info('onRandomEventTax', players);
 
-      this.popupStatus(`随机事件!\n全民收税!`);
+      this.popupRandomEvent(`随机事件!\n全民收税!`);
 
       for (let i = 0; i < this.playerInfoGroup.getLength(); i++) {
         let mdfPlayerMoney = this.playerInfoGroup.getChildren()[
@@ -479,6 +482,11 @@ export class BoardScene extends Scene {
       let playerIndex = this.findPlayerIndexByPlayerName(currentPlayer.id);
 
       this.playerJump(playerIndex, oldLandIndex, step, false);
+    });
+
+    gameService.onGameOver(player => {
+      this.popupStatus(`游戏结束!\n ${player}获得胜利!`);
+      window.close();
     });
 
     // this.rollDice(); // for test
@@ -654,7 +662,7 @@ export class BoardScene extends Scene {
       let playerMoney = this.add.text(
         infoMoneyPos.x,
         infoMoneyPos.y,
-        `¥${this.playerDetails[i].data.money}`,
+        `¥${Math.floor(this.playerDetails[i].data.money)}`,
         {
           fontFamily: 'Arial Black',
           fontSize: 60,
@@ -1170,7 +1178,7 @@ export class BoardScene extends Scene {
       case LandType.parking:
         let playerPoint = playerService.player!.data.point;
 
-        if (playerPoint >= 10) {
+        if (playerPoint >= 100) {
           this.popupDecision(
             `您当前的点数为${playerPoint},\n您是否要购买一张好运卡?`,
             yes => {
@@ -1300,20 +1308,6 @@ export class BoardScene extends Scene {
         this,
       );
     }
-
-    // this.luckyButtonGroup.children.iterate(child => {
-    //   let text = child as Phaser.GameObjects.Text;
-    //   child.on(
-    //     'click',
-    //     () => {
-    //       console.info(text.get);
-    //       this.closeLuckyButton();
-    //       this.closeStatus();
-    //       cb(true);
-    //     },
-    //     this,
-    //   );
-    // }, 0);
   }
 
   private createLuckyButton(): void {
@@ -1351,6 +1345,50 @@ export class BoardScene extends Scene {
 
   private closeLuckyButton(): void {
     this.luckyButtonGroup.children.iterate(child => {
+      child.setVisible(false);
+    }, 0);
+  }
+
+  private popupRandomEvent(text: string): void {
+    if (this.randomEventGroup.getLength() === 0) {
+      this.createRandomEvent(text);
+    } else {
+      this.showRandomEvent();
+      let ramdomText = this.randomEventGroup.getChildren()[0] as Phaser.GameObjects.Text;
+      ramdomText.setText(text);
+    }
+
+    this.time.delayedCall(
+      2000,
+      () => {
+        this.closeRandomEvent();
+      },
+      [],
+      this,
+    );
+  }
+
+  private createRandomEvent(text: string): void {
+    let randomText = this.add.text(width(50), height(93), text, {
+      fontFamily: 'Arial Black',
+      fontSize: 60,
+      color: '#fff',
+    });
+    randomText.setStroke('#555', 4).setShadow(2, 2, '#fff', 8, true, true);
+    scaleGameObject(randomText);
+    randomText.setOrigin(0.5, 0.5);
+    this.randomEventGroup.add(randomText);
+  }
+
+  private showRandomEvent(): void {
+    this.randomEventGroup.children.iterate(child => {
+      child.setVisible(true);
+    }, 0);
+  }
+
+  private closeRandomEvent(): void {
+    console.info('randomEventGroup');
+    this.randomEventGroup.children.iterate(child => {
       child.setVisible(false);
     }, 0);
   }
