@@ -777,8 +777,8 @@ export class BoardScene extends Scene {
     $('#roll-btn').on('click', () => {
       let faceValue1 = Math.ceil(Math.random() * 6);
       let faceValue2 = Math.ceil(Math.random() * 6);
-      faceValue1 = 3; // for test
-      faceValue2 = 1;
+      // faceValue1 = 3; // for test
+      // faceValue2 = 1;
       this.myDice1.roll(faceValue1);
       this.myDice2.roll(faceValue2);
       console.info(faceValue1, faceValue2);
