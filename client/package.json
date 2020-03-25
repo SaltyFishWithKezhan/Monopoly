@@ -13,7 +13,7 @@
     "babel-polyfill": "^6.26.0",
     "eventemitter3": "^3.1.0",
     "image-preloader": "^1.1.1",
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.0",
     "phaser": "^3.15.1",
     "socket.io-client": "^2.2.0"
   },
